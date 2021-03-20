@@ -429,7 +429,7 @@ if rootWidget then
       source = "HP"
     elseif src == "Mana Percent" then
       source = "MP%"
-    elseif spellSource == "Health Percent" then
+    elseif src == "Health Percent" then
       source = "HP%"
     else
       source = "burst"
