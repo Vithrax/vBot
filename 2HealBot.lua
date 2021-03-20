@@ -606,7 +606,7 @@ end)
 -- items
 macro(500, function()
   if not currentSettings.enabled or #currentSettings.itemTable == 0 then return end
-  if currentSettings.Delay and storage.isUsing then return end
+  if currentBotProfile.Delay and storage.isUsing then return end
 
   if TargetBot.isOn() and TargetBot.Looting.getStatus():len() > 0 and currentSettings.Interval then
     delay(700)
