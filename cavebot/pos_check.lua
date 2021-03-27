@@ -3,7 +3,7 @@ CaveBot.Extensions.PosCheck = {}
 
 storage.posCheckRetries = 0
 CaveBot.Extensions.PosCheck.setup = function()
-  CaveBot.registerAction("PosCheck", "#00FFFF", function(value, retries)
+  CaveBot.registerAction("PosCheck", "#E169FF", function(value, retries)
     local tilePos
     local data = string.split(value, ",")
     if #data ~= 5 then

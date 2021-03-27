@@ -2,7 +2,7 @@ CaveBot.Extensions.BuySupplies = {}
 
 storage.buySuppliesCap = 0
 CaveBot.Extensions.BuySupplies.setup = function()
-  CaveBot.registerAction("BuySupplies", "#00FFFF", function(value, retries)
+  CaveBot.registerAction("BuySupplies", "#8F0000", function(value, retries)
     local item1Count = itemAmount(storage[suppliesPanelName].item1)
     local item2Count = itemAmount(storage[suppliesPanelName].item2)
     local item3Count = itemAmount(storage[suppliesPanelName].item3)

@@ -2,7 +2,7 @@ CaveBot.Extensions.SellAll = {}
 
 storage.sellAllCap = 0
 CaveBot.Extensions.SellAll.setup = function()
-  CaveBot.registerAction("SellAll", "#00FFFF", function(value, retries)
+  CaveBot.registerAction("SellAll", "#C300FF", function(value, retries)
     local val = string.split(value, ",")
     local wait
     if #val > 2 then 

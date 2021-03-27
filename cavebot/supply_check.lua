@@ -2,7 +2,7 @@ CaveBot.Extensions.SupplyCheck = {}
 
 storage.supplyRetries = 0
 CaveBot.Extensions.SupplyCheck.setup = function()
- CaveBot.registerAction("supplyCheck", "#00FFFF", function(value)
+ CaveBot.registerAction("supplyCheck", "#00FF91", function(value)
   local softCount = itemAmount(6529) + itemAmount(3549)
   local totalItem1 = itemAmount(storage[suppliesPanelName].item1)
   local totalItem2 = itemAmount(storage[suppliesPanelName].item2)

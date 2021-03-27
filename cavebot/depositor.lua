@@ -15,7 +15,7 @@ end
 local i = 1
 
 CaveBot.Extensions.Depositor.setup = function()
-	CaveBot.registerAction("depositor", "#00FFFF", function(value, retries)
+	CaveBot.registerAction("depositor", "#00FF99", function(value, retries)
 	if retries > 400 then 
 		print("CaveBot[Depositor]: Depositor actions limit reached, proceeding")
 		reset()

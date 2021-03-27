@@ -1,23 +1,28 @@
 CaveBot.Extensions.Lure = {}
 
 CaveBot.Extensions.Lure.setup = function()
-  CaveBot.registerAction("lure", "#00FFFF", function(value, retries)
+  CaveBot.registerAction("lure", "#FF0090", function(value, retries)
+    value = value:lower()
     if value == "start" then
         TargetBot.setOff()
-        return true
     elseif value == "stop" then
         TargetBot.setOn()
-        return true
+    elseif value == "toggle" then
+      if TargetBot.isOn() then
+        TargetBot.setOff()
+      else
+        TargetBot.setOn()
+      end
     else
-        warn("incorrect lure value!")
-        return false
+      warn("incorrect lure value!")
     end
+    return true
   end)
 
   CaveBot.Editor.registerAction("lure", "lure", {
-    value="start",
+    value="toggle",
     title="Lure",
-    description="start/stop",
+    description="TargetBot: start, stop, toggle",
     multiline=false,
 })
 end

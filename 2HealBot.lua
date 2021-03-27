@@ -617,57 +617,57 @@ macro(500, function()
     if (not currentSettings.Visible or item) and entry.enabled then
       if entry.origin == "HP%" then
         if entry.sign == "=" and hppercent() == entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == ">" and hppercent() >= entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == "<" and hppercent() <= entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         end
       elseif entry.origin == "HP" then
         if entry.sign == "=" and hp() == tonumberentry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == ">" and hp() >= entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == "<" and hp() <= entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         end
       elseif entry.origin == "MP%" then
         if entry.sign == "=" and manapercent() == entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == ">" and manapercent() >= entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == "<" and manapercent() <= entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         end
       elseif entry.origin == "MP" then
         if entry.sign == "=" and mana() == entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == ">" and mana() >= entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == "<" and mana() <= entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         end   
       elseif entry.origin == "burst" then
         if entry.sign == "=" and burstDamageValue() == entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == ">" and burstDamageValue() >= entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == "<" and burstDamageValue() <= entry.value then
-          useWith(entry.item, player)
+          g_game.useInventoryItemWith(entry.item, player)
           return
         end   
       end

@@ -96,8 +96,16 @@ CaveBot.registerAction("follow", "#FF8400", function(value, retries, prev)
     print("CaveBot[follow]: can't find creature to follow")
     return false
   end
-  follow(c)
-  return true
+  local cpos = c:getPosition()
+  local pos = pos()
+  if getDistanceBetween(cpos, pos) < 2 then
+    g_game.cancelFollow()
+    return true
+  else
+    follow(c)
+    delay(200)
+    return "retry"
+  end
 end)
 
 CaveBot.registerAction("function", "red", function(value, retries, prev)
@@ -166,18 +174,20 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
     local monsters = {}
     for i, spec in pairs(getSpectators()) do
       if spec:isMonster() and spec:getType() ~= 3 then
-        if findPath(playerPos, spec:getPosition(), 20, {ignoreNonPathable = true, precision = 1}) then
+        if spec:canShoot() and findPath(playerPos, spec:getPosition(), 20, {ignoreNonPathable = true, precision = 1}) then
           table.insert(monsters, {mob = spec, dist = getDistanceBetween(pos, spec:getPosition())})
         end
       end
     end
     table.sort(monsters, function(a,b) return a.dist < b.dist end)
     if monsters[1] then 
-      attack(monsters[1].mob)
-      CaveBot.walkTo(monsters[1].mob:getPosition(), 10, {precision = 1})
+      g_game.attack(monsters[1].mob)
+      storage.blockMonster = monsters[1].mob
+      autoWalk(storage.blockMonster, 10, {precision = 1})
+      storage.clearing = true
       CaveBot.setOff()
       g_game.setChaseMode(1)
-      schedule(500, function() CaveBot.setOn() end) -- just in case callback trigger fails
+      schedule(3000, function() CaveBot.setOn() end) -- just in case callback trigger fails
       return "retry"
     else
       return false -- there's no way
@@ -216,6 +226,33 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
   -- everything else failed, try to walk ignoring creatures, maybe will work
   CaveBot.walkTo(pos, 40, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true })
   return "retry"
+end)
+
+onCreatureDisappear(function(creature)
+  if creature ~= storage.blockMonster then return end
+  if storage.clearing then
+    CaveBot.setOn()
+    storage.blockMonster = nil
+    storage.clearing = false
+  end
+end)
+
+onCreaturePositionChange(function(creature, newPos, oldPos)
+  if creature ~= storage.blockMonster and creature ~= player then return end
+  if storage.clearing then
+    if creature == storage.blockMonster and not findPath(player:getPosition(), newPos, 20, {ignoreNonPathable = true, precision = 1}) then
+      CaveBot.setOn()
+      storage.blockMonster = nil
+      storage.clearing = false
+    end
+    if creature == player then
+      if oldPos.z ~= newPos.z then
+        CaveBot.setOn()
+        storage.blockMonster = nil
+        storage.clearing = false
+      end
+    end
+  end
 end)
 
 CaveBot.registerAction("use", "#FFB272", function(value, retries, prev)

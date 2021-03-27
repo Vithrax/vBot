@@ -3,6 +3,8 @@
 
 -- if you want to change tab, in line below insert: setDefaultTab("tab name")
 
+
+
 attackPanelName = "attackbot"
 local ui = setupUI([[
 Panel
@@ -438,6 +440,7 @@ if rootWidget then
     attackWindow.minMana:setText(1)
     attackWindow.minMonsters:setText(1)
     attackWindow.itemId:setItemId(0)
+    attackWindow.newCooldown:setText(1)
     pvpDedicated = false
     item = false
     attackWindow.pvpSpell:setChecked(false)
@@ -555,7 +558,7 @@ if rootWidget then
       else
         val = attackWindow.spellFormula:getText()
       end
-      table.insert(currentSettings.attackTable, {index = #currentSettings.attackTable+1, attack = val, manaCost = tonumber(attackWindow.minMana:getText()), minMonsters = tonumber(attackWindow.minMonsters:getText()), pvp = pvpDedicated, dist = j-1, model = k, category = i, enabled = true})
+      table.insert(currentSettings.attackTable, {index = #currentSettings.attackTable+1, cd = tonumber(attackWindow.newCooldown:getText()) ,attack = val, manaCost = tonumber(attackWindow.minMana:getText()), minMonsters = tonumber(attackWindow.minMonsters:getText()), pvp = pvpDedicated, dist = j-1, model = k, category = i, enabled = true})
       refreshAttacks()
       clearValues()
     end
@@ -944,11 +947,11 @@ macro(100, function()
           if currentSettings.pvpMode then
             if entry.pvp then
               if type(entry.attack) == "string" and target():canShoot() then
-                say(entry.attack)
+                cast(entry.attack, entry.cd)
                 return
               else
                 if not storage.isUsing and target():canShoot() then
-                  useWith(entry.attack, target())
+                  g_game.useInventoryItemWith(entry.attack, target())
                   return
                 end
               end
@@ -958,11 +961,11 @@ macro(100, function()
               if getMonsters(4) >= entry.minMonsters then
                 if type(entry.attack) == "number" then
                   if not storage.isUsing then
-                    useWith(entry.attack, target())
+                    g_game.useInventoryItemWith(entry.attack, target())
                     return
                   end
                 else
-                  say(entry.attack)
+                  cast(entry.attack, entry.cd)
                   return
                 end
               end
@@ -972,35 +975,35 @@ macro(100, function()
                   bestTile = getBestTileByPatern(patterns[5], 2, entry.dist, not currentSettings.PvpSafe)
                 end
                 if entry.category == 4 and (not currentSettings.PvpSafe or isSafe(2, false)) and bestSide >= entry.minMonsters then
-                  say(entry.attack)
+                  cast(entry.attack, entry.cd)
                   return
                 elseif entry.category == 3 and (not currentSettings.PvpSafe or isSafe(2, false)) and getMonsters(1) >= entry.minMonsters then
-                  say(entry.attack)
+                  cast(entry.attack, entry.cd)
                   return
                 elseif entry.category == 5 and getCreaturesInArea(player, patterns[entry.model], 2) >= entry.minMonsters and (not currentSettings.PvpSafe or getCreaturesInArea(player, safePatterns[entry.model], 3) == 0) then
-                  say(entry.attack)
+                  cast(entry.attack, entry.cd)
                   return
                 elseif entry.category == 2 and getCreaturesInArea(pos(), patterns[entry.model], 2) >= entry.minMonsters and (not currentSettings.PvpSafe or getCreaturesInArea(pos(), safePatterns[entry.model], 3) == 0) then
-                  say(entry.attack)
+                  cast(entry.attack, entry.cd)
                   return
                 elseif entry.category == 8 and bestTile and bestTile.count >= entry.minMonsters then
                   if not storage.isUsing then
-                    useWith(entry.attack, bestTile.pos:getTopUseThing())
+                    g_game.useInventoryItemWith(entry.attack, bestTile.pos:getTopUseThing())
                   end
                   return
                 elseif entry.category == 9 and not isBuffed() and getMonsters(entry.dist) >= entry.minMonsters then
-                  say(entry.attack)
+                  cast(entry.attack, entry.cd)
                   return
                 else
                   if entry.category == 6 or entry.category == 7 then
                     if getMonsters(4) >= entry.minMonsters then
                       if type(entry.attack) == "number" then
                         if not storage.isUsing then
-                          useWith(entry.attack, target())
+                          g_game.useInventoryItemWith(entry.attack, target())
                           return
                         end
                       else
-                        say(entry.attack)
+                        cast(entry.attack, entry.cd)
                         return
                       end
                     end
@@ -1011,11 +1014,11 @@ macro(100, function()
                   if getMonsters(4) >= entry.minMonsters then
                     if type(entry.attack) == "number" then
                       if not storage.isUsing then
-                        useWith(entry.attack, target())
+                        g_game.useInventoryItemWith(entry.attack, target())
                         return
                       end
                     else
-                      say(entry.attack)
+                      cast(entry.attack, entry.cd)
                       return
                     end
                   end

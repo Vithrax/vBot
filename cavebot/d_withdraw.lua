@@ -12,7 +12,7 @@ local i = 1
 
 
 CaveBot.Extensions.DWithdraw.setup = function()
-	CaveBot.registerAction("dpwithdraw", "#00FFFF", function(value, retries)
+	CaveBot.registerAction("dpwithdraw", "#8F008F", function(value, retries)
 		local capLimit = nil
 		if retries > 600 then
 			print("CaveBot[DepotWithdraw]: actions limit reached, proceeding") 

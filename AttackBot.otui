@@ -125,8 +125,8 @@ AttackWindow < MainWindow
     id: spellFormula
     anchors.left: parent.left
     anchors.top: parameter2Prev.bottom
-    margin-top: 27
-    margin-left: 5
+    margin-top: 20
+    margin-left: 30
     width: 200
 
   Label
@@ -142,8 +142,8 @@ AttackWindow < MainWindow
     id: itemId
     anchors.left: parent.left
     anchors.top: parameter2Prev.bottom
-    margin-top: 20
-    margin-left: 5
+    margin-top: 10
+    margin-left: 20
 
   Label
     id: itemDescription
@@ -153,9 +153,9 @@ AttackWindow < MainWindow
     text: < insert id or drag item here
 
   Label
-    anchors.left: parameter2Prev.left
-    anchors.top: parameter2Prev.bottom
-    margin-top: 10
+    anchors.left: parent.left
+    anchors.bottom: BottomSeparator.top
+    margin-bottom: 10
     text-align: center
     text: Min Monsters: 
 
@@ -170,28 +170,45 @@ AttackWindow < MainWindow
     focusable: true
 
   Label
-    anchors.left: parameter2Prev.left
-    anchors.top: prev.bottom
-    margin-top: 10
+    anchors.left: minMonsters.right
+    anchors.verticalCenter: minMonsters.verticalCenter
+    margin-left: 10
     text-align: center
     text: Min Mana%: 
 
   SpinBox
     id: minMana
-    anchors.left: minMonsters.left
+    anchors.left: prev.right
     anchors.verticalCenter: prev.verticalCenter
+    margin-left: 5
     width: 45
     minimum: 1
     maximum: 100
     focusable: true
 
+  Label
+    anchors.left: prev.right
+    anchors.verticalCenter: prev.verticalCenter
+    margin-left: 10
+    text: Cooldown(ms):
+    !tooltip: tr('Optional, can be left at 1, recommended for custom spells/old tibia')
+
+  SpinBox
+    id: newCooldown
+    anchors.left: prev.right
+    anchors.verticalCenter: prev.verticalCenter
+    margin-left: 5
+    width: 60
+    minimum: 0
+    maximum: 99999
+    focusable: true
+
   CheckBox
     id: pvpSpell
-    anchors.right: minMana.right
-    anchors.top: minMana.bottom
+    anchors.verticalCenter: spellFormula.verticalCenter
+    anchors.left: spellFormula.right
     width: 100
-    margin-left: 30
-    margin-top: 6
+    margin-left: 50
     text: Spell for PVP
 
   Button 
@@ -229,6 +246,7 @@ AttackWindow < MainWindow
     margin-left: 10
 
   Label
+    id: thing
     anchors.left: prev.right
     anchors.right: parent.right
     anchors.top: parent.top
@@ -355,17 +373,16 @@ AttackWindow < MainWindow
     focusable: true 
     margin-left: 5
 
-
-
-
-
-
-
-
-
-
-
-
+  Label
+    anchors.left: thing.left
+    anchors.right: thing.right
+    anchors.bottom: ResetSettings.top
+    margin-bottom: 10
+    text: Note: Cooldown value is optional for new global Tibia, recommended for Old tibia and custom OT
+    text-wrap: true
+    text-align: center
+    height: 40
+    multiline: true
 
   HorizontalSeparator
     id: BottomSeparator

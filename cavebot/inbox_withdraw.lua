@@ -11,7 +11,7 @@ local i = 1
 
 
 CaveBot.Extensions.InWithdraw.setup = function()
-	CaveBot.registerAction("inwithdraw", "#00FFFF", function(value, retries)
+	CaveBot.registerAction("inwithdraw", "#FFC800", function(value, retries)
 		local data = string.split(value, ",")
 		local withdrawId
 		local count

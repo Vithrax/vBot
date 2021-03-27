@@ -130,12 +130,47 @@ function killsToRs()
     return math.min(g_game.getUnjustifiedPoints().killsDayRemaining, g_game.getUnjustifiedPoints().killsWeekRemaining, g_game.getUnjustifiedPoints().killsMonthRemaining)
 end
 
-local Spells = modules.gamelib.SpellInfo['Default']
+-- [[ canCast and cast functions ]] --
+SpellCastTable = {}
+onTalk(function(name, level, mode, text, channelId, pos)
+  if name ~= player:getName() then return end
 
+  if SpellCastTable[text] then
+    SpellCastTable[text].t = now
+  end
+end)
+
+function cast(text, delay)
+  if type(text) ~= "string" then return end
+  if not delay or delay < 100 then 
+    return say(text) -- if not added delay or delay is really low then just treat it like casual say
+  end
+  if not SpellCastTable[text] or SpellCastTable[text].d ~= delay then
+    SpellCastTable[text] = {t=now-delay,d=delay}
+    return say(text)
+  end
+  local lastCast = SpellCastTable[text].t
+  local spellDelay = SpellCastTable[text].d
+  if now - lastCast > spellDelay then
+     return say(text)
+  end
+  return
+end
+local Spells = modules.gamelib.SpellInfo['Default']
 function canCast(spell, ignoreRL, ignoreCd)
     if type(spell) ~= "string" then return end
     spell = spell:lower()
-    if not getSpellData(spell) then return true end
+    if not getSpellData(spell) then
+        if SpellCastTable[spell] then
+            if now - SpellCastTable[spell].t > SpellCastTable[spell].d then 
+                return true 
+            else
+                return false
+            end
+        else
+            return true
+        end
+    end
     if (ignoreCd or not getSpellCoolDown(spell)) and (ignoreRL or level() >= getSpellData(spell).level and mana() >= getSpellData(spell).mana) then
         return true
     else
