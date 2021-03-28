@@ -57,7 +57,9 @@ CaveBot.Extensions.Tasker.setup = function()
             taskName = data[2]:lower():trim()
             count = tonumber(data[3]:trim())
             monster = data[4]:lower():trim()
-            monster2 = data[5]:lower():trim()
+            if #data == 5 then
+                monster2 = data[5]:lower():trim()
+            end
         end
     elseif marker == 2 then
         if #data ~= 3 then
@@ -85,7 +87,7 @@ CaveBot.Extensions.Tasker.setup = function()
         delay(talkDelay*4)
 
         storage.caveBotTasker.monster = monster
-        storage.caveBotTasker.monster2 = monster2
+        if monster2 then storage.caveBotTasker.monster2 = monster2 end
         storage.caveBotTasker.taskName = taskName
         storage.caveBotTasker.inProgress = true
         storage.caveBotTasker.max = count
