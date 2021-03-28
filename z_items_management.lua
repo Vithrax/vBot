@@ -43,7 +43,7 @@ macro(200, "Use Items", function()
   for _, container in pairs(g_game.getContainers()) do
     for __, item in ipairs(container:getItems()) do
       for i, useItem in ipairs(storage.useItems) do
-        if item:getId() == trashItem.id then
+        if item:getId() == useItem.id then
           return use(item)
         end
       end
