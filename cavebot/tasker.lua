@@ -163,8 +163,8 @@ CaveBot.Extensions.Tasker.setup = function()
  })
 end
 
-local regex = "Loot of ([a-z])* ([a-z A-Z]*):"
-local regex2 = "Loot of ([a-z A-Z]*):"
+local regex = "Loot of ([a-z])* ([^(?!:)]*):"
+local regex2 = "Loot of ([^(?!:)]*):"
 onTextMessage(function(mode, text)
     if CaveBot.isOff() then return end
     if not text:lower():find("loot of") then return end

@@ -178,5 +178,5 @@ onPlayerPositionChange(function(newPos, oldPos)
   if not storage.targetBotLureMax then return end
   if storage.targetBotTargets < storage.targetBotLureMax/2 or not target() then return end
 
-  CaveBot.delay(storage.targetBotDynamicLureDelayValue)
+  CaveBot.delay(storage.targetBotDynamicLureDelayValue or 0)
 end)
