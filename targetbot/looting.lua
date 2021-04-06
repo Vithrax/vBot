@@ -283,6 +283,7 @@ onContainerOpen(function(container, previousContainer)
 end)
 
 onCreatureDisappear(function(creature)
+  if isInPz() then return end
   if not TargetBot.isOn() then return end
   if not creature:isMonster() then return end
   local config = TargetBot.Creature.calculateParams(creature, {}) -- return {craeture, config, danger, priority}

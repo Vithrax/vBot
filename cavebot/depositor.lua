@@ -17,6 +17,8 @@ local i = 1
 local ifPing = function()
 	if ping() and ping() > 150 then
 		return ping()
+	else
+		return 1
 	end
 end
 
