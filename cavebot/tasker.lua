@@ -27,7 +27,7 @@ local resetTaskData = function()
 end
 
 CaveBot.Extensions.Tasker.setup = function()
-  CaveBot.registerAction("Tasker", "#9900FF", function(value, retries)
+  CaveBot.registerAction("Tasker", "#FF0090", function(value, retries)
     local taskName = ""
     local monster = ""
     local monster2 = ""
@@ -154,7 +154,7 @@ CaveBot.Extensions.Tasker.setup = function()
   when begin remove all the text and leave just a single string of parameters
   some examples:
 
-  2, goReport, skipReport
+  2, skipReport, goReport
   3
   1, drakens, 500, draken warmaster, draken spellweaver
   1, medusae, 500, medusa]],
@@ -163,22 +163,21 @@ CaveBot.Extensions.Tasker.setup = function()
  })
 end
 
-local regex = "Loot of ([a-z])* ([^(?!:)]*):"
-local regex2 = "Loot of ([^(?!:)]*):"
+local regex = "Loot of ([a-z])* ([a-z A-Z]*):"
+local regex2 = "Loot of ([a-z A-Z]*):"
 onTextMessage(function(mode, text)
-    if CaveBot.isOff() then return end
+   -- if CaveBot.isOff() then return end
     if not text:lower():find("loot of") then return end
-    local monster
     if #regexMatch(text, regex) == 1 and #regexMatch(text, regex)[1] == 3 then
         monster = regexMatch(text, regex)[1][3]
-    else
+    elseif #regexMatch(text, regex2) == 1 and #regexMatch(text, regex2)[1] == 2 then
         monster = regexMatch(text, regex2)[1][2]
-    end 
-    
+    end
+
     local m1 = storage.caveBotTasker.monster
     local m2 = storage.caveBotTasker.monster2
 
-    if monster == m1 or monster == m2 then
+    if monster == m1 or monster == m2 and storage.caveBotTasker.countaa then
         storage.caveBotTasker.count = storage.caveBotTasker.count + 1
     end
 end)

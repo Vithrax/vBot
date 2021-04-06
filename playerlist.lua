@@ -28,7 +28,6 @@ Panel
     storage[listPanelName].blackList = {}
   end
 
-
   rootWidget = g_ui.getRootWidget()
   playerListWindow = g_ui.createWidget('PlayerListsWindow', rootWidget)
   playerListWindow:hide()
@@ -82,6 +81,7 @@ Panel
       end
       label:setText(friendName)
       playerListWindow.FriendName:setText('')
+      refreshStatus()
     end
   end
 
@@ -107,6 +107,7 @@ Panel
       end
       label:setText(friendName)
       playerListWindow.FriendName:setText('')
+      refreshStatus()
     end
   end
   
@@ -121,6 +122,7 @@ Panel
       end
       label:setText(enemyName)
       playerListWindow.EnemyName:setText('')
+      refreshStatus()
     end
   end 
 
@@ -135,6 +137,7 @@ Panel
       end
       label:setText(blackName)
       playerListWindow.BlackName:setText('')
+      refreshStatus()
     end
   end 
 
@@ -153,16 +156,18 @@ function refreshStatus()
       if storage[listPanelName].outfits then
         specOutfit = spec:getOutfit()
         if isEnemy(spec:getName()) then
+          spec:setMarked('#FF0000')
           specOutfit.head = 112
           specOutfit.body = 112
           specOutfit.legs = 112
           specOutfit.feet = 112
           spec:setOutfit(specOutfit)
         elseif isFriend(spec:getName()) then
-          specOutfit.head = 88
-          specOutfit.body = 88
-          specOutfit.legs = 88
-          specOutfit.feet = 88
+          spec:setMarked('#0000FF')
+          specOutfit.head = 94
+          specOutfit.body = 94
+          specOutfit.legs = 94
+          specOutfit.feet = 94
           spec:setOutfit(specOutfit)
         end
       end
@@ -176,5 +181,3 @@ onCreatureAppear(function(creature)
    refreshStatus()
   end
 end)
-
-addSeparator()

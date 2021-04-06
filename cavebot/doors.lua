@@ -2,7 +2,11 @@ CaveBot.Extensions.OpenDoors = {}
 
 CaveBot.Extensions.OpenDoors.setup = function()
   CaveBot.registerAction("OpenDoors", "#00FFFF", function(value, retries)
-    local pos = regexMatch(value, "\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+)")
+    local pos = string.split(value, ",")
+    local key = nil
+    if #pos == 4 then
+      key = tonumber(pos[4])
+    end
     if not pos[1] then
       error("CaveBot[OpenDoors]: invalid value. It should be position (x,y,z), is: " .. value)
       return false
@@ -13,7 +17,7 @@ CaveBot.Extensions.OpenDoors.setup = function()
       return false -- tried 5 times, can't open
     end
 
-    pos = {x=tonumber(pos[1][2]), y=tonumber(pos[1][3]), z=tonumber(pos[1][4])}  
+    pos = {x=tonumber(pos[1]), y=tonumber(pos[2]), z=tonumber(pos[3])}  
 
     local doorTile
     if not doorTile then
@@ -29,8 +33,15 @@ CaveBot.Extensions.OpenDoors.setup = function()
     end
   
     if not doorTile:isWalkable() then
-      use(doorTile:getTopUseThing())
-      return "retry"
+      if not key then
+        use(doorTile:getTopUseThing())
+        delay(200)
+        return "retry"
+      else
+        useWith(key, doorTile:getTopUseThing())
+        delay(200)
+        return "retry"
+      end
     else
       print("CaveBot[OpenDoors]: possible to cross, proceeding")
       return true
@@ -40,8 +51,7 @@ CaveBot.Extensions.OpenDoors.setup = function()
   CaveBot.Editor.registerAction("opendoors", "open doors", {
     value=function() return posx() .. "," .. posy() .. "," .. posz() end,
     title="Door position",
-    description="doors position (x,y,z)",
+    description="doors position (x,y,z) and key id (optional)",
     multiline=false,
-    validation="^\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+)$"
 })
 end

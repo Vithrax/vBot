@@ -1,7 +1,7 @@
 CaveBot.Extensions.Travel = {}
 
 CaveBot.Extensions.Travel.setup = function()
-  CaveBot.registerAction("Travel", "#AAFF00", function(value, retries)
+  CaveBot.registerAction("Travel", "#db5a5a", function(value, retries)
    local data = string.split(value, ",")
    local waitVal = 0
     if #data < 2 or #data > 3 then

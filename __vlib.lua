@@ -23,6 +23,10 @@ onTextMessage(function(mode, text)
     end)
 end)
 
+function whiteInfoMessage(text)
+    return modules.game_textmessage.displayGameMessage(text)
+end
+
 function burstDamageValue()
     local d = 0
     local time = 0
@@ -227,24 +231,48 @@ function string.starts(String,Start)
  return string.sub(String,1,string.len(Start))==Start
 end
 
-function isFriend(name)
-    if not name then return false end
+local cachedFriends = {}
+local cachedNeutrals = {}
+local cachedEnemies = {}
+function isFriend(c)
+    local name = c
+    if type(c) ~= "string" then
+        if c == player then return true end 
+        name = c:getName()
+        if name == name() then return true end
+    end
+
+    if table.find(cachedFriends, c) then return true end
+    if table.find(cachedNeutrals, c) or table.find(cachedEnemies, c) then return false end 
 
     if table.find(storage.playerList.friendList, name) then
+        table.insert(CachedFriends, c)
+        table.insert(CachedFriends, p)
         return true
     elseif string.find(storage.serverMembers, name) then
+        table.insert(CachedFriends, c)
+        table.insert(CachedFriends, p)
         return true
     elseif storage.playerList.groupMembers then
-        local p = getCreatureByName(name, true)
+        local p = c
+        if type(c) == "string" then 
+            p = getCreatureByName(c, true)
+        end
         if p:isLocalPlayer() then return true end
         if p:isPlayer() then
             if ((p:getShield() >= 3 and p:getShield() <= 10) or p:getEmblem() == 2) then
+                table.insert(CachedFriends, c)
+                table.insert(CachedFriends, p)
                 return true
             else
+                table.insert(cachedNeutrals, c)
+                table.insert(cachedNeutrals, p)
                 return false
             end
         end
     else
+        table.insert(cachedNeutrals, c)
+        table.insert(cachedNeutrals, p)
         return false
     end
 end
@@ -614,7 +642,6 @@ end
 function getBestTileByPatern(pattern, specType, maxDist, safe)
     if not pattern or not specType then return end
     if not maxDist then maxDist = 4 end
-    if not safe then safe = false end
 
 
     local bestTile = nil

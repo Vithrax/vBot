@@ -1,7 +1,7 @@
 CaveBot.Extensions.Bank = {}
 
 CaveBot.Extensions.Bank.setup = function()
-  CaveBot.registerAction("bank", "#002FFF", function(value, retries)
+  CaveBot.registerAction("bank", "#db5a5a", function(value, retries)
    local data = string.split(value, ",")
    local waitVal = 300
    local amount = 0

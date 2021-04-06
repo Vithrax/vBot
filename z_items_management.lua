@@ -51,4 +51,29 @@ macro(200, "Use Items", function()
   end
 end)
 
+UI.Label("Items to drop below 150 cap:")
+if type(storage.lowCapDrop) ~= "table" or not storage.lowCapDrop then
+  storage.lowCapDrop = {21175}
+end
+
+local useContainer = UI.Container(function(widget, items)
+  storage.lowCapDrop = items
+end, true)
+useContainer:setHeight(35)
+useContainer:setItems(storage.lowCapDrop)
+
+macro(200, "Drop Items", function()
+  if not storage.lowCapDrop[1] then return end
+  if freecap() > 150 then return end
+  for _, container in pairs(g_game.getContainers()) do
+    for __, item in ipairs(container:getItems()) do
+      for i, dropItem in ipairs(storage.lowCapDrop) do
+        if item:getId() == dropItem.id then
+          return g_game.move(item, pos(), item:getCount())
+        end
+      end
+    end
+  end
+end)
+
 UI.Separator()

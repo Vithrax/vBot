@@ -1,8 +1,7 @@
 CaveBot.Extensions.BuySupplies = {}
 
-storage.buySuppliesCap = 0
 CaveBot.Extensions.BuySupplies.setup = function()
-  CaveBot.registerAction("BuySupplies", "#8F0000", function(value, retries)
+  CaveBot.registerAction("BuySupplies", "#C300FF", function(value, retries)
     local item1Count = itemAmount(storage[suppliesPanelName].item1)
     local item2Count = itemAmount(storage[suppliesPanelName].item2)
     local item3Count = itemAmount(storage[suppliesPanelName].item3)
@@ -38,12 +37,6 @@ CaveBot.Extensions.BuySupplies.setup = function()
       return false
     end
 
-    if freecap() == storage.buySuppliesCap then
-      storage.buySuppliesCap = 0 
-      print("CaveBot[BuySupplies]: Bought Everything, proceeding")
-      return true
-    end
-
     delay(200)
 
     local pos = player:getPosition()
@@ -68,8 +61,6 @@ CaveBot.Extensions.BuySupplies.setup = function()
       NPC.say("hi")
       schedule(500, function() NPC.say("trade") end)
       return "retry"
-    else
-      storage.buySuppliesCap = freecap()
     end
 
     -- get items from npc
@@ -80,7 +71,7 @@ CaveBot.Extensions.BuySupplies.setup = function()
 
     for i, item in pairs(itemList) do
    --   info(table.find(possibleItems, item["ID"]))
-     if item["ID"] > 100 and table.find(possibleItems, item["ID"]) then
+     if item["ID"] and item["ID"] > 100 and table.find(possibleItems, item["ID"]) then
       local amountToBuy = item["maxAmount"] - item["currentAmount"]
        if amountToBuy > 100 then
         for i=1, math.ceil(amountToBuy/100), 1 do
@@ -90,14 +81,15 @@ CaveBot.Extensions.BuySupplies.setup = function()
         end
         else
          if amountToBuy > 0 then
-          NPC.buy(item["ID"], amountToBuy)
+          NPC.buy(item["ID"], math.min(100, amountToBuy))
           print("CaveBot[BuySupplies]: bought " .. amountToBuy .. "x " .. item["ID"])
           return "retry"
          end
        end
       end
      end
-    return "retry"
+    print("CaveBot[BuySupplies]: bought everything, proceeding")
+    return true
  end)
 
  CaveBot.Editor.registerAction("buysupplies", "buy supplies", {

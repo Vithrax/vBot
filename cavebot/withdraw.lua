@@ -12,7 +12,7 @@ local i = 1
 
 
 CaveBot.Extensions.Withdraw.setup = function()
-	CaveBot.registerAction("withdraw", "#00FFFF", function(value, retries)
+	CaveBot.registerAction("withdraw", "#002FFF", function(value, retries)
 		local data = string.split(value, ",")
 		local stashIndex
 		local withdrawId

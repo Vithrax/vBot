@@ -14,8 +14,14 @@ local reset = function()
 end
 local i = 1
 
+local ifPing = function()
+	if ping() and ping() > 150 then
+		return ping()
+	end
+end
+
 CaveBot.Extensions.Depositor.setup = function()
-	CaveBot.registerAction("depositor", "#00FF99", function(value, retries)
+	CaveBot.registerAction("depositor", "#002FFF", function(value, retries)
 	if retries > 400 then 
 		print("CaveBot[Depositor]: Depositor actions limit reached, proceeding")
 		reset()
@@ -65,7 +71,7 @@ CaveBot.Extensions.Depositor.setup = function()
 			end
 		end
 
-		delay(500) -- slow down this function until containers reset 
+		delay(500 + 2*ifPing()) -- slow down this function until containers reset 
 		if #lootDestination > 0 then
 			-- first closing all that are opened
 			if not storage.containersClosed then
@@ -128,7 +134,7 @@ CaveBot.Extensions.Depositor.setup = function()
 				if not dest:getCreatures()[1] and dest:isWalkable() then
 					if CaveBot.walkTo(dest:getPosition(), {ignoreNonPathable=true}) then
 						storage.stopSearch = true
-						delay(100)
+						delay(100+ifPing())
 					end
 				else
 					i = i + 1
@@ -140,7 +146,7 @@ CaveBot.Extensions.Depositor.setup = function()
 	if tileList[i] and not table.find(depotIDs, tileList[i].tileObj:getTopLookThing():getId()) and (getDistanceBetween(pos(), tileList[i].tileObj:getPosition()) <= 1) then
 		for j=1,table.getn(tileList[i].tileObj:getThings()),1 do
 			if not tileList[i].tileObj:getThings()[j]:isNotMoveable() then
-				delay(500)
+				delay(500+2*ifPing())
 				g_game.move(tileList[i].tileObj:getThings()[j], pos(), tileList[i].tileObj:getThings()[j]:getCount())
 			end
 		end
@@ -158,7 +164,7 @@ CaveBot.Extensions.Depositor.setup = function()
 		end
 	end
 	if tileList[i] and depotClear and not depotOpen and not storage.lootContainerOpen then
-		delay(500)
+		delay(500+2*ifPing())
 		g_game.use(tileList[i].tileObj:getTopUseThing())
 		depotOpen = true
 	end
@@ -172,7 +178,7 @@ CaveBot.Extensions.Depositor.setup = function()
 			end
 		end
 		if findItem(3502) and not depotBoxOpen then
-			delay(500)
+			delay(500+2*ifPing())
 			g_game.use(findItem(3502))
 			depotBoxOpen = true
 		end
@@ -183,13 +189,13 @@ CaveBot.Extensions.Depositor.setup = function()
 				for _, item in ipairs(container:getItems()) do
 					if #valueString ~= 3 then -- new depot
 						if item:isContainer() and table.find({22797, 22798}, item:getId()) then
-							delay(500)
+							delay(500+2*ifPing())
 							storage.lootContainerOpen = true
 							break
 						end
 					else
 						if item:isContainer() and item:getId() == mainBp then
-							delay(500)
+							delay(500+2*ifPing())
 							g_game.use(item, container)
 							storage.lootContainerOpen = true
 							break
@@ -202,7 +208,7 @@ CaveBot.Extensions.Depositor.setup = function()
 	end
 
 	if #valueString == 3 then
-		delay(150)
+		delay(150+ifPing())
 		for _, container in pairs(getContainers()) do
 			if container:getContainerItem():getId() == mainBp then
 				storage.lootContainerOpen = true
@@ -219,7 +225,7 @@ CaveBot.Extensions.Depositor.setup = function()
 			table.insert(looting, lootItem['id'])
 		end
 	end
-	delay(200)
+	delay(200+ifPing())
 	local currentItems = 0
 	for _, container in pairs(getContainers()) do
 		for _, item in ipairs(container:getItems()) do
