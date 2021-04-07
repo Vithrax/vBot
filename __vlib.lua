@@ -247,11 +247,9 @@ function isFriend(c)
 
     if table.find(storage.playerList.friendList, name) then
         table.insert(CachedFriends, c)
-        table.insert(CachedFriends, p)
         return true
     elseif string.find(storage.serverMembers, name) then
         table.insert(CachedFriends, c)
-        table.insert(CachedFriends, p)
         return true
     elseif storage.playerList.groupMembers then
         local p = c
