@@ -134,6 +134,22 @@ function killsToRs()
     return math.min(g_game.getUnjustifiedPoints().killsDayRemaining, g_game.getUnjustifiedPoints().killsWeekRemaining, g_game.getUnjustifiedPoints().killsMonthRemaining)
 end
 
+-- [[ experimental healing cooldown calculation ]] -- 
+storage.isUsingPotion = false
+onTalk(function(name, level, mode, text, channelId, pos)
+    if name ~= player:getName() then return end
+    if mode ~= 34 then return end
+
+    if text == "Aaaah..." then
+        storage.isUsingPotion = true
+        schedule(950, function()
+            storage.isUsingPotion = false
+        end)
+    end
+end)
+
+-- [[ eof ]] -- 
+
 -- [[ canCast and cast functions ]] --
 SpellCastTable = {}
 onTalk(function(name, level, mode, text, channelId, pos)
@@ -246,10 +262,10 @@ function isFriend(c)
     if table.find(cachedNeutrals, c) or table.find(cachedEnemies, c) then return false end 
 
     if table.find(storage.playerList.friendList, name) then
-        table.insert(CachedFriends, c)
+        table.insert(cachedFriends, c)
         return true
     elseif string.find(storage.serverMembers, name) then
-        table.insert(CachedFriends, c)
+        table.insert(cachedFriends, c)
         return true
     elseif storage.playerList.groupMembers then
         local p = c
@@ -259,8 +275,8 @@ function isFriend(c)
         if p:isLocalPlayer() then return true end
         if p:isPlayer() then
             if ((p:getShield() >= 3 and p:getShield() <= 10) or p:getEmblem() == 2) then
-                table.insert(CachedFriends, c)
-                table.insert(CachedFriends, p)
+                table.insert(cachedFriends, c)
+                table.insert(cachedFriends, p)
                 return true
             else
                 table.insert(cachedNeutrals, c)
