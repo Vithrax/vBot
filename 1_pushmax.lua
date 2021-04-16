@@ -1,6 +1,6 @@
 setDefaultTab("Main")
 
-pushPanelName = "pushmax"
+local panelName = "pushmax"
 local ui = setupUI([[
 Panel
   height: 19
@@ -23,10 +23,10 @@ Panel
     text: Setup
 
 ]])
-ui:setId(pushPanelName)
+ui:setId(panelName)
 
-if not storage[pushPanelName] then
-  storage[pushPanelName] = {
+if not storage[panelName] then
+  storage[panelName] = {
     enabled = true,
     pushDelay = 1060,
     pushMaxRuneId = 3188,
@@ -35,10 +35,10 @@ if not storage[pushPanelName] then
   }
 end
 
-ui.title:setOn(storage[pushPanelName].enabled)
+ui.title:setOn(storage[panelName].enabled)
 ui.title.onClick = function(widget)
-storage[pushPanelName].enabled = not storage[pushPanelName].enabled
-widget:setOn(storage[pushPanelName].enabled)
+storage[panelName].enabled = not storage[panelName].enabled
+widget:setOn(storage[panelName].enabled)
 end
 
 ui.push.onClick = function(widget)
@@ -57,131 +57,161 @@ if rootWidget then
   end
 
   local updateDelayText = function()
-    pushWindow.delayText:setText("Push Delay: ".. storage[pushPanelName].pushDelay)
+    pushWindow.delayText:setText("Push Delay: ".. storage[panelName].pushDelay)
   end
   updateDelayText()
   pushWindow.delay.onValueChange = function(scroll, value)
-    storage[pushPanelName].pushDelay = value
+    storage[panelName].pushDelay = value
     updateDelayText()
   end
-  pushWindow.delay:setValue(storage[pushPanelName].pushDelay)
+  pushWindow.delay:setValue(storage[panelName].pushDelay)
 
   pushWindow.runeId.onItemChange = function(widget)
-    storage[pushPanelName].pushMaxRuneId = widget:getItemId()
+    storage[panelName].pushMaxRuneId = widget:getItemId()
   end
-  pushWindow.runeId:setItemId(storage[pushPanelName].pushMaxRuneId)
+  pushWindow.runeId:setItemId(storage[panelName].pushMaxRuneId)
   pushWindow.mwallId.onItemChange = function(widget)
-    storage[pushPanelName].mwallBlockId = widget:getItemId()
+    storage[panelName].mwallBlockId = widget:getItemId()
   end
-  pushWindow.mwallId:setItemId(storage[pushPanelName].mwallBlockId)
+  pushWindow.mwallId:setItemId(storage[panelName].mwallBlockId)
 
   pushWindow.hotkey.onTextChange = function(widget, text)
-    storage[pushPanelName].pushMaxKey = text
+    storage[panelName].pushMaxKey = text
   end
-  pushWindow.hotkey:setText(storage[pushPanelName].pushMaxKey)
+  pushWindow.hotkey:setText(storage[panelName].pushMaxKey)
 end
 
 
-function matchPosition(curX, curY, destX, destY)
-  return (curX == destX and curY == destY)
-end
+-- variables for config
 
-local target
+local config = storage[panelName]
+local pushDelay = tonumber(config.pushDelay)
+local rune = tonumber(config.pushMaxRuneId)
+local customMwall = config.mwallBlockId
+local key = config.pushMaxKey
+local enabled = config.enabled
+local fieldTable = {2118, 105, 2122}
+
+-- scripts 
+
 local targetTile
-local targetOldPos
-macro(10, function()
-  if not storage[pushPanelName].enabled then return end
-  if target and targetTile then
-    if not matchPosition(target:getPosition().x, target:getPosition().y, targetTile:getPosition().x,  targetTile:getPosition().y) then
-      local tile = g_map.getTile(target:getPosition())
-      targetOldPos = tile:getPosition()
-      if tile then
-        if tile:getTopUseThing():isPickupable() or not tile:getTopUseThing():isNotMoveable() then
-          useWith(tonumber(storage[pushPanelName].pushMaxRuneId), target)
-          delay(10)
-        end
-        if targetTile:getTopThing():getId() == 2129 or targetTile:getTopThing():getId() == 2130 or targetTile:getTopThing():getId() == tonumber(storage[pushPanelName].mwallBlockId) then
-          if targetTile:getTimer() <= tonumber(storage[pushPanelName].pushDelay) then
-            info("now")
-            g_game.move(target, targetTile:getPosition())
-            tile:setText("")
-            targetTile:setText("")
-            target = nil
-            targetTile = nil
-          end
-        else
-          g_game.move(target, targetTile:getPosition())
-          delay(1250)
-        end
-      end
-    else
-      if targetOldPos then
-        local tile = g_map.getTile(targetOldPos)
-        if tile then
-          tile:setText("")
-          targetTile:setText("")
-        end
-      end
-      target = nil
-      targetTile = nil
+local pushTarget
+local targetid
+
+local resetData = function()
+  for i, tile in pairs(g_map.getTiles(posz())) do
+    if tile:getText() ~= "" then
+      tile:setText('')
     end
   end
-end)
+  pushTarget = nil
+  targetTile = nil
+  targetId = nil
+end
 
-local resetTimer = now
+local getCreatureById = function(id)
+  for i, spec in ipairs(getSpectators()) do
+    if spec:getId() == id then
+      return spec
+    end
+  end
+  return false
+end
+
+local isNotOk = function(t,tile)
+  local tileItems = {}
+
+  for i, item in pairs(tile:getItems()) do
+    table.insert(tileItems, item:getId())
+  end
+  for i, field in ipairs(t) do
+    if table.find(tileItems, field) then
+      return true
+    end
+  end
+  return false
+end
+
+local isOk = function(a,b)
+  return getDistanceBetween(a,b) == 1
+end
+
+-- to mark
 onKeyDown(function(keys)
-  if not storage[pushPanelName].enabled then return end
-  if keys == storage[pushPanelName].pushMaxKey and resetTimer == 0 then
-    if not target then
-      local tile = getTileUnderCursor()
-      if tile and getDistanceBetween(pos(), tile:getPosition()) <= 1 then
-        if tile:getCreatures()[1] then
-          target = tile:getCreatures()[1]
-          tile:setText("PUSH TARGET")
-        end
-      end
-    else
-      local tile = getTileUnderCursor()
-      if tile and not tile:getCreatures()[1] then
-        targetTile = tile
-        tile:setText("DESTINATION")
-      end
-    end
-    resetTimer = now
+  if not enabled then return end
+  if keys ~= key then return end
+  local tile = getTileUnderCursor()
+  if not tile then return end
+  if pushTarget and targetTile then
+    resetData()
+    return
   end
-end)
-
-
-onKeyPress(function(keys)
-  if not storage[pushPanelName].enabled then return end
-  if keys == storage.pushMaxKey and (resetTimer - now) < -10 then
-    for _, tile in ipairs(g_map.getTiles(posz())) do
-      if getDistanceBetween(pos(), tile:getPosition()) < 3 then
-        if tile:getText() ~= "" then
-          tile:setText("")
-        end
-      end
+  local creature = tile:getCreatures()[1]
+  if not pushTarget and creature then
+    pushTarget = creature
+    targetId = creature:getId()
+    if pushTarget then
+      tile:setText('TARGET')
+      pushTarget:setMarked('#00FF00')
     end
-    target = nil
-    targetTile = nil
-    resetTimer = 0
-  else
-    resetTimer = 0
+  elseif not targetTile and pushTarget then
+    if pushTarget and getDistanceBetween(tile:getPosition(),pushTarget:getPosition()) ~= 1 then
+      resetData()
+      return
+    else
+      tile:setText('DEST')
+      targetTile = tile
+    end
   end
 end)
 
 onCreaturePositionChange(function(creature, newPos, oldPos)
-  if target and storage[pushPanelName].enabled then
-    if creature:getName() == target:getName() then
-      target = nil
-      targetTile = nil
-      for _, tile in ipairs(g_map.getTiles(posz())) do
-        if getDistanceBetween(pos(), tile:getPosition()) < 3 then
-          if tile:getText() ~= "" then
-            tile:setText("")
-          end
-        end
+  if not enabled then return end
+  if creature == player then
+    resetData()
+  end
+  if not pushTarget or not targetTile then return end
+  if creature == pushTarget and newPos == targetTile then
+    resetData()
+  end
+end)
+
+macro(20, function()
+  if not enabled then return end
+  if not pushTarget or not targetTile then return end
+  tilePos = targetTile:getPosition()
+  targetPos = pushTarget:getPosition()
+  if not isOk(tilePos,targetPos) then return end
+  
+  local tileOfTarget = g_map.getTile(targetPos)
+  
+  if not targetTile:isWalkable() then
+    local topThing = targetTile:getTopUseThing():getId()
+    if topThing == 2129 or topThing == 2130 or topThing == customMwall then
+      if targetTile:getTimer() < pushDelay+500 then
+        storage.isUsing = true
+        schedule(pushDelay+700, function()
+          storage.isUsing = false
+        end)
       end
+      if targetTile:getTimer() > pushDelay then
+        return
+      end
+    else
+      return resetData()
     end
   end
+
+  if not tileOfTarget:getTopUseThing():isNotMoveable() then
+    return useWith(rune, pushTarget)
+  end
+  if isNotOk(fieldTable, targetTile) then
+    if targetTile:canShoot() then
+      return useWith(3148, targetTile:getTopUseThing())
+    else
+      return
+    end
+  end
+    g_game.move(pushTarget,tilePos)
+    delay(2000)
 end)

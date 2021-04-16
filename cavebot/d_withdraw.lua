@@ -176,9 +176,9 @@ CaveBot.Extensions.DWithdraw.setup = function()
   end)
 
  CaveBot.Editor.registerAction("dpwithdraw", "dpwithdraw", {
-  value="shopping bag, 21411",
+  value="1, shopping bag, 21411",
   title="Loot Withdraw",
-  description="insert destination container name and it's ID",
+  description="insert index, destination container name and it's ID",
  })
 end
 

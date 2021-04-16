@@ -86,7 +86,8 @@ if not storage[healPanelName] or not storage[healPanelName][1] or #storage[healP
       Cooldown = true,
       Interval = true,
       Conditions = true,
-      Delay = true
+      Delay = true,
+      MessageDelay = false
     },
     [2] = {
       enabled = false,
@@ -97,7 +98,8 @@ if not storage[healPanelName] or not storage[healPanelName][1] or #storage[healP
       Cooldown = true,
       Interval = true,
       Conditions = true,
-      Delay = true
+      Delay = true,
+      MessageDelay = false
     },
     [3] = {
       enabled = false,
@@ -108,7 +110,8 @@ if not storage[healPanelName] or not storage[healPanelName][1] or #storage[healP
       Cooldown = true,
       Interval = true,
       Conditions = true,
-      Delay = true
+      Delay = true,
+      MessageDelay = false
     },
     [4] = {
       enabled = false,
@@ -119,7 +122,8 @@ if not storage[healPanelName] or not storage[healPanelName][1] or #storage[healP
       Cooldown = true,
       Interval = true,
       Conditions = true,
-      Delay = true
+      Delay = true,
+      MessageDelay = false
     },
     [5] = {
       enabled = false,
@@ -130,7 +134,8 @@ if not storage[healPanelName] or not storage[healPanelName][1] or #storage[healP
       Cooldown = true,
       Interval = true,
       Conditions = true,
-      Delay = true
+      Delay = true,
+      MessageDelay = false
     },
   }
 end
@@ -201,6 +206,10 @@ if rootWidget then
   healWindow.Delay.onClick = function(widget)
     currentSettings.Delay = not currentSettings.Delay
     healWindow.Delay:setChecked(currentSettings.Delay)
+  end
+  healWindow.MessageDelay.onClick = function(widget)
+    currentSettings.MessageDelay = not currentSettings.MessageDelay
+    healWindow.MessageDelay:setChecked(currentSettings.MessageDelay)
   end
 
   local refreshSpells = function()
@@ -464,6 +473,7 @@ if rootWidget then
     healWindow.Visible:setChecked(currentSettings.Visible)
     healWindow.Cooldown:setChecked(currentSettings.Cooldown)
     healWindow.Delay:setChecked(currentSettings.Delay)
+    healWindow.MessageDelay:setChecked(currentSettings.MessageDelay)
     healWindow.Interval:setChecked(currentSettings.Interval)
     healWindow.Conditions:setChecked(currentSettings.Conditions)
   end
@@ -482,6 +492,7 @@ if rootWidget then
     currentSettings.Visible = true
     currentSettings.Cooldown = true
     currentSettings.Delay = true
+    currentSettings.MessageDelay = false
     currentSettings.Interval = true
     currentSettings.Conditions = true
     currentSettings.name = "Profile #" .. storage.currentBotProfile
@@ -542,7 +553,7 @@ macro(100, function()
   if not currentSettings.enabled or modules.game_cooldown.isGroupCooldownIconActive(2) or #currentSettings.spellTable == 0 then return end
 
   for _, entry in pairs(currentSettings.spellTable) do
-    if canCast(entry.spell, not currentSettings.Conditions, currentSettings.Cooldown) and entry.enabled and entry.cost < mana() then
+    if canCast(entry.spell, not currentSettings.Conditions, not currentSettings.Cooldown) and entry.enabled and entry.cost < mana() then
       if entry.origin == "HP%" then
         if entry.sign == "=" and hppercent() == entry.value then
           say(entry.spell)
@@ -604,12 +615,21 @@ macro(100, function()
 end)
 
 -- items
-macro(500, function()
+macro(100, function()
   if not currentSettings.enabled or #currentSettings.itemTable == 0 then return end
   if currentSettings.Delay and storage.isUsing then return end
+  if currentSettings.MessageDelay and storage.isUsingPotion then return end
+
+  if not currentSettings.MessageDelay then
+    delay(400)
+  end
 
   if TargetBot.isOn() and TargetBot.Looting.getStatus():len() > 0 and currentSettings.Interval then
-    delay(700)
+    if not currentSettings.MessageDelay then
+      delay(700)
+    else
+      delay(200)
+    end
   end
 
   for _, entry in pairs(currentSettings.itemTable) do

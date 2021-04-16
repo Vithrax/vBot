@@ -3,6 +3,7 @@ local config = nil
 local lastAction = 0
 local cavebotAllowance = 0
 local lureEnabled = true
+storage.targebotDanger = 0
 
 -- ui
 local configWidget = UI.Config()
@@ -69,6 +70,7 @@ targetbotMacro = macro(100, function()
   local looting = TargetBot.Looting.process(targets, dangerLevel)
   local lootingStatus = TargetBot.Looting.getStatus()
   storage.lootStatus = TargetBot.Looting.getStatus()
+  storage.targebotDanger = dangerLevel
 
   ui.danger.right:setText(dangerLevel)
   if highestPriorityParams and not isInPz() then
@@ -212,6 +214,14 @@ end
 
 TargetBot.enableLuring = function()
   lureEnabled = true
+end
+
+TargetBot.Danger = function()
+  return storage.dangerLevel or 0
+end
+
+TargetBot.lootStatus = function()
+  return storage.lootStatus or ""
 end
 
 

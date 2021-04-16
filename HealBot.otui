@@ -361,6 +361,14 @@ HealWindow < MainWindow
     width: 250
     text: Also check conditions from RL Tibia
 
+  CheckBox 
+    id: MessageDelay
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    margin-top: 8
+    width: 250
+    text: Cooldown based on "Aaaah..." message
+
   Label
     anchors.left: Visible.left
     anchors.bottom: separator.top

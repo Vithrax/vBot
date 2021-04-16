@@ -66,6 +66,7 @@ if playerContainer and freecap() >= 200 then
         if string.find(container:getName(), "your inbox") then
           for j, item in pairs(container:getItems()) do
             g_game.move(item, playerContainer:getSlotPosition(playerContainer:getItemsCount()), item:getCount())
+            return
           end
         end
       end

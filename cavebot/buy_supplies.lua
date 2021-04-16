@@ -32,7 +32,7 @@ CaveBot.Extensions.BuySupplies.setup = function()
       delay(waitVal)
     end
 
-    if retries > 40 then
+    if retries > 50 then
       print("CaveBot[BuySupplies]: Too many tries, can't buy")
       return false
     end

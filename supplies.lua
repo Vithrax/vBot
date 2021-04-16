@@ -275,9 +275,9 @@ SuppliesWindow.close.onClick = function(widget)
 end
 end
 
-local potions = {268, 237, 238, 23373, 266, 236, 239, 7643, 7642, 23374} 
+local potions = {23375, 268, 237, 238, 23373, 266, 236, 239, 7643, 7642, 23374} 
 local runes = {3725, 3203, 3161, 3147, 3178, 3177, 3153, 3148, 3197, 3149, 3164, 3166, 3200, 3192, 3188, 3190, 3189, 3191, 3198, 3182, 3158, 3152, 3174, 3180, 3165, 3173, 3172, 3176, 3195, 3179, 3175, 3155, 3202, 3160, 3156}
-local ammo = {23375, 3446, 16142, 6528, 7363, 3450, 16141, 25785, 14252, 3447, 3449, 15793, 25757, 774, 16143, 763, 761, 7365, 3448, 762, 21470, 7364, 14251, 7368, 25759, 3287, 7366, 3298, 25758}
+local ammo = {3446, 16142, 6528, 7363, 3450, 16141, 25785, 14252, 3447, 3449, 15793, 25757, 774, 16143, 763, 761, 7365, 3448, 762, 21470, 7364, 14251, 7368, 25759, 3287, 7366, 3298, 25758}
 
 macro(250, function()
   if not storage[suppliesPanelName].sortSupplies then return end
@@ -307,7 +307,7 @@ macro(250, function()
    -- potions
    if potionsContainer then 
     for i, container in pairs(getContainers()) do
-      if (container:getContainerItem():getId() ~= storage[suppliesPanelName].potionBp and (string.find(container:getName(), "backpack") or string.find(container:getName(), "bag") or string.find(container:getName(), "chess"))) and not string.find(container:getName():lower(), "loot") then
+      if (container:getContainerItem():getId() ~= storage[suppliesPanelName].potionBp and (string.find(container:getName(), "backpack") or string.find(container:getName(), "bag") or string.find(container:getName(), "chess"))) then
         for j, item in pairs(container:getItems()) do
           if table.find(potions, item:getId()) then
             return g_game.move(item, potionsContainer:getSlotPosition(potionsContainer:getItemsCount()), item:getCount())
@@ -320,7 +320,7 @@ macro(250, function()
    -- runes
    if runesContainer then 
     for i, container in pairs(getContainers()) do
-      if (container:getContainerItem():getId() ~= storage[suppliesPanelName].runeBp and (string.find(container:getName(), "backpack") or string.find(container:getName(), "bag") or string.find(container:getName(), "chess"))) and not string.find(container:getName():lower(), "loot") then
+      if (container:getContainerItem():getId() ~= storage[suppliesPanelName].runeBp and (string.find(container:getName(), "backpack") or string.find(container:getName(), "bag") or string.find(container:getName(), "chess"))) then
         for j, item in pairs(container:getItems()) do
           if table.find(runes, item:getId()) then
             return g_game.move(item, runesContainer:getSlotPosition(runesContainer:getItemsCount()), item:getCount())
