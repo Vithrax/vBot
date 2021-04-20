@@ -51,7 +51,7 @@ function Container:getId()
     if self._index == -1 then
         return nil
     end
-    return g_game.getContainer(self._index):getContainerItem():getId()
+    return self:getContainerItem():getId()
 end
 
 --- Returns container's item capacity.
@@ -62,7 +62,7 @@ function Container:getCapacity()
     if self._index == -1 then
         return nil
     end
-    return g_game.getContainer(self._index):getCapacity()
+    return self:getNativeContainer():getCapacity()
 end
 
 --- Returns whether container has parent.
@@ -72,7 +72,7 @@ function Container:hasParent()
     if self._index == -1 then
         return nil
     end
-    return g_game.getContainer(self._index):hasParent()
+    return self:getNativeContainer():hasParent()
 end
 
 --- Get container's item list.
@@ -83,18 +83,38 @@ function Container:getItems()
     if self._index == -1 then
         return nil
     end
-    return g_game.getContainer(self._index):getItems()
+    return self:getNativeContainer():getItems()
 end
 
 --- Get container's name.
--- As it uses getting name from market data might not work for before market clients.
 -- @return number total slots
 function Container:getName()
     self = type(self) == 'table' and self or Container.New(self)
     if self._index == -1 then
         return nil
     end
-    return Thing.GetItemNameById(g_game.getContainer(self._index):getContainerItem():getId())
+    return self:getNativeContainer():getName()
+end
+
+--- Returns native container object.
+-- Used when core functions needs native container object
+-- @return number total slots
+function Container:getNativeContainer()
+    self = type(self) == 'table' and self or Container.New(self)
+    if self._index == -1 then
+        return nil
+    end
+    return g_game.getContainer(self._index)
+end
+
+--- Returns container item.
+-- @return item container
+function Container:getContainerItem()
+    self = type(self) == 'table' and self or Container.New(self)
+    if self._index == -1 then
+        return nil
+    end
+    return self:getNativeContainer():getContainerItem()
 end
 
 --- Closes container.
@@ -104,7 +124,7 @@ function Container:close()
     if self._index == -1 then
         return nil
     end
-    return g_game.close(g_game.getContainer(self._index))
+    return g_game.close(self:getNativeContainer())
 end
 
 --- Opens container's child.
@@ -186,3 +206,4 @@ function Container.CloseAllContainers()
     end
 end
 
+-- getSlotPosition
