@@ -16,10 +16,10 @@ onTextMessage(function(mode, text)
         end
     end
     lastDmgMessage = now
-    table.insert(dmgTable, {d = dmg, t = now})
+    table.insert(dmgTable, { d = dmg, t = now })
     schedule(3050, function()
         if now - lastDmgMessage > 3000 then
-        dmgTable = {} end 
+            dmgTable = {} end
     end)
 end)
 
@@ -38,14 +38,13 @@ function burstDamageValue()
             d = d + v.d
         end
     end
-    return math.ceil(d/((now-time)/1000))
+    return math.ceil(d / ((now - time) / 1000))
 end
-
 
 function scheduleNpcSay(text, delay)
     if not text or not delay then return false end
 
-    return  schedule(delay, function() NPC.say(text) end)
+    return schedule(delay, function() NPC.say(text) end)
 end
 
 function getFirstNumberInText(text)
@@ -71,7 +70,7 @@ function isOnTile(id, p1, p2, p3)
 
     local item = false
     if #tile:getItems() ~= 0 then
-        for i,v in ipairs(tile:getItems()) do
+        for i, v in ipairs(tile:getItems()) do
             if v:getId() == id then
                 item = true
             end
@@ -83,7 +82,7 @@ function isOnTile(id, p1, p2, p3)
     return item
 end
 
-function getPos(x,y,z)
+function getPos(x, y, z)
     if not x or not y or not z then return nil end
     local pos = pos()
     pos.x = x
@@ -99,21 +98,21 @@ end
 
 function containerIsFull(c)
     if not c then return false end
-  
+
     if c:getCapacity() > #c:getItems() then
-      return false
+        return false
     else
-      return true
+        return true
     end
-  
+
 end
 
 function isBuffed()
     local var = false
-    for i=1,4 do
+    for i = 1, 4 do
         local premium = (player:getSkillLevel(i) - player:getSkillBaseLevel(i))
         local base = player:getSkillBaseLevel(i)
-        if hasPartyBuff() and (premium/100)*305 > base then
+        if hasPartyBuff() and (premium / 100) * 305 > base then
             var = true
         end
     end
@@ -153,28 +152,28 @@ end)
 -- [[ canCast and cast functions ]] --
 SpellCastTable = {}
 onTalk(function(name, level, mode, text, channelId, pos)
-  if name ~= player:getName() then return end
+    if name ~= player:getName() then return end
 
-  if SpellCastTable[text] then
-    SpellCastTable[text].t = now
-  end
+    if SpellCastTable[text] then
+        SpellCastTable[text].t = now
+    end
 end)
 
 function cast(text, delay)
-  if type(text) ~= "string" then return end
-  if not delay or delay < 100 then 
-    return say(text) -- if not added delay or delay is really low then just treat it like casual say
-  end
-  if not SpellCastTable[text] or SpellCastTable[text].d ~= delay then
-    SpellCastTable[text] = {t=now-delay,d=delay}
-    return say(text)
-  end
-  local lastCast = SpellCastTable[text].t
-  local spellDelay = SpellCastTable[text].d
-  if now - lastCast > spellDelay then
-     return say(text)
-  end
-  return
+    if type(text) ~= "string" then return end
+    if not delay or delay < 100 then
+        return say(text) -- if not added delay or delay is really low then just treat it like casual say
+    end
+    if not SpellCastTable[text] or SpellCastTable[text].d ~= delay then
+        SpellCastTable[text] = { t = now - delay, d = delay }
+        return say(text)
+    end
+    local lastCast = SpellCastTable[text].t
+    local spellDelay = SpellCastTable[text].d
+    if now - lastCast > spellDelay then
+        return say(text)
+    end
+    return
 end
 local Spells = modules.gamelib.SpellInfo['Default']
 function canCast(spell, ignoreRL, ignoreCd)
@@ -182,8 +181,8 @@ function canCast(spell, ignoreRL, ignoreCd)
     spell = spell:lower()
     if not getSpellData(spell) then
         if SpellCastTable[spell] then
-            if now - SpellCastTable[spell].t > SpellCastTable[spell].d then 
-                return true 
+            if now - SpellCastTable[spell].t > SpellCastTable[spell].d then
+                return true
             else
                 return false
             end
@@ -202,7 +201,7 @@ function getSpellData(spell)
     if not spell then return false end
     spell = spell:lower()
     local t = nil
-    for k,v in pairs(Spells) do
+    for k, v in pairs(Spells) do
         if v.words == spell then
             t = k
             break
@@ -219,7 +218,7 @@ function getSpellCoolDown(text)
     if not text then return false end
     text = text:lower()
     if not getSpellData(text) then return false end
-    for i,v in pairs(Spells) do
+    for i, v in pairs(Spells) do
         if v.words == text then
             return modules.game_cooldown.isCooldownIconActive(v.id)
         end
@@ -243,8 +242,8 @@ onUseWith(function(pos, itemId, target, subType)
     schedule(1500, function() if storage.isUsing then storage.isUsing = false end end)
 end)
 
-function string.starts(String,Start)
- return string.sub(String,1,string.len(Start))==Start
+function string.starts(String, Start)
+    return string.sub(String, 1, string.len(Start)) == Start
 end
 
 CachedFriends = {}
@@ -253,13 +252,13 @@ CachedEnemies = {}
 function isFriend(c)
     local name = c
     if type(c) ~= "string" then
-        if c == player then return true end 
+        if c == player then return true end
         name = c:getName()
         if name == name() then return true end
     end
 
     if CachedFriends[c] then return true end
-    if CachedNeutrals[c] or CachedEnemies[c] then return false end 
+    if CachedNeutrals[c] or CachedEnemies[c] then return false end
 
     if table.find(storage.playerList.friendList, name) then
         CachedFriends[c] = true
@@ -269,7 +268,7 @@ function isFriend(c)
         return true
     elseif storage.playerList.groupMembers then
         local p = c
-        if type(c) == "string" then 
+        if type(c) == "string" then
             p = getCreatureByName(c, true)
         end
         if not p then return false end
@@ -304,13 +303,13 @@ function isEnemy(name)
         return false
     end
 end
-  
+
 function isAttSpell(expr)
-  if string.starts(expr, "exori") or string.starts(expr, "exevo") then
-    return true
-  else 
-    return false
-  end
+    if string.starts(expr, "exori") or string.starts(expr, "exevo") then
+        return true
+    else
+        return false
+    end
 end
 
 function getActiveItemId(id)
@@ -345,7 +344,7 @@ function getActiveItemId(id)
     elseif id == 23533 then
         return 23534
     elseif id == 23529 then
-        return  23530
+        return 23530
     else
         return id
     end
@@ -383,7 +382,7 @@ function getInactiveItemId(id)
     elseif id == 23534 then
         return 23533
     elseif id == 23530 then
-        return  23529
+        return 23529
     else
         return id
     end
@@ -415,7 +414,7 @@ function getMonsters(range, multifloor)
     end
     local mobs = 0;
     for _, spec in pairs(getSpectators(multifloor)) do
-      mobs = (g_game.getClientVersion() < 960 or spec:getType() < 3) and spec:isMonster() and distanceFromPlayer(spec:getPosition()) <= range and mobs + 1 or mobs;
+        mobs = (g_game.getClientVersion() < 960 or spec:getType() < 3) and spec:isMonster() and distanceFromPlayer(spec:getPosition()) <= range and mobs + 1 or mobs;
     end
     return mobs;
 end
@@ -498,7 +497,7 @@ function itemAmount(id)
     local totalItemCount = 0
     for _, container in pairs(getContainers()) do
         for _, item in ipairs(container:getItems()) do
-            totalItemCount = item:getId() == id and totalItemCount + item:getCount() or totalItemCount 
+            totalItemCount = item:getId() == id and totalItemCount + item:getCount() or totalItemCount
         end
     end
     if getHead() and getHead():getId() == id then
@@ -534,22 +533,22 @@ function itemAmount(id)
     return totalItemCount
 end
 
-function useOnInvertoryItem(a,b)
+function useOnInvertoryItem(a, b)
     local item = findItem(b)
     if not item then return end
-  
+
     return useWith(a, item)
 end
 
 function hasSupplies()
     local items = {
-        {ID = storage.supplies.item1, minAmount = storage.supplies.item1Min},
-        {ID = storage.supplies.item2, minAmount = storage.supplies.item2Min}, 
-        {ID = storage.supplies.item3, minAmount = storage.supplies.item3Min},
-        {ID = storage.supplies.item4, minAmount = storage.supplies.item4Min},
-        {ID = storage.supplies.item5, minAmount = storage.supplies.item5Min},
-        {ID = storage.supplies.item6, minAmount = storage.supplies.item6Min},
-        {ID = storage.supplies.item7, minAmount = storage.supplies.item7Min}
+        { ID = storage.supplies.item1, minAmount = storage.supplies.item1Min },
+        { ID = storage.supplies.item2, minAmount = storage.supplies.item2Min },
+        { ID = storage.supplies.item3, minAmount = storage.supplies.item3Min },
+        { ID = storage.supplies.item4, minAmount = storage.supplies.item4Min },
+        { ID = storage.supplies.item5, minAmount = storage.supplies.item5Min },
+        { ID = storage.supplies.item6, minAmount = storage.supplies.item6Min },
+        { ID = storage.supplies.item7, minAmount = storage.supplies.item7Min }
     }
     -- false = no supplies
     -- true = supplies available
@@ -558,7 +557,7 @@ function hasSupplies()
 
     for i, supply in pairs(items) do
         if supply.minAmount and supply.ID then
-            if supply.ID > 100 and itemAmount(supply.ID) < (supply.minAmount/2) then
+            if supply.ID > 100 and itemAmount(supply.ID) < (supply.minAmount / 2) then
                 hasSupplies = false
             end
         end
@@ -572,15 +571,15 @@ function cordsToPos(x, y, z)
         return false
     end
     local tilePos = pos()
-     tilePos.x = x
-     tilePos.y = y
-     tilePos.z = z
+    tilePos.x = x
+    tilePos.y = y
+    tilePos.z = z
     return tilePos
 end
 
 function useGroundItem(id)
     if not id then return false end
-  
+
     local dest = nil
     for i, tile in ipairs(g_map.getTiles(posz())) do
         for j, item in ipairs(tile:getItems()) do
@@ -600,14 +599,14 @@ end
 
 function reachGroundItem(id)
     if not id then return false end
-  
+
     local dest = nil
     for i, tile in ipairs(g_map.getTiles(posz())) do
         for j, item in ipairs(tile:getItems()) do
             local iPos = item:getPosition()
             local iId = item:getId()
             if iId == id then
-                if findPath(pos(), iPos, 20, {ignoreNonPathable = true, precision = 1}) then
+                if findPath(pos(), iPos, 20, { ignoreNonPathable = true, precision = 1 }) then
                     dest = item
                     break
                 end
@@ -616,17 +615,17 @@ function reachGroundItem(id)
     end
 
     if dest then
-        return autoWalk(iPos, 20, {ignoreNonPathable = true, precision = 1})
+        return autoWalk(iPos, 20, { ignoreNonPathable = true, precision = 1 })
     else
         return false
     end
 end
 
-function useOnGroundItem(a,b)
+function useOnGroundItem(a, b)
     if not id then return false end
     local item = findItem(a)
     if not item then return false end
-  
+
     local dest = nil
     for i, tile in ipairs(g_map.getTiles(posz())) do
         for j, item in ipairs(tile:getItems()) do
@@ -646,7 +645,7 @@ end
 
 function target()
     if not g_game.isAttacking() then
-        return 
+        return
     else
         return g_game.getAttackingCreature()
     end
@@ -675,7 +674,7 @@ function reopenPurse()
         end
     end
     schedule(100, function() g_game.use(g_game.getLocalPlayer():getInventoryItem(InventorySlotPurse)) end)
-    schedule(1400, function() 
+    schedule(1400, function()
         for i, c in pairs(getContainers()) do
             if c:getName():lower() == "store inbox" then
                 for _, i in pairs(c:getItems()) do
@@ -686,7 +685,7 @@ function reopenPurse()
             end
         end
     end)
-	return CaveBot.delay(1500)
+    return CaveBot.delay(1500)
 end
 
 -- getSpectator patterns
@@ -705,7 +704,7 @@ function getCreaturesInArea(param1, param2, param3)
             if spec:isMonster() and (g_game.getClientVersion() < 960 or spec:getType() < 3) then
                 monsters = monsters + 1
             elseif spec:isPlayer() and not isFriend(spec:getName()) then
-                players = players +1
+                players = players + 1
             end
         end
     end
@@ -723,7 +722,6 @@ function getBestTileByPatern(pattern, specType, maxDist, safe)
     if not pattern or not specType then return end
     if not maxDist then maxDist = 4 end
 
-
     local bestTile = nil
     local best = nil
     -- best area tile to use
@@ -733,8 +731,8 @@ function getBestTileByPatern(pattern, specType, maxDist, safe)
             local stairs = (minimapColor >= 210 and minimapColor <= 213)
             if tile:canShoot() and tile:isWalkable() and not stairs then
                 if getCreaturesInArea(tile:getPosition(), pattern, specType) > 0 then
-                    if (not safe or getCreaturesInArea(tile:getPosition(), pattern, 3) == 0) then 
-                        local candidate = {pos = tile, count = getCreaturesInArea(tile:getPosition(), pattern, specType)}
+                    if (not safe or getCreaturesInArea(tile:getPosition(), pattern, 3) == 0) then
+                        local candidate = { pos = tile, count = getCreaturesInArea(tile:getPosition(), pattern, specType) }
                         if not best or best.count <= candidate.count then
                             best = candidate
                         end
@@ -745,7 +743,7 @@ function getBestTileByPatern(pattern, specType, maxDist, safe)
     end
 
     bestTile = best
-    
+
     if bestTile then
         return bestTile
     else
@@ -893,7 +891,7 @@ newWaveArea = [[
     0000SSS0000
     000SSSSS000
     000SSSSS000
-]]  
+]]
 
 bigWaveArea = [[
     0000NNN0000
@@ -908,7 +906,6 @@ bigWaveArea = [[
     0000SSS0000
     0000SSS0000
 ]]
-
 
 smallWaveArea = [[
     00NNN00

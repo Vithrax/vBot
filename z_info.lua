@@ -40,24 +40,25 @@ function format_thousand(v)
     local pos = string.len(s) % 3
     if pos == 0 then pos = 3 end
     return string.sub(s, 1, pos)
-    .. string.gsub(string.sub(s, pos+1), "(...)", ".%1")
-  end
+            .. string.gsub(string.sub(s, pos + 1), "(...)", ".%1")
+end
 
 local expGained = function()
     return exp() - startExp
 end
 local expLeft = function()
-    local level = lvl()+1
-    return math.floor((50*level*level*level)/3 - 100*level*level + (850*level)/3 - 200) - exp()
+    local level = lvl() + 1
+    return math.floor((50 * level * level * level) / 3 - 100 * level * level + (850 * level) / 3 - 200) - exp()
 end
 
-local niceTimeFormat = function(v) -- v in seconds
-    local hours = string.format("%02.f", math.floor(v/3600))
-    local mins = string.format("%02.f", math.floor(v/60 - (hours*60)))
-   return hours .. ":" .. mins .. "h"
+local niceTimeFormat = function(v)
+    -- v in seconds
+    local hours = string.format("%02.f", math.floor(v / 3600))
+    local mins = string.format("%02.f", math.floor(v / 60 - (hours * 60)))
+    return hours .. ":" .. mins .. "h"
 end
 local sessionTime = function()
-    uptime = math.floor((now - launchTime)/1000)
+    uptime = math.floor((now - launchTime) / 1000)
     return niceTimeFormat(uptime)
 end
 
@@ -69,10 +70,10 @@ local expPerHour = function(calculation)
         return "-"
     end
 
-    if uptime < 15*60 then
-        r = math.ceil((r/uptime)*60*60)
+    if uptime < 15 * 60 then
+        r = math.ceil((r / uptime) * 60 * 60)
     else
-        r = math.ceil(r*8)
+        r = math.ceil(r * 8)
     end
     if calculation then
         return r
@@ -86,14 +87,14 @@ local timeToLevel = function()
     if expPerHour(true) == 0 or expPerHour() == "-" then
         return "-"
     else
-        t = expLeft()/expPerHour(true)
-        return niceTimeFormat(math.ceil(t*60*60))
+        t = expLeft() / expPerHour(true)
+        return niceTimeFormat(math.ceil(t * 60 * 60))
     end
 end
 
 local sumT = function(t)
     local s = 0
-    for i,v in pairs(t) do
+    for i, v in pairs(t) do
         s = s + v.d
     end
     return s
@@ -110,25 +111,27 @@ local valueInSeconds = function(t)
                 end
                 d = d + v.d
             else
-              table.remove(t, 1)
+                table.remove(t, 1)
             end
         end
     end
-    return math.ceil(d/((now-time)/1000))
+    return math.ceil(d / ((now - time) / 1000))
 end
 
-local regex = "You lose ([0-9]*) hitpoints due to an attack by ([a-z*]) ([a-z A-z-]*)" 
+local regex = "You lose ([0-9]*) hitpoints due to an attack by ([a-z*]) ([a-z A-z-]*)"
 onTextMessage(function(mode, text)
-    if mode == 21 then -- damage dealt
-      totalDmg = totalDmg + getFirstNumberInText(text)
-        table.insert(dmgTable, {d = getFirstNumberInText(text), t = now})
+    if mode == 21 then
+        -- damage dealt
+        totalDmg = totalDmg + getFirstNumberInText(text)
+        table.insert(dmgTable, { d = getFirstNumberInText(text), t = now })
         if getFirstNumberInText(text) > storage.bestHit then
             storage.bestHit = getFirstNumberInText(text)
         end
     end
-    if mode == 23 then -- healing
-      totalHeal = totalHeal + getFirstNumberInText(text)
-        table.insert(healTable, {d = getFirstNumberInText(text), t = now})
+    if mode == 23 then
+        -- healing
+        totalHeal = totalHeal + getFirstNumberInText(text)
+        table.insert(healTable, { d = getFirstNumberInText(text), t = now })
         if getFirstNumberInText(text) > storage.bestHeal then
             storage.bestHeal = getFirstNumberInText(text)
         end
@@ -136,69 +139,69 @@ onTextMessage(function(mode, text)
 
     -- damage distribution part
     if text:find("You lose") then
-      local data = regexMatch(text, regex)[1]
-      if data then
-        local monster = data[4]
-        local val = data[2]
-        table.insert(dmgDistribution, {v=val,m=monster,t=now})
-      end
+        local data = regexMatch(text, regex)[1]
+        if data then
+            local monster = data[4]
+            local val = data[2]
+            table.insert(dmgDistribution, { v = val, m = monster, t = now })
+        end
     end
 end)
 
 
 -- tables maintance
 macro(500, function()
-  local dmgFinal = {}
-  local labelTable = {}
-  local dmgSum = 0
+    local dmgFinal = {}
+    local labelTable = {}
+    local dmgSum = 0
     table.insert(expTable, exp())
-    if #expTable > 15*60 then
-        for i,v in pairs(expTable) do
+    if #expTable > 15 * 60 then
+        for i, v in pairs(expTable) do
             if i == 1 then
-              table.remove(expTable, i)
+                table.remove(expTable, i)
             end
         end
     end
 
-    for i,v in pairs(dmgDistribution) do
-      if now - v.t > 60*1000*10 then
-        table.remove(dmgDistribution, i)
-      else
-        dmgSum = dmgSum + v.v
-        if not dmgFinal[v.m] then
-          dmgFinal[v.m] = v.v
+    for i, v in pairs(dmgDistribution) do
+        if now - v.t > 60 * 1000 * 10 then
+            table.remove(dmgDistribution, i)
         else
-          dmgFinal[v.m] = dmgFinal[v.m] + v.v
+            dmgSum = dmgSum + v.v
+            if not dmgFinal[v.m] then
+                dmgFinal[v.m] = v.v
+            else
+                dmgFinal[v.m] = dmgFinal[v.m] + v.v
+            end
         end
-      end
     end
 
     if not dmgFinal[1] then
-      first = "-"
+        first = "-"
     end
     if not dmgFinal[2] then
-      second = "-"
+        second = "-"
     end
     if not dmgFinal[3] then
-      third = "-"
+        third = "-"
     end
 
     local iter = 0
-    for k,v in pairs(dmgFinal) do
-      table.insert(labelTable, {m=k, d=tonumber(v)})
+    for k, v in pairs(dmgFinal) do
+        table.insert(labelTable, { m = k, d = tonumber(v) })
     end
 
-    table.sort(labelTable, function(a,b) return a.d > b.d end)
+    table.sort(labelTable, function(a, b) return a.d > b.d end)
 
-    for i,v in pairs(labelTable) do
-      local label = v.m .. ": " .. math.floor((v.d/dmgSum)*100) .. "%"
-      if i == 1 then
-        first = label
-      elseif i == 2 then
-        second = label
-      elseif i == 3 then
-        third = label
-      end
+    for i, v in pairs(labelTable) do
+        local label = v.m .. ": " .. math.floor((v.d / dmgSum) * 100) .. "%"
+        if i == 1 then
+            first = label
+        elseif i == 2 then
+            second = label
+        elseif i == 3 then
+            third = label
+        end
     end
 end)
 

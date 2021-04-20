@@ -6,10 +6,10 @@ if voc == 1 or voc == 11 then
     local lastCast = now
     onCreatureHealthPercentChange(function(creature, healthPercent)
         if m.isOff() then return end
-        if healthPercent > 15 then return end 
+        if healthPercent > 15 then return end
         if CaveBot.isOff() or TargetBot.isOff() or not isBuffed() then return end
         if modules.game_cooldown.isGroupCooldownIconActive(3) then return end
-        if creature:getPosition() and getDistanceBetween(pos(),creature:getPosition()) > 1 then return end
+        if creature:getPosition() and getDistanceBetween(pos(), creature:getPosition()) > 1 then return end
         if canCast("exeta res") and now - lastCast > 6000 then
             say("exeta res")
             lastCast = now
@@ -17,10 +17,10 @@ if voc == 1 or voc == 11 then
     end)
 
     macro(500, "ExetaIfPlayer", function()
-    	if getMonsters(6) >= 1 and getPlayers(6) > 0 then
-    		say("exeta res")
-    		delay(6000)
-    	end
+        if getMonsters(6) >= 1 and getPlayers(6) > 0 then
+            say("exeta res")
+            delay(6000)
+        end
     end)
     UI.Separator()
 end
