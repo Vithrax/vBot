@@ -26,7 +26,7 @@ onAddThing(function(tile, thing)
     if m.isOff() then return end
     if thing:getId() ~= 2129 then return end
     if tile:getText():len() > 0 then
-        table.remove(candidates, table.find(candidates,tile))
+        table.remove(candidates, table.find(candidates, tile))
     end
 end)
 

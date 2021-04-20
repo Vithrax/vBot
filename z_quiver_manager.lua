@@ -34,36 +34,36 @@ Panel
   ]])
     ui:setId(quiverPanelName)
 
-    if not storage[quiverPanelName]  then
+    if not storage[quiverPanelName] then
         storage[quiverPanelName] = {
-           arrowsId = 35848,
-           boltsId = 35849,
-           bolts = false,
-           arrows = false
+            arrowsId = 35848,
+            boltsId = 35849,
+            bolts = false,
+            arrows = false
         }
     end
 
     ui.BoltsSwitch:setOn(storage[quiverPanelName].bolts)
     ui.BoltsSwitch.onClick = function(widget)
-      storage[quiverPanelName].bolts = not storage[quiverPanelName].bolts
-      widget:setOn(storage[quiverPanelName].bolts)
+        storage[quiverPanelName].bolts = not storage[quiverPanelName].bolts
+        widget:setOn(storage[quiverPanelName].bolts)
     end
     ui.ArrowsSwitch:setOn(storage[quiverPanelName].arrows)
     ui.ArrowsSwitch.onClick = function(widget)
-      storage[quiverPanelName].arrows = not storage[quiverPanelName].arrows
-      widget:setOn(storage[quiverPanelName].arrows)
+        storage[quiverPanelName].arrows = not storage[quiverPanelName].arrows
+        widget:setOn(storage[quiverPanelName].arrows)
     end
     ui.BoltsID:setItemId(storage[quiverPanelName].boltsId)
     ui.BoltsID.onItemChange = function(widget)
         storage[quiverPanelName].boltsId = widget:getItemId()
-      end
+    end
     ui.ArrowsID:setItemId(storage[quiverPanelName].arrowsId)
     ui.ArrowsID.onItemChange = function(widget)
-      storage[quiverPanelName].arrowsId = widget:getItemId()
+        storage[quiverPanelName].arrowsId = widget:getItemId()
     end
 
-    local arrows = {16143, 763, 761, 7365, 3448, 762, 21470, 7364, 14251, 3447, 3449, 15793, 25757, 774}
-    local bolts = {6528, 7363, 3450, 16141, 25758, 14252, 3446, 16142}
+    local arrows = { 16143, 763, 761, 7365, 3448, 762, 21470, 7364, 14251, 3447, 3449, 15793, 25757, 774 }
+    local bolts = { 6528, 7363, 3450, 16141, 25758, 14252, 3446, 16142 }
 
     macro(200, function()
         local dArrow
@@ -77,7 +77,7 @@ Panel
                 end
             end
         end
-    
+
         if dArrow and storage[quiverPanelName].arrows then
             for _, c in pairs(getContainers()) do
                 if c:getName():lower():find("backpack") or c:getName():lower():find("bag") or c:getName():lower():find("chess") then
@@ -106,10 +106,9 @@ Panel
 
 end
 
-
 if voc() == 2 or voc() == 12 then
-addSeparator()
-UI.Label("[[ Quiver Manager ]]")
-addSeparator()
-quiverManager()
+    addSeparator()
+    UI.Label("[[ Quiver Manager ]]")
+    addSeparator()
+    quiverManager()
 end

@@ -1,7 +1,7 @@
 CaveBot.Editor.ExampleFunctions = {}
 
 local function addExampleFunction(title, text)
-  return table.insert(CaveBot.Editor.ExampleFunctions, {title, text:trim()})
+    return table.insert(CaveBot.Editor.ExampleFunctions, { title, text:trim() })
 end
 
 addExampleFunction("Click to browse example functions", [[
