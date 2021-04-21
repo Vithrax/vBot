@@ -51,3 +51,9 @@ function Self.ReopenPurse()
 
     return CaveBot.delay(1500)
 end
+
+--- Returns logged in character name.
+-- @return string character name
+function Self.GetName()
+    return g_game.getCharacterName()
+end
