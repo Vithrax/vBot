@@ -31,7 +31,7 @@ CaveBot.Extensions.Depositor.setup = function()
         end
 
         local name = storage["_configs"]["targetbot_configs"]["selected"]
-        local file = configDir .. "/targetbot_configs/" .. name .. ".json"
+        local file = configDir .. "/pre/targetbot_configs/" .. name .. ".json"
         local data = g_resources.readFileContents(file)
         local lootList = Config.parse(data)['looting']['items']
         local lootContainers = Config.parse(data)['looting']['containers']

@@ -83,7 +83,7 @@ end)
 
 -- config, its callback is called immediately, data can be nil
 local lastConfig = ""
-config = Config.setup("cavebot_configs", configWidget, "cfg", function(name, enabled, data)
+config = Config.setup("pre/cavebot_configs", configWidget, "cfg", function(name, enabled, data)
     if enabled and CaveBot.Recorder.isOn() then
         CaveBot.Recorder.disable()
         CaveBot.setOff()

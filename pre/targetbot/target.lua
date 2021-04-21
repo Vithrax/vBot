@@ -107,7 +107,7 @@ targetbotMacro = macro(100, function()
 end)
 
 -- config, its callback is called immediately, data can be nil
-config = Config.setup("targetbot_configs", configWidget, "json", function(name, enabled, data)
+config = Config.setup("pre/targetbot_configs", configWidget, "json", function(name, enabled, data)
     if not data then
         ui.status.right:setText("Off")
         return targetbotMacro.setOff()
