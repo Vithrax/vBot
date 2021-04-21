@@ -1,6 +1,7 @@
-local isBotOldVersion = true
+local isBotOldVersion = false
 local directoryBotPrefix = "/bot/vBot/pre/"
 
+-- to ensure backwards compatibility
 if isBotOldVersion then
     local preFiles = g_resources.listDirectoryFiles(directoryBotPrefix, false, true)
 
@@ -25,21 +26,23 @@ if isBotOldVersion then
     for i, file in ipairs(luaFiles) do
         dofile("pre/" .. file)
     end
-    --
-    --for index, file in pairs(preFiles) do
-    --    if file:ends(".otui") then
-    --        g_ui.importStyle("pre/" .. file)
-    --    else
-    --        dofile("pre/" .. file)
-    --    end
-    --end
-end
+else
+    -- main of new bot version
+    Tabs = {}
 
--- load libraries
-dofile('library/constant.lua')
-dofile('library/item.lua')
-dofile('library/self.lua')
-dofile('library/container.lua')
-dofile('library/creature.lua')
-dofile('library/event.lua')
-dofile('library/utils.lua')
+
+    -- load libraries
+    dofile('library/constant.lua')
+    dofile('library/item.lua')
+    dofile('library/self.lua')
+    dofile('library/container.lua')
+    dofile('library/creature.lua')
+    dofile('library/event.lua')
+    dofile('library/utils.lua')
+
+    -- load modules/tabs
+    dofile("/tabs/main/main.lua")
+    dofile("/tabs/support/main.lua")
+    dofile("/tabs/cave/main.lua")
+    dofile("/tabs/target/main.lua")
+end
