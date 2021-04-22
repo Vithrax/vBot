@@ -1,0 +1,60 @@
+ScriptsPanel < Panel
+  height: 150
+
+  Label
+    id: title
+    anchors.top: parent.top
+    anchors.left: parent.left
+    text-align: center
+    margin-top: 10
+    width: 100
+    text: Available scripts:
+
+  TextList
+    id: ScriptsList
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 30
+    margin-bottom: 5
+    margin-left: 0
+    padding: 0
+    width: 175
+    height: 80
+    vertical-scrollbar: ScriptListScrollBar
+
+  VerticalScrollBar
+    id: ScriptListScrollBar
+    anchors.top: ScriptsList.top
+    anchors.bottom: ScriptsList.bottom
+    anchors.right: ScriptsList.right
+    step: 14
+    pixels-scroll: true
+
+
+  Button
+    id: LoadScript
+    !text: tr('Load script')
+    anchors.right: child.right
+    anchors.left: ScriptsList.left
+    anchors.top: ScriptsList.bottom
+    margin-right: 15
+    margin-top: 3
+    width: 87
+
+  Button
+    id: EditScript
+    !text: tr('Edit script')
+    anchors.left: LoadScript.right
+    anchors.top: ScriptsList.bottom
+    margin-right: 3
+    margin-top: 3
+    width: 87
+
+ScriptName < Label
+  background-color: alpha
+  text-offset: 2 0
+  focusable: true
+  height: 16
+
+  $focus:
+    background-color: #00000055

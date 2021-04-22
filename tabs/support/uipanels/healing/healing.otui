@@ -1,0 +1,11 @@
+HealingPanel < Panel
+  height: 150
+
+  Label
+    id: title
+    anchors.top: parent.top
+    anchors.left: parent.left
+    text-align: center
+    margin-top: 10
+    width: 165
+    text: Healing:
