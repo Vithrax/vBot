@@ -1,6 +1,6 @@
 CaveBot.Extensions.SellAll = {}
 
-storage.sellAllCap = 0
+local sellAllCap = 0
 CaveBot.Extensions.SellAll.setup = function()
   CaveBot.registerAction("SellAll", "#C300FF", function(value, retries)
     local val = string.split(value, ",")
@@ -27,27 +27,22 @@ CaveBot.Extensions.SellAll.setup = function()
       return false
     end
 
-    if freecap() == storage.sellAllCap then
-      storage.sellAllCap = 0 
+    if freecap() == sellAllCap then
+      sellAllCap = 0 
       print("CaveBot[SellAll]: Sold everything, proceeding")
       return true
     end
 
     delay(800)
-
-    local pos = player:getPosition()
-    local npcPos = npc:getPosition()
-    if math.max(math.abs(pos.x - npcPos.x), math.abs(pos.y - npcPos.y)) > 3 then
-      CaveBot.walkTo(npcPos, 20, {ignoreNonPathable = true, precision=3})
-      delay(300)
+    if not CaveBot.ReachNPC(npcName) then
       return "retry"
     end
 
     if not NPC.isTrading() then
-      NPC.say("hi")
-      schedule(500, function() NPC.say("trade") end)
+      CaveBot.OpenNpcTrade()
+      delay(storage.extras.talkDelay*2)
     else
-      storage.sellAllCap = freecap()
+      sellAllCap = freecap()
     end
     
     NPC.sellAll(wait)

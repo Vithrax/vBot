@@ -132,7 +132,8 @@ TargetBot.Looting.process = function(targets, dangerLevel)
 
   local pos = player:getPosition()
   local dist = math.max(math.abs(pos.x-loot.pos.x), math.abs(pos.y-loot.pos.y))
-  if loot.tries > 30 or loot.pos.z ~= pos.z or dist > 20 then
+  local maxRange = storage.extras.looting or 40
+  if loot.tries > 30 or loot.pos.z ~= pos.z or dist > maxRange then
     table.remove(TargetBot.Looting.list, 1)
     return true
   end

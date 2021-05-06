@@ -40,26 +40,17 @@ CaveBot.Extensions.Bank.setup = function()
      return false 
     end
 
-    local pos = player:getPosition()
-    local npcPos = npc:getPosition()
-    if math.max(math.abs(pos.x - npcPos.x), math.abs(pos.y - npcPos.y)) > 3 then
-      CaveBot.walkTo(npcPos, 20, {ignoreNonPathable = true, precision=3})
-      delay(300)
+    if not CaveBot.ReachNPC(npcName) then
       return "retry"
     end
 
     if actionType == "deposit" then
-      NPC.say("hi")
-      schedule(waitVal, function() NPC.say("deposit all") end)
-      schedule(waitVal*2, function() NPC.say("yes") end)
-      CaveBot.delay(waitVal*3)
+      CaveBot.Conversation("hi", "deposit all", "yes")
+      CaveBot.delay(storage.extras.talkDelay*3)
       return true
     else
-      NPC.say("hi")
-      schedule(waitVal, function() NPC.say("withdraw") end)
-      schedule(waitVal*2, function() NPC.say(value) end)
-      schedule(waitVal*3, function() NPC.say("yes") end)
-      CaveBot.delay(waitVal*4)
+      CaveBot.Conversation("hi", "withdraw", value, "yes")
+      CaveBot.delay(storage.extras.talkDelay*4)
       return true
     end
   end)

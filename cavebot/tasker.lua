@@ -6,7 +6,7 @@ local dataValidationFailed = function()
 end
 
 -- miniconfig
-local talkDelay = 300 -- default delay between npc messages
+local talkDelay = storage.extras.talkDelay
 if not storage.caveBotTasker then
     storage.caveBotTasker = {
         inProgress = false,
@@ -80,10 +80,7 @@ CaveBot.Extensions.Tasker.setup = function()
     
     -- let's cover markers now
     if marker == 1 then -- starting task
-        NPC.say("hi")
-        scheduleNpcSay("task", talkDelay)
-        scheduleNpcSay(taskName, talkDelay*2)
-        scheduleNpcSay("yes", talkDelay*3)
+        NPC.Conversation("hi", "task", taskName, "yes")
         delay(talkDelay*4)
 
         storage.caveBotTasker.monster = monster
@@ -117,9 +114,7 @@ CaveBot.Extensions.Tasker.setup = function()
 
 
     elseif marker == 3 then -- reporting task
-        NPC.say("hi")
-        scheduleNpcSay("report", talkDelay)
-        scheduleNpcSay("task", talkDelay*2)
+        NPC.Conversation("hi", "report", "task")
         delay(talkDelay*3)
 
         resetTaskData()

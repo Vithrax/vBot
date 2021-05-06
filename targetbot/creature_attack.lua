@@ -1,3 +1,7 @@
+local targetBotLure = false
+local targetCount = 0 
+local delayValue = 0
+local lureMax = 0
 TargetBot.Creature.attack = function(params, targets, isLooting) -- params {config, creature, danger, priority}
   if player:isWalking() then
     lastWalk = now
@@ -63,9 +67,6 @@ TargetBot.Creature.attack = function(params, targets, isLooting) -- params {conf
   end
 end
 
-if not storage.targetBotTargets then
-  storage.targetBotTargets = 0
-end
 TargetBot.Creature.walk = function(creature, config, targets)
   local cpos = creature:getPosition()
   local pos = player:getPosition()
@@ -81,27 +82,25 @@ TargetBot.Creature.walk = function(creature, config, targets)
   end
 
   -- data for external dynamic lure
-  if config.lureMin and config.lureMax then
+  if config.lureMin and config.lureMax and config.dynamicLure then
     if config.lureMin >= targets then
-      storage.TargetBotLure = true
+      targetBotLure = true
     elseif targets >= config.lureMax then
-      storage.TargetBotLure = false
+      targetBotLure = false
     end
   end
-  storage.targetBotTargets = targets
-  storage.targetBotDynamicLureDelayValue = config.lureDelay
+  targetCount = targets
+  delayValue = config.lureDelay
 
-  if not storage.targetBotLureMax then
-    storage.targetBotLureMax = 0
-  end
   if config.lureMax then
-    storage.targetBotLureMax = config.lureMax
+    lureMax = config.lureMax
   end
+
 
   -- luring
   if TargetBot.canLure() and (config.lure or config.lureCavebot or config.dynamicLure) and not (config.chase and creature:getHealthPercent() < 5) and not isTrapped then
     local monsters = 0
-    if storage.TargetBotLure then
+    if targetBotLure then
       return TargetBot.allowCaveBot(150)
     else
       if targets < config.lureCount then
@@ -175,8 +174,11 @@ end
 onPlayerPositionChange(function(newPos, oldPos)
   if CaveBot.isOff() then return end
   if TargetBot.isOff() then return end
-  if not storage.targetBotLureMax then return end
-  if storage.targetBotTargets < storage.targetBotLureMax/2 or not target() then return end
+  if not lureMax then return end
+  if storage.TargetBotDelayWhenPlayer then return end
 
-  CaveBot.delay(storage.targetBotDynamicLureDelayValue or 0)
+
+
+  if targetCount < lureMax/2 or not target() then return end
+  CaveBot.delay(delayValue)
 end)

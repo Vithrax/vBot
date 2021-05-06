@@ -64,7 +64,7 @@ TargetBotCreatureEditorCheckBox < BotSwitch
 TargetBotCreatureEditorWindow < MainWindow
   text: TargetBot creature editor
   width: 500
-  height: 400
+  height: 425
   
   $mobile:
     height: 300

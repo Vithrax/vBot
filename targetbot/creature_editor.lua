@@ -94,4 +94,5 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   addCheckBox("avoidAttacks", "Avoid wave attacks", false)
   addCheckBox("dynamicLure", "Dynamic lure", false)
   addCheckBox("dynamicLureDelay", "Dynamic lure delay", false)
+  addCheckBox("diamondArrows", "D-Arrows priority", false)
 end

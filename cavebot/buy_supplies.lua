@@ -2,13 +2,14 @@ CaveBot.Extensions.BuySupplies = {}
 
 CaveBot.Extensions.BuySupplies.setup = function()
   CaveBot.registerAction("BuySupplies", "#C300FF", function(value, retries)
-    local item1Count = itemAmount(storage[suppliesPanelName].item1)
-    local item2Count = itemAmount(storage[suppliesPanelName].item2)
-    local item3Count = itemAmount(storage[suppliesPanelName].item3)
-    local item4Count = itemAmount(storage[suppliesPanelName].item4)
-    local item5Count = itemAmount(storage[suppliesPanelName].item5)
-    local item6Count = itemAmount(storage[suppliesPanelName].item6)
-    local item7Count = itemAmount(storage[suppliesPanelName].item7)
+    local supplies = SuppliesConfig[suppliesPanelName]
+    local item1Count = itemAmount(supplies.item1)
+    local item2Count = itemAmount(supplies.item2)
+    local item3Count = itemAmount(supplies.item3)
+    local item4Count = itemAmount(supplies.item4)
+    local item5Count = itemAmount(supplies.item5)
+    local item6Count = itemAmount(supplies.item6)
+    local item7Count = itemAmount(supplies.item7)
     local possibleItems = {}
 
     local val = string.split(value, ",")
@@ -37,29 +38,23 @@ CaveBot.Extensions.BuySupplies.setup = function()
       return false
     end
 
-    delay(200)
-
-    local pos = player:getPosition()
-    local npcPos = npc:getPosition()
-    if math.max(math.abs(pos.x - npcPos.x), math.abs(pos.y - npcPos.y)) > 3 then
-      CaveBot.walkTo(npcPos, 20, {ignoreNonPathable = true, precision=3})
-      delay(300)
+    if not CaveBot.ReachNPC(npcName) then
       return "retry"
     end
 
     local itemList = {
-        item1 = {ID = storage[suppliesPanelName].item1, maxAmount = storage[suppliesPanelName].item1Max, currentAmount = item1Count},
-        item2 = {ID = storage[suppliesPanelName].item2, maxAmount = storage[suppliesPanelName].item2Max, currentAmount = item2Count}, 
-        item3 = {ID = storage[suppliesPanelName].item3, maxAmount = storage[suppliesPanelName].item3Max, currentAmount = item3Count},
-        item4 = {ID = storage[suppliesPanelName].item4, maxAmount = storage[suppliesPanelName].item4Max, currentAmount = item4Count},
-        item5 = {ID = storage[suppliesPanelName].item5, maxAmount = storage[suppliesPanelName].item5Max, currentAmount = item5Count},
-        item6 = {ID = storage[suppliesPanelName].item6, maxAmount = storage[suppliesPanelName].item6Max, currentAmount = item6Count},
-        item7 = {ID = storage[suppliesPanelName].item7, maxAmount = storage[suppliesPanelName].item7Max, currentAmount = item7Count}
+        item1 = {ID = supplies.item1, maxAmount = supplies.item1Max, currentAmount = item1Count},
+        item2 = {ID = supplies.item2, maxAmount = supplies.item2Max, currentAmount = item2Count}, 
+        item3 = {ID = supplies.item3, maxAmount = supplies.item3Max, currentAmount = item3Count},
+        item4 = {ID = supplies.item4, maxAmount = supplies.item4Max, currentAmount = item4Count},
+        item5 = {ID = supplies.item5, maxAmount = supplies.item5Max, currentAmount = item5Count},
+        item6 = {ID = supplies.item6, maxAmount = supplies.item6Max, currentAmount = item6Count},
+        item7 = {ID = supplies.item7, maxAmount = supplies.item7Max, currentAmount = item7Count}
     }
 
     if not NPC.isTrading() then
-      NPC.say("hi")
-      schedule(500, function() NPC.say("trade") end)
+      CaveBot.OpenNpcTrade()
+      CaveBot.delay(storage.extras.talkDelay*2)
       return "retry"
     end
 
@@ -70,24 +65,15 @@ CaveBot.Extensions.BuySupplies.setup = function()
     end
 
     for i, item in pairs(itemList) do
-   --   info(table.find(possibleItems, item["ID"]))
      if item["ID"] and item["ID"] > 100 and table.find(possibleItems, item["ID"]) then
       local amountToBuy = item["maxAmount"] - item["currentAmount"]
-       if amountToBuy > 100 then
-        for i=1, math.ceil(amountToBuy/100), 1 do
-         NPC.buy(item["ID"], math.min(100, amountToBuy))
-         print("CaveBot[BuySupplies]: bought " .. amountToBuy .. "x " .. item["ID"])
-         return "retry"
-        end
-        else
-         if amountToBuy > 0 then
-          NPC.buy(item["ID"], math.min(100, amountToBuy))
-          print("CaveBot[BuySupplies]: bought " .. amountToBuy .. "x " .. item["ID"])
-          return "retry"
-         end
-       end
+      if amountToBuy > 0 then  
+        NPC.buy(item["ID"], math.min(100, amountToBuy))
+        print("CaveBot[BuySupplies]: bought " .. math.min(100, amountToBuy) .. "x " .. item["ID"])
+        return "retry"
       end
      end
+    end
     print("CaveBot[BuySupplies]: bought everything, proceeding")
     return true
  end)
