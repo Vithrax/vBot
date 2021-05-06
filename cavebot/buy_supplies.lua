@@ -21,7 +21,8 @@ CaveBot.Extensions.BuySupplies.setup = function()
       waitVal = tonumber(val[2]:trim())
     end
 
-    local npc = getCreatureByName(val[1]:trim())
+    local npcName = val[1]:trim()
+    local npc = getCreatureByName(npcName)
     if not npc then 
       print("CaveBot[BuySupplies]: NPC not found")
       return false 
