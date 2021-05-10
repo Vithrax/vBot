@@ -180,5 +180,5 @@ onPlayerPositionChange(function(newPos, oldPos)
 
 
   if targetCount < lureMax/2 or not target() then return end
-  CaveBot.delay(delayValue)
+  CaveBot.delay(delayValue or 0)
 end)
