@@ -2,6 +2,8 @@ local targetBotLure = false
 local targetCount = 0 
 local delayValue = 0
 local lureMax = 0
+local delayedLure = false
+
 TargetBot.Creature.attack = function(params, targets, isLooting) -- params {config, creature, danger, priority}
   if player:isWalking() then
     lastWalk = now
@@ -89,6 +91,8 @@ TargetBot.Creature.walk = function(creature, config, targets)
       targetBotLure = false
     end
   end
+  
+  delayedLure = config.dynamicLureDelay
   targetCount = targets
   delayValue = config.lureDelay
 
@@ -176,7 +180,7 @@ onPlayerPositionChange(function(newPos, oldPos)
   if TargetBot.isOff() then return end
   if not lureMax then return end
   if storage.TargetBotDelayWhenPlayer then return end
-
+  if not delayedLure then return end
 
 
   if targetCount < lureMax/2 or not target() then return end
