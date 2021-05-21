@@ -166,6 +166,7 @@ Panel
     if not newTibia then return true end
 
     local voc = BotServerMembers[name]
+    if not voc then return true end
     
     if voc == 11 then voc = 1
     elseif voc == 12 then voc = 2
