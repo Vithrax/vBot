@@ -554,7 +554,11 @@ if rootWidget then
 end
 
 -- spells
+local lastMana = mana()
+local standBySpells = false
+local iterationsSpells = 0
 macro(100, function()
+  if standBySpells then return end
   if not currentSettings.enabled or modules.game_cooldown.isGroupCooldownIconActive(2) or #currentSettings.spellTable == 0 then return end
 
   for _, entry in pairs(currentSettings.spellTable) do
@@ -616,14 +620,18 @@ macro(100, function()
         end    
       end
     end
-  end  
+  end
+  standBySpells = true
+  lastMana = mana()  
 end)
 
 -- items
+local standByItems = false
 macro(100, function()
+  if standByItems then return end
   if not currentSettings.enabled or #currentSettings.itemTable == 0 then return end
-  if currentSettings.Delay and storage.isUsing then return end
-  if currentSettings.MessageDelay and storage.isUsingPotion then return end
+  if currentSettings.Delay and vBot.isUsing then return end
+  if currentSettings.MessageDelay and vBot.isUsingPotion then return end
 
   if not currentSettings.MessageDelay then
     delay(400)
@@ -698,5 +706,23 @@ macro(100, function()
       end
     end
   end
+  standByItems = true
+  lastMana = mana()
 end)
 UI.Separator()
+
+onAddThing(function(tile, thing)
+  if thing == player then return end
+  if getDistanceBetween(tile:getPosition(), player:getPosition()) == 0 then
+    standByItems = false
+    standBySpells = false
+  end
+end)
+
+macro(5000, function()
+  if (standByItems or standBySpells) and mana() >= lastMana then
+    lastMana = mana()
+    standByItems = false
+    standBySpells = false
+  end
+end)

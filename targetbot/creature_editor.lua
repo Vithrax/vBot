@@ -80,6 +80,7 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   addScrollBar("danger", "Danger", 0, 10, 1)
   addScrollBar("maxDistance", "Max distance", 1, 10, 10)
   addScrollBar("keepDistanceRange", "Keep distance", 1, 5, 1)
+  addScrollBar("anchorRange", "Anchoring Range", 1, 10, 3)
   addScrollBar("lureCount", "Classic Lure", 0, 5, 1)
   addScrollBar("lureMin", "Dynamic lure min", 0, 9, 1)
   addScrollBar("lureMax", "Dynamic lure max", 1, 9, 3)
@@ -87,6 +88,7 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
 
   addCheckBox("chase", "Chase", true)
   addCheckBox("keepDistance", "Keep Distance", false)
+  addCheckBox("anchor", "Anchoring", false)
   addCheckBox("dontLoot", "Don't loot", false)
   addCheckBox("lure", "Lure", false)
   addCheckBox("lureCavebot", "Lure using cavebot", false)

@@ -17,7 +17,8 @@ if voc == 1 or voc == 11 then
     end)
 
     macro(500, "ExetaIfPlayer", function()
-    	if getMonsters(6) >= 1 and getPlayers(6) > 0 then
+        if CaveBot.isOff() then return end
+    	if getMonsters(1) >= 1 and getPlayers(6) > 0 then
     		say("exeta res")
     		delay(6000)
     	end

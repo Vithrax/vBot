@@ -54,7 +54,7 @@ Panel
             specOutfit.legs = 88
             specOutfit.feet = 88
             if storage.BOTserver.outfit then
-              local voc = BotServerMembers[spec:getName()]
+              local voc = vBot.BotServerMembers[spec:getName()]
               specOutfit.addons = 3 
               if voc == 1 then
                 specOutfit.type = 131
@@ -98,7 +98,7 @@ Panel
       specOutfit.legs = 88
       specOutfit.feet = 88
       if storage.BOTserver.outfit then
-        local voc = BotServerMembers[creature:getName()]
+        local voc = vBot.BotServerMembers[creature:getName()]
         specOutfit.addons = 3 
         if voc == 1 then
           specOutfit.type = 131

@@ -4,8 +4,26 @@
 -- sums monster hits on a span of last 3seconds
 -- if last message was more than 3s ago then clears the table
 
+
+
 -- initial global variables declaration
-BotServerMembers = {}
+vBot = {} -- global namespace for bot variables
+vBot.BotServerMembers = {}
+vBot.standTime = now
+vBot.isUsingPotion = false
+vBot.isUsing = false
+
+
+
+
+-- scripts / functions
+onPlayerPositionChange(function(x,y)
+    vBot.standTime = now
+end)
+
+function standTime()
+    return now - vBot.standTime
+end
 
 local dmgTable = {}
 local lastDmgMessage = now
@@ -46,6 +64,7 @@ function whiteInfoMessage(text)
     return modules.game_textmessage.displayGameMessage(text)
 end
 
+-- same as above but red message
 function broadcastMessage(text)
     return modules.game_textmessage.displayBroadcastMessage(text)
 end
@@ -170,16 +189,16 @@ function killsToRs()
 end
 
 -- calculates exhaust for potions based on "Aaaah..." message
--- changes state of storage variable, can be used in other scripts
+-- changes state of vBot variable, can be used in other scripts
 -- already used in pushmax, healbot, etc
-storage.isUsingPotion = false
+
 onTalk(function(name, level, mode, text, channelId, pos)
     if name ~= player:getName() then return end
     if mode ~= 34 then return end
 
     if text == "Aaaah..." then
-        storage.isUsingPotion = true
-        schedule(950, function() storage.isUsingPotion = false end)
+        vBot.isUsingPotion = true
+        schedule(950, function() vBot.isUsingPotion = false end)
     end
 end)
 
@@ -266,13 +285,22 @@ end
 -- based on info extracted by getSpellData checks if spell is on cooldown
 -- returns boolean
 function getSpellCoolDown(text)
-    if not text then return false end
+    if not text then return nil end
     text = text:lower()
-    if not getSpellData(text) then return false end
-    for i, v in pairs(Spells) do
-        if v.words == text then
-            return modules.game_cooldown.isCooldownIconActive(v.id)
+    local data = getSpellData(text)
+    if not data then return false end
+    local icon = modules.game_cooldown.isCooldownIconActive(data.id)
+    local group = false
+    for groupId, duration in pairs(data.group) do
+        if modules.game_cooldown.isGroupCooldownIconActive(groupId) then
+            group = true
+            break
         end
+    end
+    if icon or group then
+        return true
+    else
+        return false
     end
 end
 
@@ -280,12 +308,12 @@ end
 -- prevents action blocking by scripts
 -- below callbacks are triggers to changing the var state
 local isUsingTime = now
-storage.isUsing = false
 macro(100, function()
-    storage.isUsing = now < isUsingTime and true or false
+    vBot.isUsing = now < isUsingTime and true or false
 end)
 onUse(function(pos, itemId, stackPos, subType)
     if pos.x > 65000 then return end
+    if getDistanceBetween(player:getPosition(), pos) > 1 then return end
     local tile = g_map.getTile(pos)
     if not tile then return end
 
@@ -323,7 +351,7 @@ function isFriend(c)
     if table.find(storage.playerList.friendList, name) then
         CachedFriends[c] = true
         return true
-    elseif BotServerMembers[name] ~= nil then
+    elseif vBot.BotServerMembers[name] ~= nil then
         CachedFriends[c] = true
         return true
     elseif storage.playerList.groupMembers then
@@ -347,9 +375,18 @@ end
 -- similar to isFriend but lighter version
 -- accepts only name string
 -- returns boolean
-function isEnemy(name)
+function isEnemy(c)
+    local name = c
+    local p
+    if type(c) ~= "string" then
+        if c == player then return false end
+        name = c:getName()
+        p = c
+    end
     if not name then return false end
-    local p = getCreatureByName(name, true)
+    if not p then
+        p = getCreatureByName(name, true)
+    end
     if not p then return end
     if p:isLocalPlayer() then return end
 
@@ -359,6 +396,43 @@ function isEnemy(name)
     else
         return false
     end
+end
+
+function getPlayerDistribution()
+    local friends = {}
+    local neutrals = {}
+    local enemies = {}
+    for i, spec in ipairs(getSpectators()) do
+        if spec:isPlayer() and not spec:isLocalPlayer() then
+            if isFriend(spec) then
+                table.insert(friends, spec)
+            elseif isEnemy(spec) then
+                table.insert(enemies, spec)
+            else
+                table.insert(neutrals, spec)
+            end
+        end
+    end
+
+    return friends, neutrals, enemies
+end
+
+function getFriends()
+    local friends, neutrals, enemies = getPlayerDistribution()
+
+    return friends
+end
+
+function getNeutrals()
+    local friends, neutrals, enemies = getPlayerDistribution()
+
+    return neutrals
+end
+
+function getEnemies()
+    local friends, neutrals, enemies = getPlayerDistribution()
+
+    return enemies
 end
 
 -- based on first word in string detects if text is a offensive spell

@@ -955,7 +955,7 @@ macro(100, function()
                 cast(entry.attack, entry.cd)
                 return
               else
-                if not AttackBotConfig.isUsing and target():canShoot() then
+                if not vBot.isUsing and target():canShoot() then
                   g_game.useInventoryItemWith(entry.attack, target())
                   return
                 end
@@ -965,7 +965,7 @@ macro(100, function()
             if entry.category == 6 or entry.category == 7 then
               if getMonsters(4) >= entry.minMonsters then
                 if type(entry.attack) == "number" then
-                  if not AttackBotConfig.isUsing then
+                  if not vBot.isUsing then
                     g_game.useInventoryItemWith(entry.attack, target())
                     return
                   end
@@ -992,7 +992,7 @@ macro(100, function()
                   cast(entry.attack, entry.cd)
                   return
                 elseif entry.category == 8 and bestTile and bestTile.count >= entry.minMonsters then
-                  if not AttackBotConfig.isUsing then
+                  if not vBot.isUsing then
                     g_game.useInventoryItemWith(entry.attack, bestTile.pos:getTopUseThing())
                   end
                   return
@@ -1003,7 +1003,7 @@ macro(100, function()
                   if entry.category == 6 or entry.category == 7 then
                     if getMonsters(4) >= entry.minMonsters then
                       if type(entry.attack) == "number" then
-                        if not AttackBotConfig.isUsing then
+                        if not vBot.isUsing then
                           g_game.useInventoryItemWith(entry.attack, target())
                           return
                         end
@@ -1018,7 +1018,7 @@ macro(100, function()
                 if entry.category == 6 or entry.category == 7 then
                   if getMonsters(4) >= entry.minMonsters then
                     if type(entry.attack) == "number" then
-                      if not AttackBotConfig.isUsing then
+                      if not vBot.isUsing then
                         g_game.useInventoryItemWith(entry.attack, target())
                         return
                       end

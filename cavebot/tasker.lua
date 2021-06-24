@@ -80,7 +80,7 @@ CaveBot.Extensions.Tasker.setup = function()
     
     -- let's cover markers now
     if marker == 1 then -- starting task
-        NPC.Conversation("hi", "task", taskName, "yes")
+        CaveBot.Conversation("hi", "task", taskName, "yes")
         delay(talkDelay*4)
 
         storage.caveBotTasker.monster = monster
@@ -114,7 +114,7 @@ CaveBot.Extensions.Tasker.setup = function()
 
 
     elseif marker == 3 then -- reporting task
-        NPC.Conversation("hi", "report", "task")
+        CaveBot.Conversation("hi", "report", "task")
         delay(talkDelay*3)
 
         resetTaskData()

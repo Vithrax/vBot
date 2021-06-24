@@ -82,56 +82,6 @@ SuppliesWindow < MainWindow
     margin-left: 10
     text: No Imbues
 
-  HorizontalSeparator
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    anchors.right: prev.right
-    margin-top: 5
-
-  BotSwitch
-    id: SortSupplies
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    anchors.right: prev.right
-    margin-top: 5
-    text: Sort Supplies
-
-  BotItem
-    id: PotionBp
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    margin-top: 3
-
-  Label
-    anchors.verticalCenter: prev.verticalCenter
-    anchors.left: prev.right
-    margin-left: 5
-    text: Potions
-
-  BotItem
-    id: RuneBp
-    anchors.top: PotionBp.bottom
-    anchors.left: PotionBp.left
-    margin-top: 3
-
-  Label
-    anchors.verticalCenter: prev.verticalCenter
-    anchors.left: prev.right
-    margin-left: 5
-    text: Runes
-
-  BotItem
-    id: AmmoBp
-    anchors.top: RuneBp.bottom
-    anchors.left: RuneBp.left
-    margin-top: 3
-
-  Label
-    anchors.verticalCenter: prev.verticalCenter
-    anchors.left: prev.right
-    margin-left: 5
-    text: Ammo  
-
   BotItem
     id: item1
     anchors.left: parent.left

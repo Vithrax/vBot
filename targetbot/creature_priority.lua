@@ -26,15 +26,7 @@ TargetBot.Creature.calculatePriority = function(creature, config, path)
   -- extra priority for paladin diamond arrows
   if config.diamondArrows then
     local mobCount = getCreaturesInArea(creature:getPosition(), diamondArrowArea, 2)
-    if mobCount > 5 then
-      priority = priority + 4
-    elseif mobCount > 4 then
-      priority = priority + 3
-    elseif mobCount > 3 then
-      priority = priority + 2
-    elseif mobCount > 2 then
-      priority = priority + 1
-    end
+    priority = priority + (mobCount * 4)
   end
 
   -- extra priority for low health

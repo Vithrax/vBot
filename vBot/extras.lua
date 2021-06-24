@@ -92,6 +92,9 @@ addItem("machete", "Machete Item", 9596, leftPanel)
 addItem("scythe", "Scythe Item", 9596, leftPanel)
 addScrollBar("talkDelay", "Global NPC Talk Delay", 0, 2000, 1000, leftPanel)
 addScrollBar("looting", "Max Loot Distance", 0, 50, 40, leftPanel)
+addScrollBar("huntRoutes", "Hunting Routes Limit", 0, 300, 50, leftPanel)
+addScrollBar("killUnder", "Kill monsters below", 0, 100, 30, leftPanel)
+addCheckBox("lootLast", "Start loot from last corpse", true, leftPanel)
 
 addCheckBox("title", "Custom Window Title", true, rightPanel)
 if true then
@@ -127,7 +130,8 @@ if true then
                  6257, 6256, 2772, 27260, 2773, 1632, 1633, 1948, 435, 6252, 6253, 5007, 4911, 
                  1629, 1630, 5108, 5107, 5281, 1968, 435, 1948, 5542, 31116, 31120, 30742, 31115, 
                  31118, 20474, 5737, 5736, 5734, 5733, 31202, 31228, 31199, 31200, 33262, 30824, 
-                 5125, 5126, 5116, 5117, 8257, 8258, 8255, 8256, 5120, 30777, 30776}
+                 5125, 5126, 5116, 5117, 8257, 8258, 8255, 8256, 5120, 30777, 30776, 23873, 23877,
+                 5736, 6264, 31262, 31130, 31129, 6250, 6249, 5122}
   local shovelId = {606, 593, 867}
   local ropeId = {17238, 12202, 12935, 386, 421, 21966, 14238}
   local macheteId = {2130, 3696}
@@ -218,7 +222,7 @@ end
 
 addCheckBox("stake", "Skin Monsters", false, leftPanel)
 if true then
-  local knifeBodies = {4272, 4173, 4011, 4025, 4047, 4052, 4057, 4062, 4112, 4212, 4321, 4324, 4327, 10352, 10356, 10360, 10364} 
+  local knifeBodies = {4286, 4272, 4173, 4011, 4025, 4047, 4052, 4057, 4062, 4112, 4212, 4321, 4324, 4327, 10352, 10356, 10360, 10364} 
   local stakeBodies = {4097, 4137, 8738, 18958}
   local fishingBodies = {9582}
   macro(500, function()
@@ -281,7 +285,8 @@ if true then
   local doorsIds = { 5007, 8265, 1629, 1632, 5129, 6252, 6249, 7715, 7712, 7714, 
                      7719, 6256, 1669, 1672, 5125, 5115, 5124, 17701, 17710, 1642, 
                      6260, 5107, 4912, 6251, 5291, 1683, 1696, 1692, 5006, 2179, 5116, 
-                     1632, 11705, 30772, 30774, 6248, 5735, 5732, 5120 }
+                     1632, 11705, 30772, 30774, 6248, 5735, 5732, 5120, 23873, 5736,
+                     6264, 5122 }
 
   function checkForDoors(pos)
     local tile = g_map.getTile(pos)
@@ -432,3 +437,69 @@ if true then
   end)
 end
 
+addCheckBox("checkPlayer", "Check Players", true, rightPanel)
+if true then
+
+  local function checkPlayers()
+    local found = false
+    for i, spec in ipairs(getSpectators()) do
+      if spec:isPlayer() and spec:getText() == "" and spec:getPosition().z == posz() and spec ~= player then
+          g_game.look(spec)
+          found = true
+      end
+    end
+    if found then
+      schedule(20, function() modules.game_textmessage.clearMessages() end)
+      schedule(40, function() modules.game_textmessage.clearMessages() end)
+      schedule(60, function() modules.game_textmessage.clearMessages() end)
+    end
+  end
+  checkPlayers()
+
+  onPlayerPositionChange(function(x,y)
+    if not settings.checkPlayer then return end
+    if x.z ~= y.z then
+      schedule(20, function() checkPlayers() end)
+    end
+  end)
+
+  onCreatureAppear(function(creature)
+    if not settings.checkPlayer then return end
+    local found = false
+    if creature:isPlayer() and creature:getText() == "" and creature:getPosition().z == posz() and creature ~= player then
+        g_game.look(creature)
+        found = true
+    end
+    if found then
+      schedule(20, function() modules.game_textmessage.clearMessages() end)
+      schedule(40, function() modules.game_textmessage.clearMessages() end)
+      schedule(60, function() modules.game_textmessage.clearMessages() end)
+    end
+  end)
+
+  local regex = [[You see ([a-z 'A-z-]*) \(Level ([0-9]*)\)]]
+  onTextMessage(function(mode, text)
+    if not settings.checkPlayer then return end
+    if mode ~= 20 then return end
+
+    local re = regexMatch(text, regex)
+    if #re ~= 0 then
+        local name = re[1][2]
+        local level = re[1][3]
+        local voc
+        if text:lower():find("sorcerer") then
+            voc = "MS"
+        elseif text:lower():find("druid") then
+            voc = "ED"
+        elseif text:lower():find("knight") then
+            voc = "EK"
+        elseif text:lower():find("paladin") then
+            voc = "RP"
+        end
+        local creature = getCreatureByName(name)
+        if creature then
+            creature:setText(level..voc)
+        end
+    end
+  end)
+end

@@ -35,10 +35,12 @@ if not storage[panelName] then
   }
 end
 
-ui.title:setOn(storage[panelName].enabled)
+local config = storage[panelName]
+
+ui.title:setOn(config.enabled)
 ui.title.onClick = function(widget)
-storage[panelName].enabled = not storage[panelName].enabled
-widget:setOn(storage[panelName].enabled)
+config.enabled = not config.enabled
+widget:setOn(config.enabled)
 end
 
 ui.push.onClick = function(widget)
@@ -57,34 +59,34 @@ if rootWidget then
   end
 
   local updateDelayText = function()
-    pushWindow.delayText:setText("Push Delay: ".. storage[panelName].pushDelay)
+    pushWindow.delayText:setText("Push Delay: ".. config.pushDelay)
   end
   updateDelayText()
   pushWindow.delay.onValueChange = function(scroll, value)
-    storage[panelName].pushDelay = value
+    config.pushDelay = value
     updateDelayText()
   end
-  pushWindow.delay:setValue(storage[panelName].pushDelay)
+  pushWindow.delay:setValue(config.pushDelay)
 
   pushWindow.runeId.onItemChange = function(widget)
-    storage[panelName].pushMaxRuneId = widget:getItemId()
+    config.pushMaxRuneId = widget:getItemId()
   end
-  pushWindow.runeId:setItemId(storage[panelName].pushMaxRuneId)
+  pushWindow.runeId:setItemId(config.pushMaxRuneId)
   pushWindow.mwallId.onItemChange = function(widget)
-    storage[panelName].mwallBlockId = widget:getItemId()
+    config.mwallBlockId = widget:getItemId()
   end
-  pushWindow.mwallId:setItemId(storage[panelName].mwallBlockId)
+  pushWindow.mwallId:setItemId(config.mwallBlockId)
 
   pushWindow.hotkey.onTextChange = function(widget, text)
-    storage[panelName].pushMaxKey = text
+    config.pushMaxKey = text
   end
-  pushWindow.hotkey:setText(storage[panelName].pushMaxKey)
+  pushWindow.hotkey:setText(config.pushMaxKey)
 end
 
 
 -- variables for config
 
-local config = storage[panelName]
+local config = config
 local pushDelay = tonumber(config.pushDelay)
 local rune = tonumber(config.pushMaxRuneId)
 local customMwall = config.mwallBlockId
@@ -189,9 +191,9 @@ macro(20, function()
     local topThing = targetTile:getTopUseThing():getId()
     if topThing == 2129 or topThing == 2130 or topThing == customMwall then
       if targetTile:getTimer() < pushDelay+500 then
-        storage.isUsing = true
+        vBot.isUsing = true
         schedule(pushDelay+700, function()
-          storage.isUsing = false
+          vBot.isUsing = false
         end)
       end
       if targetTile:getTimer() > pushDelay then

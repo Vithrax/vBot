@@ -34,7 +34,7 @@ end
 local channel = tostring(storage.BotServerChannel)
 BotServer.init(name(), channel)
 
-BotServerMembers = {}
+vBot.BotServerMembers = {}
 
 rootWidget = g_ui.getRootWidget()
 if rootWidget then
@@ -189,7 +189,7 @@ BotServer.listen("voc", function(name, message)
   if message == "yes" and config.vocation then
     BotServer.send("voc", player:getVocation())
   else
-    BotServerMembers[name] = message
+    vBot.BotServerMembers[name] = message
   end
 end)
 

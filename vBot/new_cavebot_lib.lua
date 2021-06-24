@@ -15,6 +15,12 @@ CaveBot = {} -- global namespace
 
 -- local variables, constants and functions, used by global functions
 local LOCKERS_LIST = {3497, 3498, 3499, 3500}
+local LOCKER_ACCESSTILE_MODIFIERS = {
+    [3497] = {0,-1},
+    [3498] = {1,0},
+    [3499] = {0,1},
+    [3500] = {-1,0}
+}
 
 local function CaveBotConfigParse()
 	local name = storage["_configs"]["targetbot_configs"]["selected"]
@@ -74,6 +80,23 @@ function CaveBot.GetLootItems()
     end
 
     return returnTable
+end
+
+
+--- Checks whether player has any visible items to be stashed
+-- @return boolean
+function CaveBot.HasLootItems()
+    for _, container in pairs(getContainers()) do
+        local name = container:getName():lower()
+        if not name:find("depot") and not name:find("your inbox") then
+            for _, item in pairs(container:getItems()) do
+                local id = item:getId()
+                if table.find(CaveBot.GetLootItems(), id) then
+                    return true
+                end
+            end
+        end
+    end
 end
 
 --- Parses config and extracts loot containers.
@@ -185,7 +208,7 @@ function CaveBot.GoTo(position, precision)
     if not precision then
         precision = 3
     end
-    return CaveBot.walkTo(position, 20, {ignoreNonPathable = true, precision = precision})
+    return CaveBot.walkTo(position, 20, {ignoreCreatures = true, precision = precision})
 end
 
 --- Finds position of npc by name and reaches its position.
@@ -213,6 +236,9 @@ end
 
 --- Reaches closest locker.
 -- @return void(acion) or boolean
+
+local depositerLockerTarget = nil
+local depositerLockerReachRetries = 0
 function CaveBot.ReachDepot()
     local pPos = player:getPosition()
     local tiles = getNearTiles(player:getPosition())
@@ -220,31 +246,53 @@ function CaveBot.ReachDepot()
     for i, tile in pairs(tiles) do
         for i, item in pairs(tile:getItems()) do
             if table.find(LOCKERS_LIST, item:getId()) then
+                depositerLockerTarget = nil
+                depositerLockerReachRetries = 0
                 return true -- if near locker already then return function
             end
         end
     end
 
-    local candidate = {}
+    if depositerLockerReachRetries > 20 then
+        depositerLockerTarget = nil
+        depositerLockerReachRetries = 0
+    end
 
-    for i, tile in pairs(g_map.getTiles(posz())) do
-        local tPos = tile:getPosition()
-        local distance = getDistanceBetween(pPos, tPos)
-        for i, item in pairs(tile:getItems()) do
-            if table.find(LOCKERS_LIST, item:getId()) then
-                if findPath(pos(), tPos, 10, {ignoreNonPathable = true, precision = 1}) then
-                    if #candidate == 0 or candidate.dist < distance then
-                        candidate = {pos = tPos, dist = distance}
+    local candidates = {}
+
+    if not depositerLockerTarget or distanceFromPlayer(depositerLockerTarget, pPos) > 12 then
+        for i, tile in pairs(g_map.getTiles(posz())) do
+            local tPos = tile:getPosition()
+            for i, item in pairs(tile:getItems()) do
+                if table.find(LOCKERS_LIST, item:getId()) then
+                    local lockerTilePos = tile:getPosition()
+                          lockerTilePos.x = lockerTilePos.x + LOCKER_ACCESSTILE_MODIFIERS[item:getId()][1]
+                          lockerTilePos.y = lockerTilePos.y + LOCKER_ACCESSTILE_MODIFIERS[item:getId()][2]
+                    local lockerTile = g_map.getTile(lockerTilePos)
+                    if not lockerTile:hasCreature() then
+                        if findPath(pos(), tPos, 20, {ignoreNonPathable = false, precision = 1, ignoreCreatures = true}) then
+                            local distance = getDistanceBetween(tPos, pPos)
+                            table.insert(candidates, {pos=tPos, dist=distance})
+                        end
                     end
                 end
             end
         end
+
+        if #candidates > 1 then
+            table.sort(candidates, function(a,b) return a.dist < b.dist end)
+        end
     end
 
-    if candidate.pos then
-        if not CaveBot.MatchPosition(candidate.pos) then
-            CaveBot.GoTo(candidate.pos, 1)
+    depositerLockerTarget = depositerLockerTarget or candidates[1].pos
+
+    if depositerLockerTarget then
+        if not CaveBot.MatchPosition(depositerLockerTarget) then
+            depositerLockerReachRetries = depositerLockerReachRetries + 1
+            return CaveBot.GoTo(depositerLockerTarget, 1)
         else
+            depositerLockerReachRetries = 0
+            depositerLockerTarget = nil
             return true
         end
     end
@@ -319,7 +367,7 @@ end
 function CaveBot.OpenDepotBox(index)
     local depot = getContainerByName("Depot chest")
     if not depot then
-        return CaveBot.OpenDepotChest()
+        return CaveBot.ReachAndOpenDepot()
     end
 
     local foundParent = false
@@ -364,13 +412,10 @@ end
 -- @param destination is object
 -- @return void
 function CaveBot.StashItem(item, index, destination)
-    local depotContainer
-    if not destination then
-        depotContainer = getContainerByName("Depot chest")
-    end
-    if not depotContainer then return false end
+    destination = destination or getContainerByName("Depot chest")
+    if not destination then return false end
 
-    return g_game.move(item, depotContainer:getSlotPosition(index), item:getCount())
+    return g_game.move(item, destination:getSlotPosition(index), item:getCount())
 end
 
 --- Withdraws item from depot chest or mail inbox.
@@ -414,7 +459,6 @@ function CaveBot.WithdrawItem(id, amount, fromDepot, destination)
     end
 
     local toMove = amount - itemCount
-    info(toMove)
     for i, item in pairs(depot:getItems()) do
         if item:getId() == id then
             return g_game.move(item, destination:getSlotPosition(destination:getItemsCount()), math.min(toMove, item:getCount()))

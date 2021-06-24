@@ -2,8 +2,7 @@ local targetBotLure = false
 local targetCount = 0 
 local delayValue = 0
 local lureMax = 0
-local delayedLure = false
-
+local anchorPosition = nil
 TargetBot.Creature.attack = function(params, targets, isLooting) -- params {config, creature, danger, priority}
   if player:isWalking() then
     lastWalk = now
@@ -91,8 +90,6 @@ TargetBot.Creature.walk = function(creature, config, targets)
       targetBotLure = false
     end
   end
-  
-  delayedLure = config.dynamicLureDelay
   targetCount = targets
   delayValue = config.lureDelay
 
@@ -105,10 +102,12 @@ TargetBot.Creature.walk = function(creature, config, targets)
   if TargetBot.canLure() and (config.lure or config.lureCavebot or config.dynamicLure) and not (config.chase and creature:getHealthPercent() < 5) and not isTrapped then
     local monsters = 0
     if targetBotLure then
+      anchorPosition = nil
       return TargetBot.allowCaveBot(150)
     else
       if targets < config.lureCount then
         if config.lureCavebot then
+          anchorPosition = nil
           return TargetBot.allowCaveBot(150)
         else
           local path = findPath(pos, cpos, 5, {ignoreNonPathable=true, precision=2})
@@ -121,13 +120,20 @@ TargetBot.Creature.walk = function(creature, config, targets)
   end
 
   local currentDistance = findPath(pos, cpos, 10, {ignoreCreatures=true, ignoreNonPathable=true, ignoreCost=true})
-  if config.chase and (creature:getHealthPercent() < 30 or not config.keepDistance) then
+  if config.chase and (creature:getHealthPercent() < (storage.extras.killUnder or 30) or not config.keepDistance) then
     if #currentDistance > 1 then
       return TargetBot.walkTo(cpos, 10, {ignoreNonPathable=true, precision=1})
     end
   elseif config.keepDistance then
+    if not anchorPosition or distanceFromPlayer(anchorPosition) > config.anchorRange then
+      anchorPosition = pos
+    end
     if #currentDistance ~= config.keepDistanceRange and #currentDistance ~= config.keepDistanceRange + 1 then
-      return TargetBot.walkTo(cpos, 10, {ignoreNonPathable=true, marginMin=config.keepDistanceRange, marginMax=config.keepDistanceRange + 1})
+      if config.anchor and anchorPosition and getDistanceBetween(pos, anchorPosition) <= config.anchorRange*2 then
+        return TargetBot.walkTo(cpos, 10, {ignoreNonPathable=true, marginMin=config.keepDistanceRange, marginMax=config.keepDistanceRange + 1, maxDistanceFrom={anchorPosition, config.anchorRange}})
+      else
+        return TargetBot.walkTo(cpos, 10, {ignoreNonPathable=true, marginMin=config.keepDistanceRange, marginMax=config.keepDistanceRange + 1})
+      end
     end
   end
 
@@ -180,8 +186,6 @@ onPlayerPositionChange(function(newPos, oldPos)
   if TargetBot.isOff() then return end
   if not lureMax then return end
   if storage.TargetBotDelayWhenPlayer then return end
-  if not delayedLure then return end
-
 
   if targetCount < lureMax/2 or not target() then return end
   CaveBot.delay(delayValue or 0)

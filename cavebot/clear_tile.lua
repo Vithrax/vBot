@@ -5,6 +5,7 @@ CaveBot.Extensions.ClearTile.setup = function()
     local data = string.split(value, ",")
     local pos = {x=tonumber(data[1]), y=tonumber(data[2]), z=tonumber(data[3])}
     local doors
+    local pPos = player:getPosition()
     if #data == 4 then
       doors = true
     end
@@ -27,6 +28,7 @@ CaveBot.Extensions.ClearTile.setup = function()
       print("CaveBot[ClearTile]: can't find tile or tile is unreachable, skipping")
       return false
     end
+    local tPos = tile:getPosition()
 
     -- no items on tile and walkability means we are done
     if tile:isWalkable() and tile:getTopUseThing():isNotMoveable() and not tile:hasCreature() and not doors then
