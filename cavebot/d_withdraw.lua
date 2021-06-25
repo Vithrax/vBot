@@ -8,6 +8,8 @@ CaveBot.Extensions.DWithdraw.setup = function()
 			print("CaveBot[DepotWithdraw]: actions limit reached, proceeding") 
 			return true
 		end
+		local destContainer
+		local depotContainer
 
 		-- input validation
 		if not value or #data ~= 3 and #data ~= 4 then
@@ -15,7 +17,7 @@ CaveBot.Extensions.DWithdraw.setup = function()
 			return false
 		end
 		local indexDp = tonumber(data[1]:trim())
-		local destName = data[2]:trim()
+		local destName = data[2]:trim():lower()
 		local destId = tonumber(data[3]:trim())
 		if #data == 4 then
 			capLimit = tonumber(data[4]:trim())
@@ -28,13 +30,28 @@ CaveBot.Extensions.DWithdraw.setup = function()
 		end
 
 		-- containers
-		local destContainer = getContainerByName(destName)
+		for i, container in ipairs(getContainers()) do
+			local cName = container:getName():lower()
+			if destName == cName then
+				destContainer = container
+			elseif cName:find("depot box") then
+				depotContainer = container
+			end
+		end
+
 		if not destContainer then 
 			print("CaveBot[DepotWithdraw]: container not found!")
 			return false
 		end
 
-		local depotContainer = getContainerByName("depot box")
+		if containerIsFull(destContainer) then
+			for i, item in pairs(destContainer:getItems()) do
+				if item:getId() == destId then
+					g_game.open(item, destContainer)
+					return "retry"
+				end
+			end
+		end
 
 		-- stash validation
 		if depotContainer and #depotContainer:getItems() == 0 then
@@ -43,7 +60,7 @@ CaveBot.Extensions.DWithdraw.setup = function()
 		end
 
 		if containerIsFull(destContainer) then
-			for i, item in pairs(destContainer) do
+			for i, item in pairs(destContainer:getItems()) do
 				if item:getId() == destId then
 					g_game.open(foundNextContainer, destContainer)
 					return "retry"

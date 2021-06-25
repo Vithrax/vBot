@@ -175,7 +175,6 @@ function CaveBot.OpenLootContainer()
         for _, item in pairs(container:getItems()) do
             local id = item:getId()
             if table.find(containers, id) and not table.find(t, id) then
-                test()
                 return g_game.open(item)
             end
         end

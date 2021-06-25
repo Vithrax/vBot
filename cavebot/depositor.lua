@@ -31,6 +31,46 @@ CaveBot.Extensions.Depositor.setup = function()
 			return true
 		end
 
+		-- backpacks etc
+		if value:lower() == "yes" then
+			-- reopening backpacks
+			if not reopenedContainers then
+				if not closedContainers then
+					if not CaveBot.CloseLootContainer() then
+						return "retry"
+					else
+						closedContainers = true
+					end
+				else
+					if not CaveBot.OpenLootContainer() then
+						return "retry"
+					else
+						reopenedContainers = true
+					end
+				end
+			end
+			-- open next backpacks if no more loot
+			if not CaveBot.HasLootItems() then
+				local lootContainers = CaveBot.GetLootContainers()
+				for _, container in ipairs(getContainers()) do
+					local cId = container:getContainerItem():getId()
+					if table.find(lootContainers, cId) then
+						for i, item in ipairs(container:getItems()) do
+							if item:getId() == cId then
+								g_game.open(item, container)
+								delay(100)
+								return "retry"
+							end
+						end
+						-- couldn't find next container, so we done
+						print("CaveBot[Depositor]: all items stashed, no backpack to open next, proceeding")
+						resetCache()
+						return true
+					end
+				end
+			end
+		end
+
 		-- first check items
 		if retries == 0 then
 			if not CaveBot.HasLootItems() then -- resource consuming function
@@ -45,23 +85,6 @@ CaveBot.Extensions.Depositor.setup = function()
 			print("CaveBot[Depositor]: Depositor actions limit reached, proceeding")
 			resetCache()
 			return true 
-		end
-
-		-- reopening backpacks
-		if value:lower() == "yes" and not reopenedContainers then
-			if not closedContainers then
-				if not CaveBot.CloseLootContainer() then
-					return "retry"
-				else
-					closedContainers = true
-				end
-			else
-				if not CaveBot.OpenLootContainer() then
-					return "retry"
-				else
-					reopenedContainers = true
-				end
-			end
 		end
 
 		-- reaching and opening depot 
@@ -92,7 +115,6 @@ CaveBot.Extensions.Depositor.setup = function()
 
 		-- we gucci
 		return true
-
 	end)
 
 	CaveBot.Editor.registerAction("depositor", "depositor", {

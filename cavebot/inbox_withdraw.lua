@@ -68,7 +68,7 @@ CaveBot.Extensions.InWithdraw.setup = function()
 				for j, item in pairs(container:getItems()) do
 					if item:getId() == withdrawId then
 						if item:isStackable() then
-							g_game.move(item, destination:getSlotPosition(destination:getItemsCount()), math.min(item:getCount(), (count - itemCount)))
+							g_game.move(item, destination:getSlotPosition(destination:getItemsCount()), math.min(item:getCount(), (amount - currentAmount)))
 							return "retry"
 						else
 							g_game.move(item, destination:getSlotPosition(destination:getItemsCount()), 1)
