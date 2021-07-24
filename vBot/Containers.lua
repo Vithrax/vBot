@@ -512,7 +512,7 @@ macro(100, function()
                 for __, item in ipairs(container:getItems()) do
                     local id = item:getId()
                     if table.find(items, id) and cId ~= dId then
-                        local destination = getContainerByItem(dId)
+                        local destination = getContainerByItem(dId, true)
                         if destination and not containerIsFull(destination) then
                             return moveItem(item, destination)
                         end

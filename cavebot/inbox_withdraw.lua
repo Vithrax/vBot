@@ -46,6 +46,7 @@ CaveBot.Extensions.InWithdraw.setup = function()
 		end
 		if inboxAmount == 0 then
 			warn("CaveBot[InboxWithdraw]: not enough items in inbox container, proceeding")
+			g_game.close(inboxContainer)
 			return true
 		end
 
@@ -58,7 +59,8 @@ CaveBot.Extensions.InWithdraw.setup = function()
 
 		if not destination then
 			print("CaveBot[InboxWithdraw]: couldn't find proper destination container, skipping")
-			return falsed
+			g_game.close(inboxContainer)
+			return false
 		end
 
 		CaveBot.PingDelay(2)

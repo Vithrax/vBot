@@ -246,7 +246,8 @@ local pattern = {
   "Beam (exevo vis lux)",
   "Adjacent (exori)",
   "Area Rune (GFB, AVA)",
-  "Empowerment"
+  "Empowerment",
+  "Huge Wave (gran flam hur)"
 }
 
 ui.title.onClick = function(widget)
@@ -772,7 +773,23 @@ local patterns = {
     0000000S0000000
   ]],
   "",
-  ""
+  "",
+  "",
+  [[
+    0000NNNNN0000
+    0000NNNNN0000
+    00000NNN00000
+    00000NNN00000
+    WW0000N0000EE
+    WWWW00N00EEEE
+    WWWWWW0EEEEEE
+    WWWW00S00EEEE
+    WW0000S0000EE
+    00000SSS00000
+    00000SSS00000
+    0000SSSSS0000
+    0000SSSSS0000
+  ]]
 }
 
 local safePatterns = {
@@ -882,28 +899,97 @@ local safePatterns = {
     0000000SSS0000000
   ]],
   "",
-  ""
+  "",
+  "",
+  [[
+    0000NNNNNNN0000
+    0000NNNNNNN0000
+    0000NNNNNNN0000
+    00000NNNNN00000
+    WWW00NNNNN00EEE
+    WWWWW0NNN0EEEEE
+    WWWWWWNNNEEEEEE
+    WWWWWWW0EEEEEEE
+    WWWWWWSSSEEEEEE
+    WWWWW0SSS0EEEEE
+    WWW00SSSSS00EEE
+    00000SSSSS00000
+    0000SSSSSSS0000
+    0000SSSSSSS0000
+    0000SSSSSSS0000
+  ]]
 }
 
-local posN = [[
+local ek = (voc() == 1 or voc() == 11) and true
+
+local posN = ek and [[
   111
   000
   000
+]] or [[
+  00011111000
+  00011111000
+  00011111000
+  00011111000
+  00000100000
+  00000000000
+  00000000000
+  00000000000
+  00000000000
+  00000000000
+  00000000000
 ]]
-local posE = [[
+
+local posE = ek and [[
   001
   001
   001
+]] or   [[
+  00000000000
+  00000000000
+  00000000000
+  00000001111
+  00000001111
+  00000011111
+  00000001111
+  00000001111
+  00000000000
+  00000000000
+  00000000000
 ]]
-local posS = [[
+local posS = ek and [[
   000
   000
   111
+]] or   [[
+  00000000000
+  00000000000
+  00000000000
+  00000000000
+  00000000000
+  00000000000
+  00000100000
+  00011111000
+  00011111000
+  00011111000
+  00011111000
 ]]
-local posW = [[
+local posW = ek and [[
   100
   100
   100
+]] or   [[
+  00000000000
+  00000000000
+  00000000000
+  11110000000
+  11110000000
+  11111000000
+  11110000000
+  11110000000
+  00000000000
+  00000000000
+  00000000000
 ]]
 
 local bestTile
@@ -942,6 +1028,7 @@ macro(100, function()
   if currentSettings.Rotate then
     if player:getDirection() ~= bestDir and bestSide > 0 then
       turn(bestDir)
+      return
     end
   end
 

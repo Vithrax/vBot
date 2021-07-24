@@ -17,6 +17,7 @@ end
 -- libraries should be loaded first
 local luaFiles = {
   "main",
+  "items",
   "vlib",
   "new_cavebot_lib",
   "configs", -- do not change this and above
@@ -42,7 +43,7 @@ local luaFiles = {
   "eat_food",
   "equip",
   "exeta",
-  "info",
+  "analyzer",
   "jewellery_equipper",
   "spy_level",
   "supplies",

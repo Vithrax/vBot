@@ -172,7 +172,7 @@ onTextMessage(function(mode, text)
     local m1 = storage.caveBotTasker.monster
     local m2 = storage.caveBotTasker.monster2
 
-    if monster == m1 or monster == m2 and storage.caveBotTasker.countaa then
+    if monster == m1 or monster == m2 and storage.caveBotTasker.count then
         storage.caveBotTasker.count = storage.caveBotTasker.count + 1
     end
 end)

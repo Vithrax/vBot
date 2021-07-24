@@ -166,7 +166,7 @@ TargetBot.Looting.getLootContainers = function(containers)
   for index, container in pairs(containers) do
     openedContainersById[container:getContainerItem():getId()] = 1
     if containersById[container:getContainerItem():getId()] and not container.lootContainer then
-      if container:getItemsCount() < container:getCapacity() then
+      if container:getItemsCount() < container:getCapacity() or container:hasPages() then
         table.insert(lootContainers, container)
       else -- it's full, open next container if possible
         for slot, item in ipairs(container:getItems()) do

@@ -10,6 +10,7 @@ CaveBot.Extensions.DWithdraw.setup = function()
 		end
 		local destContainer
 		local depotContainer
+		delay(70)
 
 		-- input validation
 		if not value or #data ~= 3 and #data ~= 4 then
@@ -25,6 +26,11 @@ CaveBot.Extensions.DWithdraw.setup = function()
 
 		-- cap check
 		if freecap() < (capLimit or 200) then
+			for i, container in ipairs(getContainers()) do
+				if container:getName():lower():find("depot") or container:getName():lower():find("locker") then
+					g_game.close(container)
+				end
+			end
 			print("CaveBot[DepotWithdraw]: cap limit reached, proceeding") 
 			return true 
 		end
@@ -56,6 +62,7 @@ CaveBot.Extensions.DWithdraw.setup = function()
 		-- stash validation
 		if depotContainer and #depotContainer:getItems() == 0 then
 			print("CaveBot[DepotWithdraw]: all items withdrawn")
+			g_game.close(depotContainer)
 			return true
 		end
 
@@ -79,6 +86,7 @@ CaveBot.Extensions.DWithdraw.setup = function()
 		for i, container in pairs(g_game.getContainers()) do
 			if string.find(container:getName():lower(), "depot box") then
 				for j, item in ipairs(container:getItems()) do
+					statusMessage("[D_Withdraw] witdhrawing item: "..item:getId())
 					g_game.move(item, destContainer:getSlotPosition(destContainer:getItemsCount()), item:getCount())
 					return "retry"
 				end

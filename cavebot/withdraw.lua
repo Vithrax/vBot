@@ -23,15 +23,26 @@ CaveBot.Extensions.Withdraw.setup = function()
 		-- check for retries
 		if retries > 100 then
 			print("CaveBot[Withdraw]: actions limit reached, proceeding")
+			for i, container in ipairs(getContainers()) do
+				if container:getName():lower():find("depot") or container:getName():lower():find("locker") then
+					g_game.close(container)
+				end
+			end
 			return true
 		end
 
 		-- check for items
 		if itemAmount(id) >= amount then
 			print("CaveBot[Withdraw]: enough items, proceeding")
+			for i, container in ipairs(getContainers()) do
+				if container:getName():lower():find("depot") or container:getName():lower():find("locker") then
+					g_game.close(container)
+				end
+			end
 			return true
 		end
 
+		statusMessage("[Withdraw] withdrawing item: " ..id.. " x"..amount)
 		CaveBot.WithdrawItem(id, amount, source)
 		CaveBot.PingDelay()
 		return "retry"

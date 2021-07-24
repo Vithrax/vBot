@@ -64,6 +64,10 @@ function whiteInfoMessage(text)
     return modules.game_textmessage.displayGameMessage(text)
 end
 
+function statusMessage(text, logInConsole)
+    return not logInConsole and modules.game_textmessage.displayFailureMessage(text) or modules.game_textmessage.displayStatusMessage(text)
+end
+
 -- same as above but red message
 function broadcastMessage(text)
     return modules.game_textmessage.displayBroadcastMessage(text)
@@ -156,12 +160,19 @@ end
 -- returns boolean
 function isBuffed()
     local var = false
+    if not hasPartyBuff() then return var end
+
+    local skillId = 0
     for i = 1, 4 do
-        local premium = (player:getSkillLevel(i) - player:getSkillBaseLevel(i))
-        local base = player:getSkillBaseLevel(i)
-        if hasPartyBuff() and (premium / 100) * 305 > base then
-            var = true
+        if player:getSkillBaseLevel(i) > player:getSkillBaseLevel(skillId) then
+            skillId = i
         end
+    end
+
+    local premium = (player:getSkillLevel(skillId) - player:getSkillBaseLevel(skillId))
+    local base = player:getSkillBaseLevel(skillId)
+    if (premium / 100) * 305 > base then
+        var = true
     end
     return var
 end
@@ -673,35 +684,10 @@ function itemAmount(id)
             end
         end
     end
-    if getHead() and getHead():getId() == id then
-        totalItemCount = totalItemCount + getHead():getCount()
-    end
-    if getNeck() and getNeck():getId() == id then
-        totalItemCount = totalItemCount + getNeck():getCount()
-    end
-    if getBack() and getBack():getId() == id then
-        totalItemCount = totalItemCount + getBack():getCount()
-    end
-    if getBody() and getBody():getId() == id then
-        totalItemCount = totalItemCount + getBody():getCount()
-    end
-    if getRight() and getRight():getId() == id then
-        totalItemCount = totalItemCount + getRight():getCount()
-    end
-    if getLeft() and getLeft():getId() == id then
-        totalItemCount = totalItemCount + getLeft():getCount()
-    end
-    if getLeg() and getLeg():getId() == id then
-        totalItemCount = totalItemCount + getLeg():getCount()
-    end
-    if getFeet() and getFeet():getId() == id then
-        totalItemCount = totalItemCount + getFeet():getCount()
-    end
-    if getFinger() and getFinger():getId() == id then
-        totalItemCount = totalItemCount + getFinger():getCount()
-    end
-    if getAmmo() and getAmmo():getId() == id then
-        totalItemCount = totalItemCount + getAmmo():getCount()
+
+    local slots = {getHead(), getNeck(), getBack(), getBody(), getRight(), getLeft(), getLeg(), getFeet(), getFinger(), getAmmo()}
+    for i, slot in pairs(slots) do
+        totalItemCount = slot and slot:getId() == id and totalItemCount + 1 or totalItemCount
     end
     return totalItemCount
 end
@@ -940,7 +926,7 @@ function getBestTileByPatern(pattern, specType, maxDist, safe)
         if distanceFromPlayer(tile:getPosition()) <= maxDist then
             local minimapColor = g_map.getMinimapColor(tile:getPosition())
             local stairs = (minimapColor >= 210 and minimapColor <= 213)
-            if tile:canShoot() and tile:isWalkable() and not stairs then
+            if tile:canShoot() and tile:isWalkable() then
                 if getCreaturesInArea(tile:getPosition(), pattern, specType) > 0 then
                     if (not safe or
                         getCreaturesInArea(tile:getPosition(), pattern, 3) == 0) then
@@ -969,12 +955,12 @@ function getBestTileByPatern(pattern, specType, maxDist, safe)
 end
 
 -- returns container object based on name
-function getContainerByName(name)
+function getContainerByName(name, notFull)
     if type(name) ~= "string" then return nil end
 
     local d = nil
     for i, c in pairs(getContainers()) do
-        if c:getName():lower() == name:lower() then
+        if c:getName():lower() == name:lower() and (not notFull or not containerIsFull(c)) then
             d = c
             break
         end
@@ -983,12 +969,12 @@ function getContainerByName(name)
 end
 
 -- returns container object based on container ID
-function getContainerByItem(id)
+function getContainerByItem(id, notFull)
     if type(id) ~= "number" then return nil end
 
     local d = nil
     for i, c in pairs(getContainers()) do
-        if c:getContainerItem():getId() == id then
+        if c:getContainerItem():getId() == id and (not notFull or not containerIsFull(c)) then
             d = c
             break
         end

@@ -82,9 +82,11 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   addScrollBar("keepDistanceRange", "Keep distance", 1, 5, 1)
   addScrollBar("anchorRange", "Anchoring Range", 1, 10, 3)
   addScrollBar("lureCount", "Classic Lure", 0, 5, 1)
-  addScrollBar("lureMin", "Dynamic lure min", 0, 9, 1)
-  addScrollBar("lureMax", "Dynamic lure max", 1, 9, 3)
+  addScrollBar("lureMin", "Dynamic lure min", 0, 29, 1)
+  addScrollBar("lureMax", "Dynamic lure max", 1, 30, 3)
   addScrollBar("lureDelay", "Dynamic lure delay", 100, 1000, 250)
+  addScrollBar("delayFrom", "Start delay when monsters", 1, 29, 2)
+  addScrollBar("rePositionAmount", "Min tiles to rePosition", 0, 7, 5)
 
   addCheckBox("chase", "Chase", true)
   addCheckBox("keepDistance", "Keep Distance", false)
@@ -97,4 +99,5 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   addCheckBox("dynamicLure", "Dynamic lure", false)
   addCheckBox("dynamicLureDelay", "Dynamic lure delay", false)
   addCheckBox("diamondArrows", "D-Arrows priority", false)
+  addCheckBox("rePosition", "rePosition to better tile", false)
 end

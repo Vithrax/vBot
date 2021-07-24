@@ -11,6 +11,12 @@ local function resetCache()
 	reopenedContainers = false
 	destination = nil
 	lootTable = nil
+
+	for i, container in ipairs(getContainers()) do
+		if container:getName():lower():find("depot") or container:getName():lower():find("locker") then
+			g_game.close(container)
+		end
+	end
 end
 
 local description = g_game.getClientVersion() > 960 and "No - just deposit \n Yes - also reopen loot containers" or "currently not supported, will be added in near future"
@@ -30,6 +36,8 @@ CaveBot.Extensions.Depositor.setup = function()
 			resetCache()
 			return true
 		end
+
+		delay(70)
 
 		-- backpacks etc
 		if value:lower() == "yes" then
@@ -106,6 +114,7 @@ CaveBot.Extensions.Depositor.setup = function()
     	            local id = item:getId()
 					if table.find(lootTable, id) then
 						local index = getStashingIndex(id) or item:isStackable() and 1 or 0
+						statusMessage("[Depositer] stashing item: " ..id.. " to depot: "..index+1)
 						CaveBot.StashItem(item, index, destination)
 						return "retry"
 					end

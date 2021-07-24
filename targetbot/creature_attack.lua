@@ -3,6 +3,49 @@ local targetCount = 0
 local delayValue = 0
 local lureMax = 0
 local anchorPosition = nil
+local lastCall = now
+local delayFrom = nil
+
+function getWalkableTilesCount(position)
+  local count = 0
+
+  for i, tile in pairs(getNearTiles(position)) do
+      if tile:isWalkable() or tile:hasCreature() then
+          count = count + 1
+      end
+  end
+
+  return count
+end
+
+function rePosition(minTiles)
+  minTiles = minTiles or 8
+  if now - lastCall < 500 then return end
+  local pPos = player:getPosition()
+  local tiles = getNearTiles(pPos)
+  local playerTilesCount = getWalkableTilesCount(pPos)
+  local tilesTable = {}
+
+  if playerTilesCount > minTiles then return end
+  for i, tile in ipairs(tiles) do
+      tilesTable[tile] = not tile:hasCreature() and tile:isWalkable() and getWalkableTilesCount(tile:getPosition()) or nil
+  end
+
+  local best = 0
+  local target = nil
+  for k,v in pairs(tilesTable) do
+      if v > best and v > playerTilesCount then
+          best = v
+          target = k:getPosition()
+      end
+  end
+
+  if target then
+      lastCall = now
+      return CaveBot.GoTo(target, 0)
+  end
+end
+
 TargetBot.Creature.attack = function(params, targets, isLooting) -- params {config, creature, danger, priority}
   if player:isWalking() then
     lastWalk = now
@@ -97,9 +140,10 @@ TargetBot.Creature.walk = function(creature, config, targets)
     lureMax = config.lureMax
   end
 
+  delayFrom = config.delayFrom
 
   -- luring
-  if TargetBot.canLure() and (config.lure or config.lureCavebot or config.dynamicLure) and not (config.chase and creature:getHealthPercent() < 5) and not isTrapped then
+  if TargetBot.canLure() and (config.lure or config.lureCavebot or config.dynamicLure) and not (creature:getHealthPercent() < (storage.extras.killUnder or 30)) and not isTrapped then
     local monsters = 0
     if targetBotLure then
       anchorPosition = nil
@@ -119,8 +163,12 @@ TargetBot.Creature.walk = function(creature, config, targets)
     end
   end
 
+  local lastRePosition = now
+  if not config.chase and not config.keepDistance and config.rePosition and (creature:getHealthPercent() >= (storage.extras.killUnder or 30)) then
+    return rePosition(config.rePositionAmount or 6)
+  end
   local currentDistance = findPath(pos, cpos, 10, {ignoreCreatures=true, ignoreNonPathable=true, ignoreCost=true})
-  if config.chase and (creature:getHealthPercent() < (storage.extras.killUnder or 30) or not config.keepDistance) then
+  if ((creature:getHealthPercent() < (storage.extras.killUnder or 30)) or config.chase) and not config.keepDistance then
     if #currentDistance > 1 then
       return TargetBot.walkTo(cpos, 10, {ignoreNonPathable=true, precision=1})
     end
@@ -187,6 +235,6 @@ onPlayerPositionChange(function(newPos, oldPos)
   if not lureMax then return end
   if storage.TargetBotDelayWhenPlayer then return end
 
-  if targetCount < lureMax/2 or not target() then return end
+  if targetCount < (delayFrom or lureMax/2) or not target() then return end
   CaveBot.delay(delayValue or 0)
 end)
