@@ -24,6 +24,9 @@ local LOCKER_ACCESSTILE_MODIFIERS = {
 
 local function CaveBotConfigParse()
 	local name = storage["_configs"]["targetbot_configs"]["selected"]
+    if not name then 
+        return warn("[vBot] Please create a new TargetBot config and reset bot")
+    end
 	local file = configDir .. "/targetbot_configs/" .. name .. ".json"
 	local data = g_resources.readFileContents(file)
 	return Config.parse(data)['looting']

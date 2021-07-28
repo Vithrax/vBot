@@ -65,6 +65,7 @@ local sessionTime = function()
     uptime = math.floor((now - launchTime)/1000)
     return niceTimeFormat(uptime)
 end
+sessionTime()
 
 local expPerHour = function(calculation)
     local r = 0
@@ -244,8 +245,10 @@ local lastCap = freecap()
 onAddItem(function(container, slot, item, oldItem)
   if not table.find(containers, container:getContainerItem():getId()) then return end
   if isInPz() then return end
-  if freecap() == lastCap then return end
+  if slot > 0 then return end 
+  if freecap() >= lastCap then return end
   local name = item:getId() == 3031 and "gold coin" or item:getId() == 3035 and "platinum coin" or item:getId() == 3043 and "crystal coin" or item:getMarketData().name
+
 
   if not lootedItems[name] then
     lootedItems[name] = item:getCount()
@@ -342,21 +345,71 @@ local balanceDesc
 local hourDesc
 local desc
 local hour
+
+
+function bottingStats()
+  lootWorth = 0
+  wasteWorth = 0
+  for k, v in pairs(lootedItems) do
+    if LootItems[k] then
+      lootWorth = lootWorth + (LootItems[k]*v)
+    end
+  end
+  for k, v in pairs(usedItems) do
+    if LootItems[k] then
+      wasteWorth = wasteWorth + (LootItems[k]*v)
+    end
+  end
+  balance = lootWorth - wasteWorth
+
+  return lootWorth, wasteWorth, balance
+end
+
+function bottingLabels(lootWorth, wasteWorth, balance)
+  balanceDesc = nil
+  hourDesc = nil
+  desc = nil
+
+  if balance >= 1000000 or balance <= -1000000 then
+    desc = balance / 1000000
+    balanceDesc = math.floor(desc) .. "." .. math.floor(desc * 10) % 10 .. "kk"
+  elseif balance >= 1000 or balance <= -1000 then
+    desc = balance / 1000
+    balanceDesc = math.floor(desc) .. "." .. math.floor(desc * 10) % 10 .."k"
+  else
+    balanceDesc = balance .. "gp"
+  end
+
+  hour = hourVal(balance)
+  if hour >= 1000000 or hour <= -1000000 then
+    desc = balance / 1000000
+    hourDesc = math.floor(hourVal(desc)) .. "." .. math.floor(hourVal(desc) * 10) % 10 .. "kk/h"
+  elseif hour >= 1000 or hour <= -1000 then
+    desc = balance / 1000
+    hourDesc = math.floor(hourVal(desc)) .. "." .. math.floor(hourVal(desc) * 10) % 10 .. "k/h"
+  else
+    hourDesc = math.floor(hourVal(balance)) .. "gp/h"
+  end
+
+  return balanceDesc, hourDesc
+end
+
+function reportStats()
+  local lootWorth, wasteWorth, balance = bottingStats()
+  local balanceDesc, hourDesc = bottingLabels(lootWorth, wasteWorth, balance)
+
+  local a, b, c
+
+  a = "Session Time: " .. sessionTime() .. ", Exp Gained: " .. format_thousand(expGained()) .. ", Exp/h: " .. expPerHour()
+  b = " | Balance: " .. balanceDesc .. " (" .. hourDesc .. ")"
+  c = a..b
+
+  return c
+end
+
 macro(500, function()
-    -- loot calculation
-    lootWorth = 0
-    wasteWorth = 0
-    for k, v in pairs(lootedItems) do
-      if LootItems[k] then
-        lootWorth = lootWorth + (LootItems[k]*v)
-      end
-    end
-    for k, v in pairs(usedItems) do
-      if LootItems[k] then
-        wasteWorth = wasteWorth + (LootItems[k]*v)
-      end
-    end
-    balance = lootWorth - wasteWorth
+    local lootWorth, wasteWorth, balance = bottingStats()
+    local balanceDesc, hourDesc = bottingLabels(lootWorth, wasteWorth, balance)
     -- hunting
     ui.one:setText(sessionTime())
     ui.two:setText(format_thousand(expGained()))
@@ -379,29 +432,6 @@ macro(500, function()
     ui2.supplies:setText(format_thousand(wasteWorth))
     ui2.suppliesHour:setText(format_thousand(hourVal(wasteWorth)))
     ui.balance:setColor(balance >= 0 and "green" or "red")
-    balanceDesc = nil
-    hourDesc = nil
-    desc = nil
-    if balance >= 1000000 or balance <= -1000000 then
-      desc = balance / 1000000
-      balanceDesc = math.floor(desc) .. "." .. math.floor(desc * 10) % 10 .. "kk"
-    elseif balance >= 1000 or balance <= -1000 then
-      desc = balance / 1000
-      balanceDesc = math.floor(desc) .. "." .. math.floor(desc * 10) % 10 .."k"
-    else
-      balanceDesc = balance .. "gp"
-    end
-
-    hour = hourVal(balance)
-    if hour >= 1000000 or hour <= -1000000 then
-      desc = balance / 1000000
-      hourDesc = math.floor(hourVal(desc)) .. "." .. math.floor(hourVal(desc) * 10) % 10 .. "kk/h"
-    elseif hour >= 1000 or hour <= -1000 then
-      desc = balance / 1000
-      hourDesc = math.floor(hourVal(desc)) .. "." .. math.floor(hourVal(desc) * 10) % 10 .. "k/h"
-    else
-      hourDesc = math.floor(hourVal(balance)) .. "gp/h"
-    end
-
     ui.balance:setText(balanceDesc .. " (" .. hourDesc .. ")")
 end)
+
