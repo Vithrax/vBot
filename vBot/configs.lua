@@ -12,7 +12,7 @@ end
 HealBotConfig = {}
 local healBotFile = "/bot/" .. configName .. "/vBot_configs/".. name() .. " HealBot.json"
 AttackBotConfig = {}
-local attackBotFile = "/bot/" .. configName .. "/vBot_configs/".. name() .. " AttackBot.json"
+local attackBotFile = "/bot/" .. configName .. "/vBot_configs/".. name() .. " AttackBotV2.json"
 SuppliesConfig = {}
 local suppliesFile = "/bot/" .. configName .. "/vBot_configs/".. name() .. " Supplies.json"
 

@@ -209,6 +209,7 @@ macro(500, function()
 end)
 
 -- visuals
+UI.Separator()
 local main = UI.createWidget("MainAnalyzer")
 local ui = UI.createWidget("HuntingAnalyzer")
 local ui2 = UI.createWidget("LootAnalyzer")
@@ -248,7 +249,6 @@ onAddItem(function(container, slot, item, oldItem)
   if slot > 0 then return end 
   if freecap() >= lastCap then return end
   local name = item:getId() == 3031 and "gold coin" or item:getId() == 3035 and "platinum coin" or item:getId() == 3043 and "crystal coin" or item:getMarketData().name
-
 
   if not lootedItems[name] then
     lootedItems[name] = item:getCount()

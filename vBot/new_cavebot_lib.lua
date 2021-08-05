@@ -432,7 +432,6 @@ function CaveBot.WithdrawItem(id, amount, fromDepot, destination)
         destination = getContainerByName(destination)
     end
     local itemCount = itemAmount(id)
-
     local depot
     for i, container in pairs(getContainers()) do
         if container:getName():lower():find("depot box") or container:getName():lower():find("your inbox") then

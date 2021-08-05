@@ -14,8 +14,6 @@ vBot.isUsingPotion = false
 vBot.isUsing = false
 
 
-
-
 -- scripts / functions
 onPlayerPositionChange(function(x,y)
     vBot.standTime = now
@@ -152,6 +150,14 @@ function containerIsFull(c)
         return true
     end
 
+end
+
+function dropItem(idOrObject)
+    if type(idOrObject) == "number" then
+        idOrObject = findItem(idOrObject)
+    end
+
+    g_game.move(idOrObject, pos(), idOrObject:getCount())
 end
 
 -- not perfect function to return whether character has utito tempo buff

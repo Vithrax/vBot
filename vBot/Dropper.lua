@@ -134,9 +134,9 @@ macro(200, function()
             for __, item in ipairs(container:getItems()) do
                 for ___, userItem in ipairs(tables[i]) do
                     if item:getId() == userItem then
-                        return i == 1 and freecap() < 150 and g_game.move(item, pos(), item:getCount()) or
+                        return i == 1 and freecap() < 150 and dropItem(item) or
                                i == 2 and use(item) or
-                               g_game.move(item, pos(), item:getCount())
+                               i == 3 and dropItem(item)
                     end
                 end
             end

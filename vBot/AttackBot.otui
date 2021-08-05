@@ -1,8 +1,10 @@
-AttackEntry < Label
+AttackEntry < UIWidget
   background-color: alpha
-  text-offset: 18 0
+  text-offset: 18 1
   focusable: true
   height: 16
+  font: verdana-11px-rounded
+  text-align: left
 
   CheckBox
     id: enabled
@@ -24,248 +26,418 @@ AttackEntry < Label
     width: 15
     height: 15
 
-AttackWindow < MainWindow
-  !text: tr('AttackBot')
-  size: 800 350
+AttackBotBotPanel < Panel
+  height: 38
+
+  BotSwitch
+    id: title
+    anchors.top: parent.top
+    anchors.left: parent.left
+    text-align: center
+    width: 130
+    !text: tr('AttackBot')
+
+  Button
+    id: settings
+    anchors.top: prev.top
+    anchors.left: prev.right
+    anchors.right: parent.right
+    margin-left: 3
+    height: 17
+    text: Setup
+
+  Button
+    id: 1
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    text: 1
+    margin-right: 2
+    margin-top: 4
+    size: 17 17
+
+  Button
+    id: 2
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    text: 2
+    margin-left: 4
+    size: 17 17
+    
+  Button
+    id: 3
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    text: 3
+    margin-left: 4
+    size: 17 17
+
+  Button
+    id: 4
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    text: 4
+    margin-left: 4
+    size: 17 17 
+    
+  Button
+    id: 5
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    text: 5
+    margin-left: 4
+    size: 17 17
+    
+  Label
+    id: name
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    anchors.right: parent.right
+    text-align: center
+    margin-left: 4
+    height: 17
+    text: Profile #1
+    background: #292A2A
+
+CategoryLabel < Panel
+  size: 315 15
+  image-source: /images/ui/panel_flat
+  image-border: 5
+  padding: 1
+
+  Label
+    id: description
+    anchors.fill: parent
+    text-align: center
+    text: Area Rune (avalanche, great fireball, etc)
+    font: verdana-11px-rounded
+    background: #363636
+
+SourceLabel < Panel
+  size: 105 15
+  image-source: /images/ui/panel_flat
+  image-border: 5
+  padding: 1
+
+  Label
+    id: description
+    anchors.fill: parent
+    text-align: center
+    text: Monster Name
+    font: verdana-11px-rounded
+    background: #363636
+
+RangeLabel < Panel
+  size: 323 15
+  image-source: /images/ui/panel_flat
+  image-border: 5
+  padding: 1
+
+  Label
+    id: description
+    anchors.fill: parent
+    text-align: center
+    text: 5 Sqm
+    font: verdana-11px-rounded
+    background: #363636
+
+PreButton < PreviousButton
+  background: #363636
+  height: 15
+
+NexButton < NextButton
+  background: #363636
+  height: 15
+
+AttackBotPanel < Panel
+  size: 500 200
+  image-source: /images/ui/panel_flat
+  image-border: 5
+  padding: 5
 
   TextList
-    id: attackList
+    id: entryList
     anchors.left: parent.left
-    anchors.top: parent.top
-    padding: 1
-    size: 500 150    
-    margin-left: 3
-    margin-top: 3
-    margin-left: 3
-    vertical-scrollbar: attackListScrollBar
-
-  VerticalScrollBar
-    id: attackListScrollBar
-    anchors.top: attackList.top
-    anchors.bottom: attackList.bottom
-    anchors.right: attackList.right
-    step: 14
-    pixels-scroll: true
-
-  Label
-    id: category
-    anchors.top: attackList.bottom
-    anchors.left: attackList.left
-    anchors.right: attackList.right
-    text-align: center
-    margin-top: 5
-    image-source: /images/ui/panel_flat
-    image-border: 5
-    height: 21
-    margin-left: 25
-    margin-right: 25
-
-  NextButton
-    id: categoryNext
-    anchors.left: category.right
-    anchors.verticalCenter: category.verticalCenter
-    margin-left: 10
-
-  PreviousButton
-    id: categoryPrev
-    anchors.right: category.left
-    anchors.verticalCenter: category.verticalCenter
-    margin-right: 10
-
-  Label
-    id: parameter1
-    anchors.top: category.bottom
-    anchors.left: category.left
-    anchors.right: category.horizontalCenter
-    margin-top: 5
-    margin-right: 25
-    height: 21
-    text-align: center
-    image-source: /images/ui/panel_flat
-    image-border: 5
-
-  NextButton
-    id: parameter1Next
-    anchors.left: parameter1.right
-    anchors.verticalCenter: parameter1.verticalCenter
-    margin-left: 10
-
-  PreviousButton
-    id: parameter1Prev
-    anchors.right: parameter1.left
-    anchors.verticalCenter: parameter1.verticalCenter
-    margin-right: 10
-
-  Label
-    id: parameter2
-    anchors.top: category.bottom
-    anchors.left: category.horizontalCenter
-    anchors.right: category.right
-    margin-top: 5
-    margin-left: 25
-    height: 21
-    text-align: center
-    image-source: /images/ui/panel_flat
-    image-border: 5
-
-  NextButton
-    id: parameter2Next
-    anchors.left: parameter2.right
-    anchors.verticalCenter: parameter2.verticalCenter
-    margin-left: 10
-
-  PreviousButton
-    id: parameter2Prev
-    anchors.right: parameter2.left
-    anchors.verticalCenter: parameter2.verticalCenter
-    margin-right: 10
-
-  TextEdit
-    id: spellFormula
-    anchors.left: parent.left
-    anchors.top: parameter2Prev.bottom
-    margin-top: 20
-    margin-left: 30
-    width: 200
-
-  Label
-    id: spellDescription
-    anchors.left: prev.left
-    anchors.right: prev.right
-    anchors.bottom: prev.top
-    margin-bottom: 2
-    text-align: center 
-    text: Insert Spell Formula Below  
-
-  BotItem
-    id: itemId
-    anchors.left: parent.left
-    anchors.top: parameter2Prev.bottom
-    margin-top: 10
-    margin-left: 20
-
-  Label
-    id: itemDescription
-    anchors.left: itemId.right
-    margin-left: 5
-    anchors.verticalCenter: itemId.verticalCenter
-    text: < insert id or drag item here
-
-  Label
-    anchors.left: parent.left
-    anchors.bottom: BottomSeparator.top
-    margin-bottom: 10
-    text-align: center
-    text: Min Monsters: 
-
-  SpinBox
-    id: minMonsters
-    anchors.left: prev.right
-    anchors.verticalCenter: prev.verticalCenter
-    margin-left: 5
-    width: 45
-    minimum: 1
-    maximum: 100
-    focusable: true
-
-  Label
-    anchors.left: minMonsters.right
-    anchors.verticalCenter: minMonsters.verticalCenter
-    margin-left: 10
-    text-align: center
-    text: Min Mana%: 
-
-  SpinBox
-    id: minMana
-    anchors.left: prev.right
-    anchors.verticalCenter: prev.verticalCenter
-    margin-left: 5
-    width: 45
-    minimum: 1
-    maximum: 100
-    focusable: true
-
-  Label
-    anchors.left: prev.right
-    anchors.verticalCenter: prev.verticalCenter
-    margin-left: 10
-    text: Cooldown(ms):
-    !tooltip: tr('Optional, can be left at 1, recommended for custom spells/old tibia')
-
-  SpinBox
-    id: newCooldown
-    anchors.left: prev.right
-    anchors.verticalCenter: prev.verticalCenter
-    margin-left: 5
-    width: 60
-    minimum: 0
-    maximum: 99999
-    focusable: true
-
-  CheckBox
-    id: pvpSpell
-    anchors.verticalCenter: spellFormula.verticalCenter
-    anchors.left: spellFormula.right
-    width: 100
-    margin-left: 50
-    text: Spell for PVP
-
-  Button 
-    id: addButton
-    anchors.right: attackList.right
-    anchors.bottom: BottomSeparator.top
-    text-align: center
-    text: Add
-    margin-bottom: 10
-    size: 80 20
-
-  Button 
-    id: MoveUp
-    anchors.right: prev.right
-    anchors.bottom: prev.top
-    size: 80 20
-    text: Move Up
-    margin-bottom: 2
-    
-  Button 
-    id: MoveDown
-    anchors.right: prev.right
-    anchors.bottom: prev.top
-    size: 80 20
-    text: Move Down
-    text-align: center
-    margin-bottom: 2
-
-  VerticalSeparator
-    anchors.top: parent.top
-    anchors.bottom: BottomSeparator.top
-    anchors.left: MoveDown.right
-    margin-top: 3
-    margin-bottom: 3
-    margin-left: 10
-
-  Label
-    id: thing
-    anchors.left: prev.right
     anchors.right: parent.right
     anchors.top: parent.top
     margin-top: 3
-    text-align: center
-    text: Additional Options
+    size: 430 100
+    vertical-scrollbar: entryListScrollBar
 
-  HorizontalSeparator
+  VerticalScrollBar
+    id: entryListScrollBar
+    anchors.top: entryList.top
+    anchors.bottom: entryList.bottom
+    anchors.right: entryList.right
+    step: 14
+    pixels-scroll: true
+
+  PreButton
+    id: previousCategory
+    anchors.left: entryList.left
+    anchors.top: entryList.bottom
+    margin-top: 8
+
+  NexButton
+    id: nextCategory
+    anchors.left: category.right
+    anchors.top: entryList.bottom
+    margin-top: 8
+    margin-left: 2
+
+  CategoryLabel
+    id: category
+    anchors.top: entryList.bottom
+    anchors.left: previousCategory.right
+    anchors.verticalCenter: previousCategory.verticalCenter
+    margin-left: 3
+
+  PreButton
+    id: previousSource
+    anchors.left: entryList.left
+    anchors.top: category.bottom
+    margin-top: 8
+
+  NexButton
+    id: nextSource
+    anchors.left: source.right
+    anchors.top: category.bottom
+    margin-top: 8
+    margin-left: 2
+
+  SourceLabel
+    id: source
+    anchors.top: category.bottom
+    anchors.left: previousSource.right
+    anchors.verticalCenter: previousSource.verticalCenter
+    margin-left: 3
+
+  PreButton
+    id: previousRange
+    anchors.left: nextSource.right
+    anchors.verticalCenter: nextSource.verticalCenter
+    margin-left: 8
+
+  NexButton
+    id: nextRange
+    anchors.left: range.right
+    anchors.verticalCenter: range.verticalCenter
+    margin-left: 2
+
+  RangeLabel
+    id: range
+    anchors.left: previousRange.right
+    anchors.verticalCenter: previousRange.verticalCenter
+    margin-left: 3
+
+  TextEdit
+    id: monsters
+    anchors.left: entryList.left
+    anchors.top: range.bottom
+    margin-top: 5
+    size: 405 15
+    text: monster names
+    font: cipsoftFont
+    background: #363636
+
+  Label
     anchors.left: prev.left
-    anchors.right: prev.right
+    anchors.top: prev.bottom
+    margin-top: 6
+    margin-left: 3
+    text-align: center
+    text: Mana%:
+    font: verdana-11px-rounded
+  
+  SpinBox
+    id: manaPercent
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    margin-left: 4
+    size: 30 20
+    minimum: 0
+    maximum: 99
+    step: 1
+    editable: true
+    focusable: true
+
+  Label
+    anchors.left: prev.right
+    margin-left: 7
+    anchors.verticalCenter: prev.verticalCenter
+    text: Creatures: 
+    font: verdana-11px-rounded
+
+  SpinBox
+    id: creatures
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    margin-left: 4
+    size: 30 20
+    minimum: 1
+    maximum: 99
+    step: 1
+    editable: true
+    focusable: true
+
+  CheckBox
+    id: orMore
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    margin-left: 3
+    tooltip: or more creatures
+
+  Label
+    anchors.left: prev.right
+    margin-left: 7
+    anchors.verticalCenter: prev.verticalCenter
+    text: HP: 
+    font: verdana-11px-rounded
+
+  SpinBox
+    id: minHp
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    margin-left: 4
+    size: 40 20
+    minimum: 0
+    maximum: 99
+    value: 0
+    editable: true
+    focusable: true
+
+  Label
+    anchors.left: prev.right
+    margin-left: 4
+    anchors.verticalCenter: prev.verticalCenter
+    text: - 
+    font: verdana-11px-rounded
+
+  SpinBox
+    id: maxHp
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    margin-left: 4
+    size: 40 20
+    minimum: 1
+    maximum: 100
+    value: 100
+    editable: true
+    focusable: true
+
+  Label
+    anchors.left: prev.right
+    margin-left: 7
+    anchors.verticalCenter: prev.verticalCenter
+    text: CD: 
+    font: verdana-11px-rounded
+
+  SpinBox
+    id: cooldown
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    margin-left: 4
+    size: 60 20
+    minimum: 0
+    maximum: 999999
+    step: 100
+    value: 0
+    editable: true
+    focusable: true
+
+  Button
+    id: up
+    anchors.right: parent.right
+    anchors.top: entryList.bottom
+    size: 60 17
+    text: Move Up
+    text-align: center
+    font: cipsoftFont
+    margin-top: 7
+    margin-right: 8
+
+  Button
+    id: down
+    anchors.right: prev.left
+    anchors.verticalCenter: prev.verticalCenter
+    size: 60 17
+    margin-right: 5
+    text: Move Down
+    text-align: center
+    font: cipsoftFont
+  
+  Button
+    id: addEntry
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 40 19
+    text-align: center
+    text: New
+    font: cipsoftFont
+
+  BotItem
+    id: itemId
+    anchors.right: addEntry.left
+    margin-right: 5
+    anchors.bottom: parent.bottom
+    margin-bottom: 2
+    tooltip: drag item here on press to open window
+
+  TextEdit
+    id: spellName
+    anchors.top: monsters.top
+    anchors.left: monsters.right
+    anchors.right: parent.right
+    margin-left: 5
+    height: 15
+    text: spell name
+    background: #363636
+    font: cipsoftFont
+    visible: false
+
+SettingsPanel < Panel
+  size: 500 200
+  image-source: /images/ui/panel_flat
+  image-border: 5
+  padding: 10
+
+  VerticalSeparator
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.left: Visible.right
+    margin-left: 10
+    margin-top: 5
+    margin-bottom: 5
+
+  Label
+    anchors.top: parent.top
+    anchors.left: prev.right
+    anchors.right: parent.right
+    margin-left: 10
+    text-align: center
+    font: verdana-11px-rounded
+    text: Profile:
+
+  TextEdit
+    id: profileName
     anchors.top: prev.bottom
     margin-top: 3
-    margin-left: 5
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-left: 20
+    margin-right: 20
+
+  Button
+    id: resetSettings
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    text-align: center
+    text: Reset Settings
 
   CheckBox 
     id: IgnoreMana
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    margin-top: 10
-    margin-left: 5
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 5
     width: 200
     text: Check RL Tibia conditions
 
@@ -285,31 +457,12 @@ AttackWindow < MainWindow
     anchors.top: prev.top
     anchors.bottom: prev.bottom
     anchors.left: prev.right
-    text-align: center
-    width: 50
+    text-align: left
+    width: 30
     minimum: 1
     maximum: 10
     focusable: true 
     margin-left: 5
-
-  Label
-    anchors.left: Kills.left
-    anchors.bottom: BottomSeparator.top
-    margin-bottom: 8
-    text: Profile:
-
-  TextEdit
-    id: Name
-    anchors.verticalCenter: prev.verticalCenter
-    anchors.left: prev.right
-    margin-left: 5
-
-  Button
-    id: ResetSettings
-    anchors.verticalCenter: prev.verticalCenter
-    anchors.right: parent.right
-    text: Reset Settings
-    margin-top: 1
 
   CheckBox
     id: Rotate
@@ -370,32 +523,77 @@ AttackWindow < MainWindow
     minimum: 1
     maximum: 10
     focusable: true 
-    margin-left: 5
+    margin-left: 5    
+
+AttackBotWindow < MainWindow
+  size: 535 300
+  padding: 15
+  text: AttackBot v2
 
   Label
-    anchors.left: thing.left
-    anchors.right: thing.right
-    anchors.bottom: ResetSettings.top
-    margin-bottom: 10
-    text: Note: Cooldown value is optional for new global Tibia, recommended for Old tibia and custom OT
-    text-wrap: true
-    text-align: center
-    height: 40
-    multiline: true
+    id: mainLabel
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    margin-top: 10
+    margin-left: 2
+    !text: tr('More important methods come first (Example: Exori gran above Exori)')
+    text-align: left
+    font: verdana-11px-rounded
+    color: #aeaeae  
+
+  SettingsPanel
+    id: settingsPanel
+    anchors.top: prev.bottom
+    margin-top: 10
+    anchors.left: parent.left
+    margin-left: 2
+
+  Label
+    id: settingsLabel
+    anchors.verticalCenter: prev.top
+    anchors.left: prev.left
+    margin-left: 3
+    text: Settings
+    color: #fe4400
+    font: verdana-11px-rounded
+
+  AttackBotPanel
+    id: mainPanel
+    anchors.top: mainLabel.bottom
+    margin-top: 10
+    anchors.left: parent.left
+    margin-left: 2
+    visible: false    
+
+  Label
+    id: shooterLabel
+    anchors.verticalCenter: prev.top
+    anchors.left: prev.left
+    margin-left: 3
+    text: Spell Shooter
+    color: #fe4400
+    font: verdana-11px-rounded
+    visible: false    
 
   HorizontalSeparator
-    id: BottomSeparator
-    anchors.right: parent.right
     anchors.left: parent.left
-    anchors.bottom: CloseButton.top
-    margin-bottom: 8
+    anchors.right: parent.right 
+    anchors.bottom: closeButton.top
+    margin-bottom: 10
 
   Button
-    id: CloseButton
-    !text: tr('Close')
-    font: cipsoftFont
+    id: closeButton
     anchors.right: parent.right
     anchors.bottom: parent.bottom
     size: 45 21
-    margin-top: 15
-    margin-right: 5
+    text: Close
+    font: cipsoftFont
+
+  Button
+    id: settings
+    anchors.left: parent.left
+    anchors.verticalCenter: prev.verticalCenter
+    size: 50 21
+    font: cipsoftFont
+    text: Settings
