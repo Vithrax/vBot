@@ -164,11 +164,11 @@ TargetBot.Creature.walk = function(creature, config, targets)
   end
 
   local lastRePosition = now
-  if not config.chase and not config.keepDistance and config.rePosition and (creature:getHealthPercent() >= (storage.extras.killUnder or 30)) then
+  if not config.chase and not config.keepDistance and config.rePosition and (creature:getHealthPercent() >= storage.extras.killUnder) then
     return rePosition(config.rePositionAmount or 6)
   end
   local currentDistance = findPath(pos, cpos, 10, {ignoreCreatures=true, ignoreNonPathable=true, ignoreCost=true})
-  if ((creature:getHealthPercent() < (storage.extras.killUnder or 30)) or config.chase) and not config.keepDistance then
+  if ((storage.extras.killUnder > 1 and (creature:getHealthPercent() < storage.extras.killUnder)) or config.chase) and not config.keepDistance then
     if #currentDistance > 1 then
       return TargetBot.walkTo(cpos, 10, {ignoreNonPathable=true, precision=1})
     end

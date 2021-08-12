@@ -1088,9 +1088,9 @@ end
 
 function executeAttackBotAction(categoryOrPos, idOrFormula, cooldown)
   cooldown = cooldown or 0
-  if category == 4 or category == 5 or category == 1 then
+  if categoryOrPos == 4 or categoryOrPos == 5 or categoryOrPos == 1 then
     cast(idOrFormula, cooldown)
-  elseif category == 3 then
+  elseif categoryOrPos == 3 then
     useWith(idOrFormula, target())
   end
 end
@@ -1159,7 +1159,7 @@ macro(100, function()
   for i, entry in pairs(currentSettings.attackTable) do
     local attackData = entry.itemId > 100 and entry.itemId or entry.spell
     if entry.enabled and manapercent() >= entry.mana then
-      if (entry.spell and canCast(entry.spell, not currentSettings.ignoreMana, not currentSettings.Cooldown)) or (entry.itemId and (not currentSettings.Visible or findItem(entry.itemId))) then 
+      if (entry.spell and canCast(entry.spell, not currentSettings.ignoreMana, not currentSettings.Cooldown)) or (entry.itemId > 100 and (not currentSettings.Visible or findItem(entry.itemId))) then 
         -- first PVP scenario
         if currentSettings.pvpMode and target():getHealthPercent() >= entry.minHp and target():getHealthPercent() <= entry.maxHp then
           if entry.category == 2 then
