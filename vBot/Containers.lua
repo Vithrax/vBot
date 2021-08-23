@@ -4,7 +4,6 @@ if type(storage[panelName]) ~= "table" then
     storage[panelName] = {
         enabled = false;
         purse = true;
-        all = true;
         list = {
             {
                 value = "Main Backpack",
@@ -200,23 +199,12 @@ ContListsWindow < MainWindow
     margin-bottom: 8
 
   CheckBox
-    id: all
-    anchors.left: parent.left
-    anchors.bottom: parent.bottom
-    text: Open All
-    tooltip: Opens all containers in main backpack.
-    width: 90
-    height: 15
-    margin-top: 2
-    margin-left: 3
-
-  CheckBox
     id: purse
-    anchors.left: prev.right
+    anchors.left: parent.left
     anchors.bottom: parent.bottom
     text: Open Purse
     tooltip: Opens Store/Charm Purse
-    width: 90
+    width: 85
     height: 15
     margin-top: 2
     margin-left: 3
@@ -227,7 +215,18 @@ ContListsWindow < MainWindow
     anchors.bottom: parent.bottom
     text: Sort Items
     tooltip: Sort items based on items widget
-    width: 90
+    width: 85
+    height: 15
+    margin-top: 2
+    margin-left: 15
+
+  CheckBox
+    id: forceOpen
+    anchors.left: prev.right
+    anchors.bottom: parent.bottom
+    text: Keep Open
+    tooltip: Will keep open containers all the time
+    width: 85
     height: 15
     margin-top: 2
     margin-left: 15
@@ -292,7 +291,7 @@ function reopenBackpacks()
         g_game.open(bpItem)
     end
 
-    schedule(250, function()
+    schedule(500, function()
         local delay = 200
 
         if config.purse then
@@ -301,33 +300,11 @@ function reopenBackpacks()
                 use(item)
             end
         end
-        if config.all then
-            local nextContainers = {}
-            containers = getContainers()
-            for i, container in pairs(g_game.getContainers()) do
-                for i, item in ipairs(container:getItems()) do
-                    if item:isContainer() then
-                        if item:isContainer() and config.all then
-                            table.insert(nextContainers, item)
-                        end
-                    end
-                end
-            end
-            if #nextContainers > 0 then
-                for i = 1, #nextContainers do
-                    schedule(delay, function()
-                        g_game.open(nextContainers[i], nil)
-                    end)
-                    delay = delay + 250
-                end
-            end
-        else
-            for i=1,#lstBPs do
-                schedule(delay, function()
-                    openContainer(lstBPs[i])
-                end)
-                delay = delay + 250
-            end
+        for i=1,#lstBPs do
+            schedule(delay, function()
+                openContainer(lstBPs[i])
+            end)
+            delay = delay + 250
         end
     end)
     
@@ -369,14 +346,13 @@ if rootWidget then
         config.sort = not config.sort
         contListWindow.sort:setChecked(config.sort)
     end
-    contListWindow.sort:setChecked(config.sort)   
+    contListWindow.sort:setChecked(config.sort)
 
-    contListWindow.all.onClick = function(widget)
-        config.all = not config.all
-        contListWindow.all:setChecked(config.all)
-        label.enabled:setTooltip(config.all and 'Opens all containers in main backpack.' or 'Opens listed containers from main backpack.')
+    contListWindow.forceOpen.onClick = function(widget)
+        config.forceOpen = not config.forceOpen
+        contListWindow.forceOpen:setChecked(config.forceOpen)
     end
-    contListWindow.all:setChecked(config.all)
+    contListWindow.forceOpen:setChecked(config.forceOpen)  
 
     local function refreshSortList(k, t)
         t = t or {}
@@ -490,38 +466,58 @@ end
 
 local function properTable(t)
     local r = {}
-  
     for _, entry in pairs(t) do
-      table.insert(r, entry.id)
+      if type(entry) == "number" then
+        table.insert(r, entry)
+      else
+        table.insert(r, entry.id)
+      end
     end
     return r
 end
 
 macro(100, function()
-    if not config.sort then return end
+    if not config.sort and not config.purse then return end
 
     local storageVal = config.list
     for _, entry in pairs(storageVal) do
         local dId = entry.item
         local items = properTable(entry.items)
-
-        for _, container in pairs(getContainers()) do
-            local cName = container:getName():lower()
-            if not cName:find("depot") and not cName:find("depot") and not cName:find("quiver") then
-                local cId = container:getContainerItem():getId()
-                for __, item in ipairs(container:getItems()) do
-                    local id = item:getId()
-                    if table.find(items, id) and cId ~= dId then
-                        local destination = getContainerByItem(dId, true)
-                        if destination and not containerIsFull(destination) then
-                            return moveItem(item, destination)
+        -- sorting
+        if config.sort then
+            for _, container in pairs(getContainers()) do
+                local cName = container:getName():lower()
+                if not cName:find("depot") and not cName:find("depot") and not cName:find("quiver") then
+                    local cId = container:getContainerItem():getId()
+                    for __, item in ipairs(container:getItems()) do
+                        local id = item:getId()
+                        if table.find(items, id) and cId ~= dId then
+                            local destination = getContainerByItem(dId, true)
+                            if destination and not containerIsFull(destination) then
+                                return moveItem(item, destination)
+                            end
                         end
                     end
                 end
             end
         end
-
+        -- keep open / purse 23396
+        if config.forceOpen then
+            local container = getContainerByItem(dId)
+            if not container then
+                if getBack() and getBack():getId() == dId then
+                    g_game.open(getBack())
+                else
+                    local cItem = findItem(dId)
+                    if cItem then
+                        return g_game.open(cItem)
+                    end
+                end
+            end
+        end
     end
-
+    if config.purse and config.forceOpen and not getContainerByItem(23396) then
+        return use(getPurse())
+    end
     delay(900)
 end)

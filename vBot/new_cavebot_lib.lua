@@ -75,11 +75,13 @@ CaveBot.Status = "waiting"
 --- Parses config and extracts loot list.
 -- @return table
 function CaveBot.GetLootItems()
-    local t = CaveBotConfigParse()["items"]
+    local t = CaveBotConfigParse() and CaveBotConfigParse()["items"] or nil
 
     local returnTable = {}
-    for i, item in pairs(t) do
-        table.insert(returnTable, item["id"])
+    if type(t) == "table" then
+        for i, item in pairs(t) do
+            table.insert(returnTable, item["id"])
+        end
     end
 
     return returnTable
@@ -105,11 +107,13 @@ end
 --- Parses config and extracts loot containers.
 -- @return table
 function CaveBot.GetLootContainers()
-    local t = CaveBotConfigParse()["containers"]
+    local t = CaveBotConfigParse() and CaveBotConfigParse()["containers"] or nil
 
     local returnTable = {}
-    for i, container in pairs(t) do
-        table.insert(returnTable, container["id"])
+    if type(t) == "table" then
+        for i, container in pairs(t) do
+            table.insert(returnTable, container["id"])
+        end
     end
 
     return returnTable
@@ -432,6 +436,7 @@ function CaveBot.WithdrawItem(id, amount, fromDepot, destination)
         destination = getContainerByName(destination)
     end
     local itemCount = itemAmount(id)
+    test()
     local depot
     for i, container in pairs(getContainers()) do
         if container:getName():lower():find("depot box") or container:getName():lower():find("your inbox") then

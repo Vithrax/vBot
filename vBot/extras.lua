@@ -94,7 +94,10 @@ addScrollBar("talkDelay", "Global NPC Talk Delay", 0, 2000, 1000, leftPanel)
 addScrollBar("looting", "Max Loot Distance", 0, 50, 40, leftPanel)
 addScrollBar("huntRoutes", "Hunting Routes Limit", 0, 300, 50, leftPanel)
 addScrollBar("killUnder", "Kill monsters below", 0, 100, 30, leftPanel)
+addScrollBar("gotoMaxDistance", "Max GoTo Distance", 0, 127, 30, leftPanel)
 addCheckBox("lootLast", "Start loot from last corpse", true, leftPanel)
+addCheckBox("joinBot", "Join TargetBot and CaveBot", false, leftPanel)
+addCheckBox("reachable", "Target only pathable mobs", false, leftPanel)
 
 addCheckBox("title", "Custom Window Title", true, rightPanel)
 if true then
@@ -123,6 +126,20 @@ if true then
   end)
 end
 
+addCheckBox("separatePm", "Open PM's in new Window", false, rightPanel)
+if true then
+  onTalk(function(name, level, mode, text, channelId, pos)
+    if mode == 4 and settings.separatePm then
+        local g_console = modules.game_console
+        local privateTab = g_console.getTab(name)
+        if privateTab == nil then
+            privateTab = g_console.addTab(name, true)
+            g_console.addPrivateText(g_console.applyMessagePrefixies(name, level, text), g_console.SpeakTypesSettings['private'], name, false, name)
+        end
+        return
+    end
+  end)
+end
 
 addTextEdit("useAll", "Use All Hotkey", "space", rightPanel)
 if true then

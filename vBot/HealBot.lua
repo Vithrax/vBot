@@ -621,8 +621,7 @@ macro(100, function()
       end
     end
   end
-  standBySpells = true
-  lastMana = mana()  
+  standBySpells = true 
 end)
 
 -- items
@@ -707,22 +706,15 @@ macro(100, function()
     end
   end
   standByItems = true
-  lastMana = mana()
 end)
 UI.Separator()
 
-onAddThing(function(tile, thing)
-  if thing == player then return end
-  if getDistanceBetween(tile:getPosition(), player:getPosition()) == 0 then
-    standByItems = false
-    standBySpells = false
-  end
+onPlayerHealthChange(function(healthPercent)
+  standByItems = false
+  standBySpells = false
 end)
 
-macro(5000, function()
-  if (standByItems or standBySpells) and mana() >= lastMana then
-    lastMana = mana()
-    standByItems = false
-    standBySpells = false
-  end
+onManaChange(function(player, mana, maxMana, oldMana, oldMaxMana)
+  standByItems = false
+  standBySpells = false
 end)

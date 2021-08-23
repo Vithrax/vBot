@@ -63,7 +63,7 @@ Panel
     sioListWindow:hide()
 
     -- TextWindow
-    sioListWindow.spellName:setText(config.spellName)
+    sioListWindow.spellName:setText(config.customSpellName)
     sioListWindow.spellName.onTextChange = function(widget, text)
       config.customSpellName = text
     end

@@ -67,17 +67,3 @@ TargetBotLootingPanel < Panel
       anchors.verticalCenter: prev.verticalCenter
       text: Min. capacity:
       margin-left: 5
-
-  Label
-    margin-top: 3
-    margin-left: 20
-    margin-right: 20
-    !text: tr("Drag item or click on any of empty slot")
-    text-align: center
-    text-wrap: true
-    text-auto-resize: true
-
-  BotButton
-    margin-top: 3
-    text: Help & Tutorials
-    @onClick: g_platform.openUrl("http://bot.otclient.ovh/")

@@ -2,7 +2,7 @@
 -- visit http://bot.otclient.ovh/
 
 local cavebotTab = "Cave"
-local targetingTab = "Target"
+local targetingTab = storage.extras.joinBot and "Cave" or "Target"
 
 setDefaultTab(cavebotTab)
 CaveBot.Extensions = {}
@@ -35,6 +35,7 @@ dofile("/cavebot/tasker.lua")
 dofile("/cavebot/cavebot.lua")
 
 setDefaultTab(targetingTab)
+if storage.extras.joinBot then UI.Label("-- [[ TargetBot ]] --") end
 TargetBot = {} -- global namespace
 importStyle("/targetbot/looting.otui")
 importStyle("/targetbot/target.otui")

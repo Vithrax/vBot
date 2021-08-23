@@ -1,5 +1,7 @@
 CaveBot.Actions = {}
 
+
+local antiTrapTriggered = true
 -- it adds an action widget to list
 CaveBot.addAction = function(action, value, focus)
   action = action:lower()
@@ -147,8 +149,10 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
   if pos.z ~= playerPos.z then 
     return false -- different floor
   end
+
+  local maxDist = storage.extras.gotoMaxDistance or 40
   
-  if math.abs(pos.x-playerPos.x) + math.abs(pos.y-playerPos.y) > 40 then
+  if math.abs(pos.x-playerPos.x) + math.abs(pos.y-playerPos.y) > maxDist then
     return false -- too far way
   end
 
@@ -163,34 +167,35 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
       return true -- already at position
   end
   -- check if there's a path to that place, ignore creatures and fields
-  local path = findPath(playerPos, pos, 40, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true })
+  local path = findPath(playerPos, pos, maxDist, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true })
   if not path then
     return false -- there's no way
   end
 
   -- check if there's a path to destination but consider Creatures (attack only if trapped)
-  local path2 = findPath(playerPos, pos, 40, { ignoreNonPathable = true, precision = 1 })
+  local path2 = findPath(playerPos, pos, maxDist, { ignoreNonPathable = true, precision = 1 })
   if not path2 then
-    local monsters = {}
+    local target = {} -- c = creature, d = distance
     for i, spec in pairs(getSpectators()) do
-      if spec:isMonster() and spec:getType() ~= 3 then
-        if spec:canShoot() and findPath(playerPos, spec:getPosition(), 20, {ignoreNonPathable = true, precision = 1}) then
-          table.insert(monsters, {mob = spec, dist = getDistanceBetween(pos, spec:getPosition())})
+      if spec:isMonster() then
+        local path = findPath(playerPos, spec:getPosition(), 7, { ignoreNonPathable = true, precision = 1 })
+        if path then
+          local dist = getDistanceBetween(pos, spec:getPosition())
+          if not target.d or target.d > dist then
+            target = {c=spec, d=dist}
+          end
         end
       end
     end
-    table.sort(monsters, function(a,b) return a.dist < b.dist end)
-    if monsters[1] then 
-      g_game.attack(monsters[1].mob)
-      storage.blockMonster = monsters[1].mob
-      autoWalk(storage.blockMonster, 10, {precision = 1})
-      storage.clearing = true
-      CaveBot.setOff()
+    if target.c then
+      if target.c ~= getTarget() then
+        attack(target.c)
+      end
       g_game.setChaseMode(1)
-      schedule(3000, function() CaveBot.setOn() end) -- just in case callback trigger fails
+      antiTrapTriggered = true
       return "retry"
     else
-      return false -- there's no way
+      return false -- no other way
     end
   end
     
@@ -200,7 +205,7 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
   end
   
   -- try to find path, don't ignore creatures, ignore fields
-  if CaveBot.walkTo(pos, 40, { ignoreNonPathable = true }) then
+  if CaveBot.walkTo(pos, maxDist, { ignoreNonPathable = true }) then
     return "retry"
   end
   
@@ -224,34 +229,14 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
   end
 
   -- everything else failed, try to walk ignoring creatures, maybe will work
-  CaveBot.walkTo(pos, 40, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true })
+  CaveBot.walkTo(pos, maxDist, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true })
   return "retry"
 end)
 
-onCreatureDisappear(function(creature)
-  if creature ~= storage.blockMonster then return end
-  if storage.clearing then
+onAttackingCreatureChange(function(creature, oldCreature)
+  if antiTrapTriggered then
     CaveBot.setOn()
-    storage.blockMonster = nil
-    storage.clearing = false
-  end
-end)
-
-onCreaturePositionChange(function(creature, newPos, oldPos)
-  if creature ~= storage.blockMonster and creature ~= player then return end
-  if storage.clearing then
-    if creature == storage.blockMonster and not findPath(player:getPosition(), newPos, 20, {ignoreNonPathable = true, precision = 1}) then
-      CaveBot.setOn()
-      storage.blockMonster = nil
-      storage.clearing = false
-    end
-    if creature == player then
-      if oldPos.z ~= newPos.z then
-        CaveBot.setOn()
-        storage.blockMonster = nil
-        storage.clearing = false
-      end
-    end
+    antiTrapTriggered = false
   end
 end)
 
