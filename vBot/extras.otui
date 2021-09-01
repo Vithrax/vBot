@@ -39,6 +39,7 @@ ExtrasTextEdit < Panel
     minimum: 0
     maximum: 10
     step: 1
+    text-align: center
 
 ExtrasItem < Panel
   height: 34

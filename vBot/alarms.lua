@@ -126,6 +126,7 @@ if rootWidget then
           if math.max(math.abs(posx()-specPos.x), math.abs(posy()-specPos.y)) <= 8 then
             playSound("/sounds/Player_Detected.ogg")
             delay(1500)
+            g_window.setTitle(name() .. " - Player Detected!")
             if config.playerDetectedLogout then
               modules.game_interface.tryLogout(false)
             end
@@ -142,6 +143,7 @@ if rootWidget then
           if math.max(math.abs(posx()-specPos.x), math.abs(posy()-specPos.y)) <= 8 then
             playSound("/sounds/Creature_Detected.ogg")
             delay(1500)
+            g_window.setTitle(name() .. " - Creature Detected! ")
             return
           end
         end
@@ -151,6 +153,7 @@ if rootWidget then
     if config.healthBelow then
       if hppercent() <= config.healthValue then
         playSound("/sounds/Low_Health.ogg")
+        g_window.setTitle(name() .. " - Low Health!")
         delay(1500)
         return
       end
@@ -159,6 +162,7 @@ if rootWidget then
     if config.manaBelow then
       if manapercent() <= config.manaValue then
         playSound("/sounds/Low_Mana.ogg")
+        g_window.setTitle(name() .. " - Low Mana!")
         delay(1500)
         return
       end
@@ -168,6 +172,7 @@ if rootWidget then
   onTalk(function(name, level, mode, text, channelId, pos)
     if mode == 4 and config.enabled and config.privateMessage then
       playSound("/sounds/Private_Message.ogg")
+      g_window.setTitle(name() .. " - Private Message")
       return
     end
   end)

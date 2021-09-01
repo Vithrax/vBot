@@ -390,14 +390,19 @@ if true then
   end)
 end
 
-addCheckBox("holdMwall", "Hold MW/WG [ , ][ . ]", true, rightPanel)
+addCheckBox("holdMwall", "Hold MW/WG", true, rightPanel)
+addTextEdit("holdMwHot", "Magic Wall Hotkey: ", "F5", rightPanel)
+addTextEdit("holdWgHot", "Wild Growth Hotkey: ", "F6", rightPanel)
 if true then
-  local mwHot = ","
-  local wgHot = "."
+  local mwHot
+  local wgHot
 
   local candidates = {}
 
   local m = macro(20, function()
+    mwHot = settings.holdMwHot
+    wgHot = settings.holdWgHot
+    
     if not settings.holdMwall then return end
       if #candidates == 0 then return end
 
@@ -405,7 +410,7 @@ if true then
           if tile:getText():len() == 0 then 
               table.remove(candidates, i)
           end
-          local rune = tile:getText() == "HOLD MW" and 3180 or 3156
+          local rune = tile:getText() == "HOLD MW" and 3180 or tile:getText() == "HOLD WG" and 3156
           if tile:canShoot() and not isInPz() and tile:isWalkable() and tile:getTopUseThing():getId() ~= 2130 then
               return useWith(rune, tile:getTopUseThing())
           end
@@ -415,9 +420,10 @@ if true then
   onRemoveThing(function(tile, thing)
     if not settings.holdMwall then return end
       if thing:getId() ~= 2129 then return end
-      if tile:getText():len() > 0 then
+      if tile:getText():find("HOLD") then
           table.insert(candidates, tile)
-          useWith(3180, tile:getTopUseThing())
+          local rune = tile:getText() == "HOLD MW" and 3180 or tile:getText() == "HOLD WG" and 3156
+          useWith(rune, tile:getTopUseThing())
       end
   end)
 
@@ -456,22 +462,18 @@ end
 
 addCheckBox("checkPlayer", "Check Players", true, rightPanel)
 if true then
-
+  local found
   local function checkPlayers()
-    local found = false
     for i, spec in ipairs(getSpectators()) do
       if spec:isPlayer() and spec:getText() == "" and spec:getPosition().z == posz() and spec ~= player then
           g_game.look(spec)
-          found = true
+          found = now
       end
     end
-    if found then
-      schedule(20, function() modules.game_textmessage.clearMessages() end)
-      schedule(40, function() modules.game_textmessage.clearMessages() end)
-      schedule(60, function() modules.game_textmessage.clearMessages() end)
-    end
   end
-  checkPlayers()
+  if settings.checkPlayer then 
+    checkPlayers()
+  end
 
   onPlayerPositionChange(function(x,y)
     if not settings.checkPlayer then return end
@@ -482,22 +484,15 @@ if true then
 
   onCreatureAppear(function(creature)
     if not settings.checkPlayer then return end
-    local found = false
     if creature:isPlayer() and creature:getText() == "" and creature:getPosition().z == posz() and creature ~= player then
         g_game.look(creature)
-        found = true
-    end
-    if found then
-      schedule(20, function() modules.game_textmessage.clearMessages() end)
-      schedule(40, function() modules.game_textmessage.clearMessages() end)
-      schedule(60, function() modules.game_textmessage.clearMessages() end)
+        found = now
     end
   end)
 
   local regex = [[You see ([a-z 'A-z-]*) \(Level ([0-9]*)\)]]
   onTextMessage(function(mode, text)
     if not settings.checkPlayer then return end
-    if mode ~= 20 then return end
 
     local re = regexMatch(text, regex)
     if #re ~= 0 then
@@ -516,6 +511,9 @@ if true then
         local creature = getCreatureByName(name)
         if creature then
             creature:setText(level..voc)
+        end
+        if found and now - found < 500 then
+          modules.game_textmessage.clearMessages()
         end
     end
   end)

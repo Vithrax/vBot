@@ -93,33 +93,37 @@ Panel
       if config.highlight then
         creature:setMarked('#0000FF')
       end
-      specOutfit.head = 88
-      specOutfit.body = 88
-      specOutfit.legs = 88
-      specOutfit.feet = 88
-      if storage.BOTserver.outfit then
-        local voc = vBot.BotServerMembers[creature:getName()]
-        specOutfit.addons = 3 
-        if voc == 1 then
-          specOutfit.type = 131
-        elseif voc == 2 then
-          specOutfit.type = 129
-        elseif voc == 3 then
-          specOutfit.type = 130
-        elseif voc == 4 then
-          specOutfit.type = 144
+      if config.outfits then
+        specOutfit.head = 88
+        specOutfit.body = 88
+        specOutfit.legs = 88
+        specOutfit.feet = 88
+        if storage.BOTserver.outfit then
+          local voc = vBot.BotServerMembers[creature:getName()]
+          specOutfit.addons = 3 
+          if voc == 1 then
+            specOutfit.type = 131
+          elseif voc == 2 then
+            specOutfit.type = 129
+          elseif voc == 3 then
+            specOutfit.type = 130
+          elseif voc == 4 then
+            specOutfit.type = 144
+          end
         end
+        creature:setOutfit(specOutfit)
       end
-      creature:setOutfit(specOutfit)
     elseif isEnemy(specName) then
       if config.highlight then
         creature:setMarked('#FF0000')
       end
-      specOutfit.head = 94
-      specOutfit.body = 94
-      specOutfit.legs = 94
-      specOutfit.feet = 94
-      creature:setOutfit(specOutfit)
+      if config.outfits then
+        specOutfit.head = 94
+        specOutfit.body = 94
+        specOutfit.legs = 94
+        specOutfit.feet = 94
+        creature:setOutfit(specOutfit)
+      end
     end
   end
 

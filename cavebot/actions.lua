@@ -1,7 +1,7 @@
 CaveBot.Actions = {}
 
 
-local antiTrapTriggered = true
+local antiTrapTriggered = false
 -- it adds an action widget to list
 CaveBot.addAction = function(action, value, focus)
   action = action:lower()
@@ -192,6 +192,7 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
         attack(target.c)
       end
       g_game.setChaseMode(1)
+      CaveBot.setOff()
       antiTrapTriggered = true
       return "retry"
     else

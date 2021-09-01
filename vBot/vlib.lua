@@ -378,7 +378,7 @@ function isFriend(c)
         if p:isLocalPlayer() then return true end
         if p:isPlayer() then
             if ((p:getShield() >= 3 and p:getShield() <= 10) or p:getEmblem() ==
-                2) then
+                1) then
                 CachedFriends[c] = true
                 CachedFriends[p] = true
                 return true
@@ -408,7 +408,7 @@ function isEnemy(c)
     if p:isLocalPlayer() then return end
 
     if p:isPlayer() and table.find(storage.playerList.enemyList, name) or
-        (storage.playerList.marks and not isFriend(name)) then
+        (storage.playerList.marks and not isFriend(name)) or p:getEmblem() == 2 then
         return true
     else
         return false
