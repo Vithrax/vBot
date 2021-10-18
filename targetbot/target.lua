@@ -203,6 +203,20 @@ TargetBot.setOff = function(val)
   config.setOff()
 end
 
+TargetBot.getCurrentProfile = function()
+  return storage._configs.targetbot_configs.selected
+end
+
+local botConfigName = modules.game_bot.contentsPanel.config:getCurrentOption().text
+TargetBot.setCurrentProfile = function(name)
+  if not g_resources.fileExists("/bot/"..botConfigName.."/targetbot_configs/"..name..".json") then
+    return warn("there is no targetbot profile with that name!")
+  end
+  TargetBot.setOff()
+  storage._configs.targetbot_configs.selected = name
+  TargetBot.setOn()
+end
+
 TargetBot.delay = function(value)
   targetbotMacro.delay = now + value
 end

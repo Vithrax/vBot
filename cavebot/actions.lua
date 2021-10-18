@@ -167,7 +167,7 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
       return true -- already at position
   end
   -- check if there's a path to that place, ignore creatures and fields
-  local path = findPath(playerPos, pos, maxDist, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true })
+  local path = findPath(playerPos, pos, maxDist, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true, allowUnseen = true, allowOnlyVisibleTiles = false  })
   if not path then
     return false -- there's no way
   end
@@ -206,7 +206,7 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
   end
   
   -- try to find path, don't ignore creatures, ignore fields
-  if CaveBot.walkTo(pos, maxDist, { ignoreNonPathable = true }) then
+  if CaveBot.walkTo(pos, maxDist, { ignoreNonPathable = true, allowUnseen = true, allowOnlyVisibleTiles = false }) then
     return "retry"
   end
   
@@ -216,7 +216,7 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
     if stairs then
       precison = 0
     end
-    if CaveBot.walkTo(pos, 50, { ignoreNonPathable = true, precision = precison }) then
+    if CaveBot.walkTo(pos, 50, { ignoreNonPathable = true, precision = precison, allowUnseen = true, allowOnlyVisibleTiles = false }) then
       return "retry"
     end    
   end
@@ -230,7 +230,7 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
   end
 
   -- everything else failed, try to walk ignoring creatures, maybe will work
-  CaveBot.walkTo(pos, maxDist, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true })
+  CaveBot.walkTo(pos, maxDist, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true, allowUnseen = true, allowOnlyVisibleTiles = false })
   return "retry"
 end)
 

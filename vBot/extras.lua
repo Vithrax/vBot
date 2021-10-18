@@ -346,12 +346,22 @@ end
 
 addCheckBox("bless", "Buy bless at login", true, rightPanel)
 if true then
+  local blessed = false
+  onTextMessage(function(mode,text) 
+    if not settings.bless then return end
+    
+    text = text:lower()
+
+    if text == "you already have all blessings." then
+      blessed = true
+    end
+  end)
   if settings.bless then
     if player:getBlessings() == 0 then
       say("!bless")
       schedule(2000, function() 
           if g_game.getClientVersion() > 1000 then
-            if player:getBlessings() == 0 then
+            if not blessed and player:getBlessings() == 0 then
                 warn("!! Blessings not bought !!")
             end
           end
@@ -394,11 +404,12 @@ addCheckBox("holdMwall", "Hold MW/WG", true, rightPanel)
 addTextEdit("holdMwHot", "Magic Wall Hotkey: ", "F5", rightPanel)
 addTextEdit("holdWgHot", "Wild Growth Hotkey: ", "F6", rightPanel)
 if true then
+
+  local hold = 0
   local mwHot
   local wgHot
 
   local candidates = {}
-
   local m = macro(20, function()
     mwHot = settings.holdMwHot
     wgHot = settings.holdWgHot
@@ -406,14 +417,19 @@ if true then
     if not settings.holdMwall then return end
       if #candidates == 0 then return end
 
-      for i, tile in pairs(candidates) do
+      for i, pos in pairs(candidates) do
+        local tile = g_map.getTile(pos)
+        if tile then
           if tile:getText():len() == 0 then 
-              table.remove(candidates, i)
+            table.remove(candidates, i)
           end
           local rune = tile:getText() == "HOLD MW" and 3180 or tile:getText() == "HOLD WG" and 3156
           if tile:canShoot() and not isInPz() and tile:isWalkable() and tile:getTopUseThing():getId() ~= 2130 then
+            if math.abs(player:getPosition().x-tile:getPosition().x) < 8 and math.abs(player:getPosition().y-tile:getPosition().y) < 6 then
               return useWith(rune, tile:getTopUseThing())
+            end
           end
+        end
       end
   end)
 
@@ -421,9 +437,11 @@ if true then
     if not settings.holdMwall then return end
       if thing:getId() ~= 2129 then return end
       if tile:getText():find("HOLD") then
-          table.insert(candidates, tile)
+          table.insert(candidates, tile:getPosition())
           local rune = tile:getText() == "HOLD MW" and 3180 or tile:getText() == "HOLD WG" and 3156
-          useWith(rune, tile:getTopUseThing())
+          if math.abs(player:getPosition().x-tile:getPosition().x) < 8 and math.abs(player:getPosition().y-tile:getPosition().y) < 6 then
+            return useWith(rune, tile:getTopUseThing())
+          end
       end
   end)
 
@@ -436,13 +454,13 @@ if true then
       end
   end)
 
-  onKeyPress(function(keys)
+  onKeyDown(function(keys)
     local wsadWalking = modules.game_walking.wsadWalking
     if not wsadWalking then return end
     if not settings.holdMwall then return end
     if m.isOff() then return end
     if keys ~= mwHot and keys ~= wgHot then return end
-
+    hold = now
 
     local tile = getTileUnderCursor()
     if not tile then return end
@@ -455,7 +473,25 @@ if true then
         else
             tile:setText("HOLD WG")
         end
-        table.insert(candidates, tile)
+        table.insert(candidates, tile:getPosition())
+    end
+  end)
+
+  onKeyPress(function(keys)
+    local wsadWalking = modules.game_walking.wsadWalking
+    if not wsadWalking then return end
+    if not settings.holdMwall then return end
+    if m.isOff() then return end
+    if keys ~= mwHot and keys ~= wgHot then return end
+
+    if (hold - now) < -1000 then
+      candidates = {}
+      for i, tile in ipairs(g_map.getTiles(posz())) do
+        local text = tile:getText()
+        if text:find("HOLD") then
+          tile:setText("")
+        end
+      end
     end
   end)
 end
@@ -490,7 +526,7 @@ if true then
     end
   end)
 
-  local regex = [[You see ([a-z 'A-z-]*) \(Level ([0-9]*)\)]]
+  local regex = [[You see ([a-z 'A-z-]*) \(Level ([0-9]*)\)((?:.)* of the ([\w ]*),|)]]
   onTextMessage(function(mode, text)
     if not settings.checkPlayer then return end
 
@@ -498,6 +534,12 @@ if true then
     if #re ~= 0 then
         local name = re[1][2]
         local level = re[1][3]
+        local guild = re[1][5] or ""
+
+        if guild:len() > 10 then
+          guild = guild:sub(1,10) -- change to proper (last) values
+          guild = guild.."..."
+        end
         local voc
         if text:lower():find("sorcerer") then
             voc = "MS"
@@ -510,7 +552,7 @@ if true then
         end
         local creature = getCreatureByName(name)
         if creature then
-            creature:setText(level..voc)
+            creature:setText("\n"..level..voc.."\n"..guild)
         end
         if found and now - found < 500 then
           modules.game_textmessage.clearMessages()

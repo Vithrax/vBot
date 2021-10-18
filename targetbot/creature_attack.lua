@@ -185,6 +185,7 @@ TargetBot.Creature.walk = function(creature, config, targets)
     end
   end
 
+  --target only movement
   if config.avoidAttacks then
     local diffx = cpos.x - pos.x
     local diffy = cpos.y - pos.y

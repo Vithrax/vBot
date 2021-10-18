@@ -2,7 +2,7 @@
     Configs for modules
     Based on Kondrah storage method  
 --]]
-configName = modules.game_bot.contentsPanel.config:getCurrentOption().text
+local configName = modules.game_bot.contentsPanel.config:getCurrentOption().text
 
 -- make vBot config dir
 if not g_resources.directoryExists("/bot/".. configName .."/vBot_configs/") then

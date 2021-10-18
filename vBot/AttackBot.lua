@@ -1161,7 +1161,7 @@ macro(100, function()
     if entry.enabled and manapercent() >= entry.mana then
       if (entry.spell and canCast(entry.spell, not currentSettings.ignoreMana, not currentSettings.Cooldown)) or (entry.itemId > 100 and (not currentSettings.Visible or findItem(entry.itemId))) then 
         -- first PVP scenario
-        if currentSettings.pvpMode and target():getHealthPercent() >= entry.minHp and target():getHealthPercent() <= entry.maxHp then
+        if currentSettings.pvpMode and target():getHealthPercent() >= entry.minHp and target():getHealthPercent() <= entry.maxHp and target():canShoot() then
           if entry.category == 2 then
             return warn("[AttackBot] Area Runes cannot be used in PVP situation!")
           else
@@ -1186,7 +1186,7 @@ macro(100, function()
           local anchorParam = (pattern == 2 or pattern == 6 or pattern == 7 or pattern > 9) and player or pos()
           local safe = currentSettings.PvpSafe and spellPatterns[pCat][entry.pattern][2] or false
           local monsterAmount = pCat ~= 8 and getMonstersInArea(entry.category, anchorParam, spellPatterns[pCat][entry.pattern][1], entry.minHp, entry.maxHp, safe, entry.monsters)
-          if (pattern ~= 8 and (entry.orMore and monsterAmount >= entry.count or not entry.orMore and monsterAmount == entry.count)) or pattern == 8 and bestSide >= entry.count then
+          if (pattern ~= 8 and (entry.orMore and monsterAmount >= entry.count or not entry.orMore and monsterAmount == entry.count)) or (pattern == 8 and bestSide >= entry.count and (not currentSettings.PvpSafe or getPlayers(2) == 0)) then
             return executeAttackBotAction(entry.category, attackData, entry.cooldown)
           end
         elseif entry.category == 2 then

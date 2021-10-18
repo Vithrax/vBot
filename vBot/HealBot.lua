@@ -1,3 +1,6 @@
+local standBySpells = false
+local standByItems = false
+
 setDefaultTab("HP")
 healPanelName = "healbot"
 local ui = setupUI([[
@@ -222,10 +225,14 @@ if rootWidget then
         local label = UI.createWidget("SpellEntry", healWindow.spells.spellList)
         label.enabled:setChecked(entry.enabled)
         label.enabled.onClick = function(widget)
+          standBySpells = false
+          standByItems = false
           entry.enabled = not entry.enabled
           label.enabled:setChecked(entry.enabled)
         end
         label.remove.onClick = function(widget)
+          standBySpells = false
+          standByItems = false
           table.removevalue(currentSettings.spellTable, entry)
           reindexTable(currentSettings.spellTable)
           label:destroy()
@@ -245,10 +252,14 @@ if rootWidget then
         local label = UI.createWidget("SpellEntry", healWindow.items.itemList)
         label.enabled:setChecked(entry.enabled)
         label.enabled.onClick = function(widget)
+          standBySpells = false
+          standByItems = false
           entry.enabled = not entry.enabled
           label.enabled:setChecked(entry.enabled)
         end
         label.remove.onClick = function(widget)
+          standBySpells = false
+          standByItems = false
           table.removevalue(currentSettings.itemTable, entry)
           reindexTable(currentSettings.itemTable)
           label:destroy()
@@ -414,6 +425,8 @@ if rootWidget then
       healWindow.spells.spellValue:setText('')
       healWindow.spells.manaCost:setText('')
     end
+    standBySpells = false
+    standByItems = false
     refreshSpells()
   end
 
@@ -455,6 +468,8 @@ if rootWidget then
 
     if id > 100 then
       table.insert(currentSettings.itemTable, {index = #currentSettings.itemTable+1,item = id, sign = equasion, origin = source, value = trigger, enabled = true})
+      standBySpells = false
+      standByItems = false
       refreshItems()
       healWindow.items.itemId:setItemId(0)
       healWindow.items.itemValue:setText('')
@@ -554,9 +569,6 @@ if rootWidget then
 end
 
 -- spells
-local lastMana = mana()
-local standBySpells = false
-local iterationsSpells = 0
 macro(100, function()
   if standBySpells then return end
   if not currentSettings.enabled or modules.game_cooldown.isGroupCooldownIconActive(2) or #currentSettings.spellTable == 0 then return end
@@ -625,7 +637,6 @@ macro(100, function()
 end)
 
 -- items
-local standByItems = false
 macro(100, function()
   if standByItems then return end
   if not currentSettings.enabled or #currentSettings.itemTable == 0 then return end

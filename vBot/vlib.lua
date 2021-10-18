@@ -1,10 +1,5 @@
 -- Author: Vithrax
 -- contains mostly basic function shortcuts and code shorteners
--- burst damage calculation, for function burstDamageValue()
--- sums monster hits on a span of last 3seconds
--- if last message was more than 3s ago then clears the table
-
-
 
 -- initial global variables declaration
 vBot = {} -- global namespace for bot variables
@@ -12,6 +7,7 @@ vBot.BotServerMembers = {}
 vBot.standTime = now
 vBot.isUsingPotion = false
 vBot.isUsing = false
+vBot.customCooldowns = {}
 
 
 -- scripts / functions
@@ -282,18 +278,56 @@ end
 -- exctracts data about spell from gamelib SpellInfo table
 -- returns table
 -- ie:['Spell Name'] = {id, words, exhaustion, premium, type, icon, mana, level, soul, group, vocations}
+-- cooldown detection module
+local lastPhrase = ""
+onTalk(function(name, level, mode, text, channelId, pos)
+    if name == player:getName() then
+        lastPhrase = text:lower()
+    end
+end)
+
+if onSpellCooldown and onGroupSpellCooldown then
+    onSpellCooldown(function(iconId, duration)
+        schedule(5, function()
+            if not vBot.customCooldowns[lastPhrase] then
+                vBot.customCooldowns[lastPhrase] = {id = iconId}
+            end
+        end)
+    end)
+
+    onGroupSpellCooldown(function(iconId, duration)
+        schedule(10, function()
+            if vBot.customCooldowns[lastPhrase] then
+                vBot.customCooldowns[lastPhrase] = {id = vBot.customCooldowns[lastPhrase].id, group = {[iconId] = duration}}
+            end
+        end)
+    end)
+else
+    warn("Outdated OTClient! update to newest version to take benefits from all scripts!")
+end
 function getSpellData(spell)
     if not spell then return false end
     spell = spell:lower()
     local t = nil
+    local c = nil
     for k, v in pairs(Spells) do
         if v.words == spell then
             t = k
             break
         end
     end
+    if not t then
+        for k, v in pairs(vBot.customCooldowns) do
+            if k == spell then
+                c = {id = v.id, mana = 1, level = 1, group = v.group}
+                break
+            end
+        end
+    end
     if t then
         return Spells[t]
+    elseif c then
+        return c
     else
         return false
     end
@@ -989,7 +1023,6 @@ function getContainerByItem(id, notFull)
 end
 
 -- [[ ready to use getSpectators patterns ]] --
-
 LargeUeArea = [[
     0000001000000
     0000011100000

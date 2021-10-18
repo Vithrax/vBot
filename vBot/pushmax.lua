@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 setDefaultTab("Main")
 
 local panelName = "pushmax"
@@ -93,22 +94,22 @@ local customMwall = config.mwallBlockId
 local key = config.pushMaxKey
 local enabled = config.enabled
 local fieldTable = {2118, 105, 2122}
+local cleanTile = nil
 
 -- scripts 
 
 local targetTile
 local pushTarget
-local targetid
 
 local resetData = function()
   for i, tile in pairs(g_map.getTiles(posz())) do
-    if tile:getText() == "TARGET" or tile:getText() == "DEST" then
+    if tile:getText() == "TARGET" or tile:getText() == "DEST" or tile:getText() == "CLEAR" then
       tile:setText('')
     end
   end
   pushTarget = nil
   targetTile = nil
-  targetId = nil
+  cleanTile = nil
 end
 
 local getCreatureById = function(id)
@@ -139,9 +140,11 @@ local isOk = function(a,b)
 end
 
 -- to mark
+local hold = 0
 onKeyDown(function(keys)
   if not enabled then return end
   if keys ~= key then return end
+  hold = now
   local tile = getTileUnderCursor()
   if not tile then return end
   if pushTarget and targetTile then
@@ -151,7 +154,6 @@ onKeyDown(function(keys)
   local creature = tile:getCreatures()[1]
   if not pushTarget and creature then
     pushTarget = creature
-    targetId = creature:getId()
     if pushTarget then
       tile:setText('TARGET')
       pushTarget:setMarked('#00FF00')
@@ -167,6 +169,24 @@ onKeyDown(function(keys)
   end
 end)
 
+-- mark tile to throw anything from it
+onKeyPress(function(keys)
+  if not enabled then return end
+  if keys ~= key then return end
+  local tile = getTileUnderCursor()
+  if not tile then return end
+
+  if (hold - now) < -2500 then
+    if cleanTile and tile ~= cleanTile then
+      resetData()
+    elseif not cleanTile then
+      cleanTile = tile
+      tile:setText("CLEAR")
+    end
+  end
+  hold = 0
+end)
+
 onCreaturePositionChange(function(creature, newPos, oldPos)
   if not enabled then return end
   if creature == player then
@@ -178,42 +198,93 @@ onCreaturePositionChange(function(creature, newPos, oldPos)
   end
 end)
 
-macro(20, function()
+macro(50, function()
   if not enabled then return end
-  if not pushTarget or not targetTile then return end
-  tilePos = targetTile:getPosition()
-  targetPos = pushTarget:getPosition()
-  if not isOk(tilePos,targetPos) then return end
-  
-  local tileOfTarget = g_map.getTile(targetPos)
-  
-  if not targetTile:isWalkable() then
-    local topThing = targetTile:getTopUseThing():getId()
-    if topThing == 2129 or topThing == 2130 or topThing == customMwall then
-      if targetTile:getTimer() < pushDelay+500 then
-        vBot.isUsing = true
-        schedule(pushDelay+700, function()
-          vBot.isUsing = false
-        end)
-      end
-      if targetTile:getTimer() > pushDelay then
-        return
-      end
-    else
-      return resetData()
-    end
-  end
 
-  if not tileOfTarget:getTopUseThing():isNotMoveable() then
-    return useWith(rune, pushTarget)
-  end
-  if isNotOk(fieldTable, targetTile) then
-    if targetTile:canShoot() then
-      return useWith(3148, targetTile:getTopUseThing())
-    else
+  if cleanTile then
+    local tilePos = cleanTile:getPosition()
+    local pPos = player:getPosition()
+    if not isOk(tilePos, pPos) then
+      resetData()
       return
     end
+
+    if not cleanTile:hasCreature() then return end
+    local tiles = getNearTiles(tilePos)
+    local destTile
+    local forbidden = {}
+    -- unfortunately double loop
+    for i, tile in pairs(tiles) do
+      local minimapColor = g_map.getMinimapColor(tile:getPosition())
+      local stairs = (minimapColor >= 210 and minimapColor <= 213)
+      if stairs then
+        table.insert(forbidden, tile:getPosition())
+      end
+    end
+    for i, tile in pairs(tiles) do
+      local minimapColor = g_map.getMinimapColor(tile:getPosition())
+      local stairs = (minimapColor >= 210 and minimapColor <= 213)
+      if tile:isWalkable() and not isNotOk(fieldTable, tile) and not tile:hasCreature() and not stairs then
+        local tooClose = false
+        if #forbidden ~= 0 then
+          for i=1,#forbidden do
+            local pos = forbidden[i]
+            if isOk(pos, tile:getPosition()) then
+              tooClose = true
+              break
+            end
+          end
+        end
+        if not tooClose then
+          destTile = tile
+          break
+        end
+      end
+    end
+
+    if not destTile then return end
+    local parcel = cleanTile:getCreatures()[1]
+    if parcel then
+      test()
+      g_game.move(parcel,destTile:getPosition())
+      delay(2000)
+    end
+  else
+    if not pushTarget or not targetTile then return end
+    local tilePos = targetTile:getPosition()
+    local targetPos = pushTarget:getPosition()
+    if not isOk(tilePos,targetPos) then return end
+    
+    local tileOfTarget = g_map.getTile(targetPos)
+    
+    if not targetTile:isWalkable() then
+      local topThing = targetTile:getTopUseThing():getId()
+      if topThing == 2129 or topThing == 2130 or topThing == customMwall then
+        if targetTile:getTimer() < pushDelay+500 then
+          vBot.isUsing = true
+          schedule(pushDelay+700, function()
+            vBot.isUsing = false
+          end)
+        end
+        if targetTile:getTimer() > pushDelay then
+          return
+        end
+      else
+        return resetData()
+      end
+    end
+
+    if not tileOfTarget:getTopUseThing():isNotMoveable() and targetTile:getTimer() < pushDelay+500 then
+      return useWith(rune, pushTarget)
+    end
+    if isNotOk(fieldTable, targetTile) then
+      if targetTile:canShoot() then
+        return useWith(3148, targetTile:getTopUseThing())
+      else
+        return
+      end
+    end
+      g_game.move(pushTarget,tilePos)
+      delay(2000)
   end
-    g_game.move(pushTarget,tilePos)
-    delay(2000)
 end)

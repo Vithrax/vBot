@@ -30,7 +30,7 @@ cavebotMacro = macro(20, function()
   end
   
   if CaveBot.doWalking() then
-    return -- executing walking
+    return -- executing walking3
   end
   
   local actions = ui.list:getChildCount()
@@ -183,6 +183,20 @@ CaveBot.setOff = function(val)
     return CaveBot.setOn(true)
   end
   config.setOff()
+end
+
+CaveBot.getCurrentProfile = function()
+  return storage._configs.cavebot_configs.selected
+end
+
+local botConfigName = modules.game_bot.contentsPanel.config:getCurrentOption().text
+CaveBot.setCurrentProfile = function(name)
+  if not g_resources.fileExists("/bot/"..botConfigName.."/cavebot_configs/"..name..".cfg") then
+    return warn("there is no cavebot profile with that name!")
+  end
+  CaveBot.setOff()
+  storage._configs.cavebot_configs.selected = name
+  CaveBot.setOn()
 end
 
 CaveBot.delay = function(value)
