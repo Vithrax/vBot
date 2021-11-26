@@ -235,7 +235,7 @@ Panel
       elseif config.cureElectrify and mana() >= config.electrifyCost and isEnergized() then say("exana vis") 
       end
     end
-    if (not config.ignoreInPz or not isInPz()) and config.holdUtura and mana() >= config.uturaCost and not hasPartyBuff() then say(config.uturaType)
+    if (not config.ignoreInPz or not isInPz()) and config.holdUtura and mana() >= config.uturaCost and canCast(config.uturaType) and hppercent() < 90 then say(config.uturaType)
     elseif (not config.ignoreInPz or not isInPz()) and config.holdUtana and mana() >= config.utanaCost and (not utanaCast or (now - utanaCast > 120000)) then say("utana vid") utanaCast = now
     end
   end)

@@ -167,6 +167,19 @@ function CaveBot.CloseLootContainer()
     return true
 end
 
+function CaveBot.CloseAllLootContainers()
+    local containers = CaveBot.GetLootContainers()
+
+    for i, container in pairs(getContainers()) do
+        local containerId = container:getContainerItem():getId()
+        if table.find(containers, containerId) then
+            g_game.close(container)
+        end
+    end
+
+    return true
+end
+
 --- Opens any loot container that isn't already opened.
 -- @return void or boolean
 function CaveBot.OpenLootContainer()
@@ -436,7 +449,6 @@ function CaveBot.WithdrawItem(id, amount, fromDepot, destination)
         destination = getContainerByName(destination)
     end
     local itemCount = itemAmount(id)
-    test()
     local depot
     for i, container in pairs(getContainers()) do
         if container:getName():lower():find("depot box") or container:getName():lower():find("your inbox") then

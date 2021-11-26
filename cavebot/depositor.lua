@@ -1,13 +1,11 @@
 CaveBot.Extensions.Depositor = {}
 
 --local variables
-local closedContainers = false
-local reopenedContainers = false
 local destination = nil
 local lootTable = nil
+local reopenedContainers = false
 
 local function resetCache()
-	closedContainers = false
 	reopenedContainers = false
 	destination = nil
 	lootTable = nil
@@ -41,21 +39,11 @@ CaveBot.Extensions.Depositor.setup = function()
 
 		-- backpacks etc
 		if value:lower() == "yes" then
-			-- reopening backpacks
 			if not reopenedContainers then
-				if not closedContainers then
-					if not CaveBot.CloseLootContainer() then
-						return "retry"
-					else
-						closedContainers = true
-					end
-				else
-					if not CaveBot.OpenLootContainer() then
-						return "retry"
-					else
-						reopenedContainers = true
-					end
-				end
+				CaveBot.CloseAllLootContainers()
+				delay(3000)
+				reopenedContainers = true
+				return "retry"
 			end
 			-- open next backpacks if no more loot
 			if not CaveBot.HasLootItems() then
@@ -70,12 +58,14 @@ CaveBot.Extensions.Depositor.setup = function()
 								return "retry"
 							end
 						end
-						-- couldn't find next container, so we done
-						print("CaveBot[Depositor]: all items stashed, no backpack to open next, proceeding")
-						resetCache()
-						return true
 					end
 				end
+				-- couldn't find next container, so we done
+				print("CaveBot[Depositor]: all items stashed, no backpack to open next, proceeding")
+				CaveBot.CloseAllLootContainers()
+				delay(3000)
+				resetCache()
+				return true
 			end
 		end
 

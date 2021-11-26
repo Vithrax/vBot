@@ -148,7 +148,7 @@ if rootWidget then
 
   local pName = player:getName()
   onTextMessage(function(mode, text)
-    if config.enabled and config.playerAttack and mode == 16 and string.match(text, "hitpoints due to an attack") and not string.match(text, "hitpoints due to an attack by a ") then
+    if config.enabled and config.playerAttack and string.match(text, "hitpoints due to an attack") and not string.match(text, "hitpoints due to an attack by a ") then
       playSound("/sounds/Player_Attack.ogg")
       g_window.setTitle(pName .. " - Player Attacks!")
       return

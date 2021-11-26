@@ -1,367 +1,267 @@
-LootItemLabel < Label
-  opacity: 0.87
+AnalyzerPriceLabel < Label
+  background-color: alpha
   text-offset: 2 0
-  focusable: false
-  height: 16  
+  focusable: true
+  height: 16
 
-MainAnalyzer < Panel
-  height: 45
-  padding: 4
+  $focus:
+    background-color: #00000055
 
-  BotButton
-    id: toggle
-    anchors.top: parent.top
+  Button
+    id: remove
+    !text: tr('x')
+    anchors.right: parent.right
+    margin-right: 15
+    width: 15
+    height: 15
+
+AnalyzerItemsPanel < Panel
+  height: 0
+
+  Panel
+    id: List
+    anchors.fill: parent
+    margin-top: 3
+    padding: 2
+    layout:
+      type: grid
+      cell-size: 32 32
+      cell-spacing: 3
+      num-columns: 5
+
+AnalyzerLootItem < UIItem
+  opacity: 0.87
+  height: 37
+  margin-left: 1
+  virtual: true
+  background-color: alpha 
+
+  Label
+    id: count
+    font: verdana-11px-rounded
+    color: white
+    opacity: 0.87
     anchors.left: parent.left
     anchors.right: parent.right
-    text: Session Analyzer
-
-  BotButton
-    id: reset
-    anchors.top: prev.bottom
-    margin-top: 4
-    anchors.left: parent.left
-    anchors.right: parent.horizontalCenter
+    anchors.bottom: parent.bottom
     margin-right: 2
-    text: Reset
+    text-align: right
+    text: 0
 
-  BotButton
-    id: change
-    anchors.top: toggle.bottom
-    margin-top: 4
-    anchors.left: parent.horizontalCenter
-    margin-left: 2
-    anchors.right: toggle.right
-    text-align: center
-    text: Loot 
-
-HuntingAnalyzer < Panel
-  height: 275
+AnalyzerGraph < UIGraph
+  height: 140
+  capacity: 400
+  line-width: 1
+  color: red
+  margin-top: 5
+  margin-left: 5
+  margin-right: 5
+  background-color: #383636
   padding: 5
+  font: verdana-11px-rounded
+  image-source: /images/ui/graph_background
 
-  Label
-    id: SessionLabel
+AnalyzerProgressBar < ProgressBar
+  background-color: green
+  height: 5
+  margin-top: 3
+  phantom: false
+  margin-left: 3
+  margin-right: 3
+  border: 1 black
+
+AnalyzerButton < Button
+  height: 22
+  margin-bottom: 2
+  font: verdana-11px-rounded
+  text-offset: 0 4
+
+MainAnalyzerWindow < MiniWindow
+  id: MainAnalyzerWindow
+  text: Analytics Selector
+  height: 200
+  icon: /images/topbuttons/analyzers
+
+  MiniWindowContents
+    padding-left: 5
+    padding-right: 5
+    padding-top: 5
+    layout: verticalBox
+
+    AnalyzerButton
+      id: HuntingAnalyzer
+      text: Hunting Analyzer
+
+    AnalyzerButton
+      id: LootAnalyzer
+      text: Loot Analyzer
+
+    AnalyzerButton
+      id: SupplyAnalyzer
+      text: Supply Analyzer    
+  
+    AnalyzerButton
+      id: ImpactAnalyzer
+      text: Impact Analyzer
+
+    AnalyzerButton
+      id: XPAnalyzer
+      text: XP Analyzer
+
+    AnalyzerButton
+      id: Settings
+      text: Features & Settings
+      color: #FABD02
+
+    AnalyzerButton
+      id: ResetSession
+      text: Reset Session
+      color: #FF0000
+
+HuntingAnalyzer < MiniWindow  
+  id: HuntingAnalyzerWindow
+  text: Hunt Analyzer
+  icon: /images/topbuttons/analyzers
+
+  MiniWindowContents
+    padding-top: 3
+    layout: verticalBox
+
+LootAnalyzer < MiniWindow
+  id: LootAnalyzerWindow    
+  text: Loot Analyzer
+  icon: /images/topbuttons/analyzers
+
+  MiniWindowContents
+    padding-top: 3
+    layout: verticalBox
+
+SupplyAnalyzer < MiniWindow
+  id: SupplyAnalyzerWindow    
+  text: Supply Analyzer
+  icon: /images/topbuttons/analyzers
+
+  MiniWindowContents
+    padding-top: 3
+    layout: verticalBox
+
+ImpactAnalyzer < MiniWindow
+  id: ImpactAnalyzerWindow    
+  text: Impact Analyzer
+  icon: /images/topbuttons/analyzers
+
+  MiniWindowContents
+    padding-top: 3
+    layout: verticalBox
+
+XPAnalyzer < MiniWindow
+  id: XPAnalyzerWindow    
+  text: XP Analyzer
+  height: 150
+  icon: /images/topbuttons/analyzers
+
+  MiniWindowContents
+    padding-top: 3
+    layout: verticalBox
+
+
+FeaturesWindow < MainWindow
+  id: FeaturesWindow
+  size: 250 370
+  padding: 15
+  text: Analyzers Features
+  @onEscape: self:hide()
+
+  TextList
+    id: CustomPrices
     anchors.top: parent.top
     anchors.left: parent.left
-    text: Session:
-
-  Label
-    id: XpGainLabel
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    margin-top: 5
-    text: XP Gain:
-
-  Label
-    id: XpHourLabel
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    margin-top: 5
-    text: XP/h:
-
-  Label
-    id: NextLevelLabel
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    margin-top: 5
-    text: Next Level:
-
-  Label
-    id: BalanceLabel
-    anchors.top: prev.bottom
-    margin-top: 5
-    anchors.left: parent.left
-    text: Balance
-
-  Label
-    id: BurstDamageLabel
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    margin-top: 5
-    text: Burst Damage: 
-
-  Label
-    id: DamageDealtLabel
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    margin-top: 5
-    text: Damage Dealt:
-
-  Label
-    id: DPSLabel
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    margin-top: 5
-    text: DPS: 
-
-  Label
-    id: BestHitLabel
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    margin-top: 5
-    text: Best Hit:     
-
-  Label
-    id: HealingDoneLabel
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    margin-top: 5
-    text: Healing Done: 
-
-  Label
-    id: HPSLabel
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    margin-top: 5
-    text: HPS: 
-
-  Label
-    id: BestHealLabel
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    margin-top: 5
-    text: Best Heal:
-
-  Label
-    id: one
     anchors.right: parent.right
-    anchors.verticalCenter: SessionLabel.verticalCenter
-    text-align: right
-    text: 00:00h
-    width: 150
+    margin-top: 10
+    padding: 1
+    height: 220
+    vertical-scrollbar: CustomPricesScrollBar
 
-  Label
-    id: two
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 5
-    text-align: right
-    text: 0
-    width: 150
+  VerticalScrollBar
+    id: CustomPricesScrollBar
+    anchors.top: CustomPrices.top
+    anchors.bottom: CustomPrices.bottom
+    anchors.right: CustomPrices.right
+    step: 14
+    pixels-scroll: true
 
-  Label
-    id: three
-    anchors.right: parent.right
-    anchors.top: prev.bottom
+  BotItem
+    id: ID
+    anchors.left: CustomPrices.left
+    anchors.top: CustomPrices.bottom
     margin-top: 5
-    text-align: right
-    text: -
-    width: 150
 
-  Label
-    id: four
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 5
-    text-align: right
-    text: -
-    width: 150
+  SpinBox
+    id: NewPrice
+    anchors.left: prev.right
+    margin-left: 5
+    anchors.verticalCenter: prev.verticalCenter
+    width: 100
+    minimum: 0
+    maximum: 1000000000
+    step: 1
+    text-align: center
+    focusable: true
 
-  Label
-    id: balance
-    anchors.top: prev.bottom
-    anchors.right: parent.right
-    margin-top: 5
-    text: 0
-    text-align: right
-    width: 150
-
-  Label
-    id: five
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 5
-    text-align: right
-    text: 0
-    width: 150
-
-  Label
-    id: six
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 5
-    text-align: right
-    text: -
-    width: 150
-
-  Label
-    id: seven
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 5
-    text-align: right
-    text: 0
-    width: 150
-
-  Label
-    id: eight
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 5
-    text-align: right
-    text: 0
-    width: 150
-
-  Label
-    id: nine
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 5
-    text-align: right
-    text: 0
-    width: 150
-
-  Label
-    id: ten
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 5
-    text-align: right
-    text: 0
-    width: 150
-
-  Label
-    id: eleven
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 5
-    text-align: right
-    text: 0
-    width: 150
+  Button
+    id: addItem
+    anchors.left: prev.right
+    margin-left: 5
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.right: CustomPrices.right
+    text: Add
+    font: verdana-11px-rounded    
 
   HorizontalSeparator
-    anchors.top: prev.bottom
-    anchors.left: parent.left
+    anchors.left: ID.right
+    margin-left: 5
+    anchors.right: CustomPrices.right
+    anchors.verticalCenter: ID.top
+
+  HorizontalSeparator
+    id: secondSeparator
+    anchors.left: ID.right
+    margin-left: 5
+    anchors.right: CustomPrices.right
+    anchors.bottom: ID.bottom
+
+  BotSwitch
+    id: LootChannel
+    anchors.left: CustomPrices.left
+    anchors.right: parent.horizontalCenter
+    margin-right: 2
+    anchors.top: prev.top
+    margin-top: 20
+    text: Loot Channel
+    font: verdana-11px-rounded   
+
+  BotSwitch
+    id: RarityFrames
+    anchors.left: parent.horizontalCenter
+    margin-left: 2
+    anchors.right: CustomPrices.right
+    anchors.top: secondSeparator.top
+    margin-top: 20
+    text: Rarity Frames
+    font: verdana-11px-rounded   
+
+  HorizontalSeparator
     anchors.right: parent.right
-    margin-top: 3
-
-  Label
-    anchors.top: prev.bottom
     anchors.left: parent.left
+    anchors.bottom: closeButton.top
+    margin-bottom: 8    
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    font: cipsoftFont
     anchors.right: parent.right
-    margin-top: 3
-    text-align: center
-    text: Damage Distribution
-
-  Label
-    id: dOne
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    margin-top: 5
-    text-align: center
-    text: -
-
-  Label
-    id: dTwo
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    margin-top: 5
-    text-align: center
-    text: -
-
-  Label
-    id: dThree
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    margin-top: 5
-    text-align: center
-    text: -
-
-LootAnalyzer < Panel
-  height: 275
-  padding: 4
-
-  Label
-    id: first
-    anchors.top: parent.top
-    anchors.left: parent.left
-    text: Supplies
-
-  Label
-    anchors.top: prev.bottom
-    margin-top: 5
-    anchors.left: parent.left
-    text: Supplies/h
-
-  TextList
-    id: supplyList
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    margin-top: 3
-    height: 50  
-    vertical-scrollbar: supplyListScrollBar
-
-  Label
-    id: second
-    anchors.top: prev.bottom
-    margin-top: 5
-    anchors.left: parent.left
-    text: Loot
-
-  Label
-    anchors.top: prev.bottom
-    margin-top: 5
-    anchors.left: parent.left
-    text: Loot/h
-
-  Label
-    id: supplies
-    anchors.top: parent.top
-    anchors.right: parent.right
-    width: 150
-    text: 0
-    text-align: right
-
-  Label
-    id: suppliesHour
-    anchors.top: prev.bottom
-    anchors.right: parent.right
-    margin-top: 5
-    text: 0
-    text-align: right
-    width: 150    
-
-  Label
-    id: loot
-    anchors.top: second.top
-    anchors.right: parent.right
-    width: 150
-    text: 0
-    text-align: right
-
-  Label
-    id: lootHour
-    anchors.top: prev.bottom
-    anchors.right: parent.right
-    margin-top: 5
-    text: 0
-    text-align: right
-    width: 150
-
-  TextList
-    id: List
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
-    margin-top: 3
-    height: 120  
-    vertical-scrollbar: ListScrollBar
-
-  VerticalScrollBar
-    id: ListScrollBar
-    anchors.top: List.top
-    anchors.bottom: List.bottom
-    anchors.right: List.right
-    step: 14
-    pixels-scroll: true
-
-  VerticalScrollBar
-    id: supplyListScrollBar
-    anchors.top: supplyList.top
-    anchors.bottom: supplyList.bottom
-    anchors.right: supplyList.right
-    step: 14
-    pixels-scroll: true
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-top: 15
+    margin-right: 5 

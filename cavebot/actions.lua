@@ -1,5 +1,5 @@
 CaveBot.Actions = {}
-
+vBot.lastLabel = ""
 
 local antiTrapTriggered = false
 -- it adds an action widget to list
@@ -77,6 +77,7 @@ CaveBot.registerAction = function(action, color, callback)
 end
 
 CaveBot.registerAction("label", "yellow", function(value, retries, prev)
+  vBot.lastLabel = value
   return true
 end)
 
@@ -177,7 +178,8 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
   if not path2 then
     local target = {} -- c = creature, d = distance
     for i, spec in pairs(getSpectators()) do
-      if spec:isMonster() then
+      local hppc = spec:getHealthPercent()
+      if spec:isMonster() and (hppc and hppc > 0) then
         local path = findPath(playerPos, spec:getPosition(), 7, { ignoreNonPathable = true, precision = 1 })
         if path then
           local dist = getDistanceBetween(pos, spec:getPosition())

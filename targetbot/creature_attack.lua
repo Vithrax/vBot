@@ -5,6 +5,7 @@ local lureMax = 0
 local anchorPosition = nil
 local lastCall = now
 local delayFrom = nil
+local dynamicLureDelay = false
 
 function getWalkableTilesCount(position)
   local count = 0
@@ -140,6 +141,7 @@ TargetBot.Creature.walk = function(creature, config, targets)
     lureMax = config.lureMax
   end
 
+  dynamicLureDelay = config.dynamicLureDelay
   delayFrom = config.delayFrom
 
   -- luring
@@ -236,6 +238,6 @@ onPlayerPositionChange(function(newPos, oldPos)
   if not lureMax then return end
   if storage.TargetBotDelayWhenPlayer then return end
 
-  if targetCount < (delayFrom or lureMax/2) or not target() then return end
+  if dynamicLureDelay and targetCount < (delayFrom or lureMax/2) or not target() then return end
   CaveBot.delay(delayValue or 0)
 end)

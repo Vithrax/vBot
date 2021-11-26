@@ -1075,7 +1075,7 @@ function getBestTileByPattern(pattern, minHp, maxHp, safePattern, monsterNamesTa
   for i, tile in pairs(tiles) do
     local tPos = tile:getPosition()
     local distance = distanceFromPlayer(tPos)
-    if tile:canShoot() and tile:isWalkable() and (not safePattern or distance < 4) then
+    if tile:canShoot() and tile:isWalkable() and distance < 4 then
       local amount = getMonstersInArea(2, tPos, pattern, minHp, maxHp, safePattern, monsterNamesTable)
       if amount > targetTile.amount then
         targetTile = {amount=amount,pos=tPos}

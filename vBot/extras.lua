@@ -1,7 +1,7 @@
 setDefaultTab("Main")
 
 -- securing storage namespace
-panelName = "extras"
+local panelName = "extras"
 if not storage[panelName] then
   storage[panelName] = {}
 end
@@ -558,5 +558,37 @@ if true then
           modules.game_textmessage.clearMessages()
         end
     end
+  end)
+end
+
+addCheckBox("title", "Open Next Loot Container", true, leftPanel)
+  local function openNextLootContainer()
+    local containers = getContainers()
+    local lootCotaniersIds = CaveBot.GetLootContainers()
+
+    for i, container in ipairs(containers) do
+      local cId = container:getContainerItem():getId()
+      if containerIsFull(container) then
+        if table.find(lootCotaniersIds, cId) then
+          for _, item in ipairs(container:getItems()) do
+            if item:getId() == cId then
+              return g_game.open(item, container)
+            end
+          end
+        end
+      end
+    end
+  end
+if true then
+  onContainerOpen(function(container, previousContainer)
+    schedule(100, function()
+      openNextLootContainer()
+    end)
+  end)
+
+  onAddItem(function(container, slot, item, oldItem)
+    schedule(100, function()
+      openNextLootContainer()
+    end)
   end)
 end

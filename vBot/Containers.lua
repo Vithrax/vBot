@@ -441,19 +441,19 @@ end
 
 onContainerOpen(function(container, previousContainer)
     if renameContui.title:isOn() then
+        if not container.window then return end
+        local containerWindow = container.window
         if not previousContainer then
-            if not container.window then return end
-            containerWindow = container.window
             containerWindow:setContentHeight(34)
-            local storageVal = config.list
-            if storageVal and #storageVal > 0 then
-                for _, entry in pairs(storageVal) do
-                    if entry.enabled and string.find(container:getContainerItem():getId(), entry.item) then
-                        if entry.min then
-                            containerWindow:minimize()
-                        end
-                        containerWindow:setText(entry.value)
+        end
+        local storageVal = config.list
+        if storageVal and #storageVal > 0 then
+            for _, entry in pairs(storageVal) do
+                if entry.enabled and string.find(container:getContainerItem():getId(), entry.item) then
+                    if entry.min then
+                        containerWindow:minimize()
                     end
+                    containerWindow:setText(entry.value)
                 end
             end
         end
@@ -476,7 +476,7 @@ local function properTable(t)
     return r
 end
 
-macro(100, function()
+macro(500, function()
     if not config.sort and not config.purse then return end
 
     local storageVal = config.list
@@ -522,5 +522,5 @@ macro(100, function()
     if config.purse and config.forceOpen and not getContainerByItem(23396) then
         return use(getPurse())
     end
-    delay(900)
+    delay(1500)
 end)

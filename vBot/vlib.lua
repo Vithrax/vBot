@@ -9,7 +9,6 @@ vBot.isUsingPotion = false
 vBot.isUsing = false
 vBot.customCooldowns = {}
 
-
 -- scripts / functions
 onPlayerPositionChange(function(x,y)
     vBot.standTime = now
@@ -853,7 +852,7 @@ end
 -- self explanatory
 -- use along with delay, it will only call action
 function useOnGroundItem(a, b)
-    if not id then return false end
+    if not b then return false end
     local item = findItem(a)
     if not item then return false end
 

@@ -35,7 +35,7 @@ end
 ]])
 
 addExampleFunction("Check for stamina and imbues", [[
-  if stamina() < 900 or player:getSkillLevel(11) ~= 100 then CaveBot.setOff() return false else return true end
+  if stamina() < 900 or player:getSkillLevel(11) == 0 then CaveBot.setOff() return false else return true end
 ]])
 
 addExampleFunction("buy 200 mana potion from npc Eryn", [[
@@ -105,4 +105,10 @@ addExampleFunction("Logout", [[
 g_game.safeLogout()
 delay(1000)
 return "retry"
+]])
+
+addExampleFunction("Close Loot Containers", [[
+CaveBot.CloseAllLootContainers()
+delay(3000)
+return true
 ]])

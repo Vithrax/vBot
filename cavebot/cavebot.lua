@@ -189,6 +189,10 @@ CaveBot.getCurrentProfile = function()
   return storage._configs.cavebot_configs.selected
 end
 
+CaveBot.lastLabel = function()
+  return vBot.lastLabel
+end
+
 local botConfigName = modules.game_bot.contentsPanel.config:getCurrentOption().text
 CaveBot.setCurrentProfile = function(name)
   if not g_resources.fileExists("/bot/"..botConfigName.."/cavebot_configs/"..name..".cfg") then
