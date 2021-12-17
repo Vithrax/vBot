@@ -195,8 +195,7 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
       end
       g_game.setChaseMode(1)
       CaveBot.setOff()
-      antiTrapTriggered = true
-      return "retry"
+      schedule(1000, function() CaveBot.setOn() end)
     else
       return false -- no other way
     end
@@ -234,13 +233,6 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
   -- everything else failed, try to walk ignoring creatures, maybe will work
   CaveBot.walkTo(pos, maxDist, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true, allowUnseen = true, allowOnlyVisibleTiles = false })
   return "retry"
-end)
-
-onAttackingCreatureChange(function(creature, oldCreature)
-  if antiTrapTriggered then
-    CaveBot.setOn()
-    antiTrapTriggered = false
-  end
 end)
 
 CaveBot.registerAction("use", "#FFB272", function(value, retries, prev)
