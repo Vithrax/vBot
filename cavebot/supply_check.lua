@@ -35,6 +35,7 @@ CaveBot.Extensions.SupplyCheck.setup = function()
   time = now
 
   local supplies = SuppliesConfig.supplies
+  supplies = supplies[supplies.currentProfile]
   local softCount = itemAmount(6529) + itemAmount(3549)
   local totalItem1 = itemAmount(supplies.item1)
   local totalItem2 = itemAmount(supplies.item2)

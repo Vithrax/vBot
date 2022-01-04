@@ -1,3 +1,121 @@
+TrackerItem < Panel
+  height: 40
+
+  BotItem
+    id: item
+    anchors.top: parent.top
+    margin-top: 2
+    anchors.left: parent.left
+    image-source:
+
+  UIWidget
+    id: name
+    anchors.top: prev.top
+    margin-top: 1
+    anchors.bottom: prev.verticalCenter
+    anchors.left: prev.right
+    anchors.right: parent.right
+    margin-left: 5
+    text: Set Item to start track.
+    text-align:left
+    font: verdana-11px-rounded
+    color: #FFFFFF
+
+  UIWidget
+    id: drops
+    anchors.top: prev.bottom
+    margin-top: 3
+    anchors.bottom: Item.bottom
+    anchors.left: prev.left
+    anchors.right: parent.right    
+    font: verdana-11px-rounded
+    text-align:left
+    text: Loot Drops: 0
+    color: #CCCCCC
+
+
+DualLabel < Label
+  height: 15
+  text-offset: 4 0
+  font: verdana-11px-rounded
+  text-align: left
+  width: 50
+
+  Label
+    id: value
+    anchors.right: parent.right
+    margin-right: 4
+    anchors.verticalCenter: parent.verticalCenter
+    width: 200
+    font: verdana-11px-rounded
+    text-align: right
+    text: 0
+
+MemberWidget < Panel
+  height: 85
+  margin-top: 3
+
+  UICreature
+    id: creature
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    size: 28 28
+
+  UIWidget
+    id: name
+    anchors.left: prev.right
+    margin-left: 5
+    anchors.top: parent.top
+    height: 12
+    anchors.right: parent.right
+    text: Player Name
+    font: verdana-11px-rounded
+    text-align: left     
+
+  ProgressBar
+    id: health
+    anchors.left: prev.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
+    height: 7
+    background-color: #00c000
+    phantom: false 
+
+  ProgressBar
+    id: mana
+    anchors.left: prev.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    height: 7
+    background-color: #0000FF
+    phantom: false
+
+  DualLabel
+    id: balance
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+    text: Balance:
+
+  DualLabel
+    id: damage
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 2
+    text: Damage:    
+
+  DualLabel
+    id: healing
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 2
+    text: Healing:    
+
 AnalyzerPriceLabel < Label
   background-color: alpha
   text-offset: 2 0
@@ -14,6 +132,18 @@ AnalyzerPriceLabel < Label
     margin-right: 15
     width: 15
     height: 15
+
+AnalyzerListPanel < Panel
+  height: 20
+  padding-left: 4
+  padding-right: 4
+  layout:
+    type: verticalBox
+
+ListLabel < Label
+  height: 15
+  font: verdana-11px-rounded
+  text-offset: 15 0
 
 AnalyzerItemsPanel < Panel
   height: 0
@@ -79,7 +209,7 @@ AnalyzerButton < Button
 MainAnalyzerWindow < MiniWindow
   id: MainAnalyzerWindow
   text: Analytics Selector
-  height: 200
+  height: 245
   icon: /images/topbuttons/analyzers
 
   MiniWindowContents
@@ -107,6 +237,15 @@ MainAnalyzerWindow < MiniWindow
     AnalyzerButton
       id: XPAnalyzer
       text: XP Analyzer
+
+    AnalyzerButton
+      id: DropTracker
+      text: Drop Tracker
+
+    AnalyzerButton
+      id: PartyHunt
+      text: Party Hunt
+      color: #3895D3
 
     AnalyzerButton
       id: Settings
@@ -164,6 +303,29 @@ XPAnalyzer < MiniWindow
     padding-top: 3
     layout: verticalBox
 
+PartyAnalyzerWindow < MiniWindow
+  id: PartyAnalyzerWindow
+  text: Party Hunt
+  height: 200
+  icon: /images/topbuttons/analyzers
+
+  MiniWindowContents
+    padding-left: 3
+    padding-right: 3
+    padding-top: 1
+    layout: verticalBox
+
+DropTracker < MiniWindow
+  id: DropTracker
+  text: Drop Tracker
+  height: 200
+  icon: /images/topbuttons/analyzers
+
+  MiniWindowContents
+    padding-left: 3
+    padding-right: 3
+    padding-top: 1
+    layout: verticalBox
 
 FeaturesWindow < MainWindow
   id: FeaturesWindow

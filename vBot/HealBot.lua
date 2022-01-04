@@ -571,69 +571,76 @@ end
 -- spells
 macro(100, function()
   if standBySpells then return end
-  if not currentSettings.enabled or modules.game_cooldown.isGroupCooldownIconActive(2) or #currentSettings.spellTable == 0 then return end
+  if not currentSettings.enabled then return end
+  local somethingIsOnCooldown = false
 
   for _, entry in pairs(currentSettings.spellTable) do
-    if canCast(entry.spell, not currentSettings.Conditions, not currentSettings.Cooldown) and entry.enabled and entry.cost < mana() then
-      if entry.origin == "HP%" then
-        if entry.sign == "=" and hppercent() == entry.value then
-          say(entry.spell)
-          return
-        elseif entry.sign == ">" and hppercent() >= entry.value then
-          say(entry.spell)
-          return
-        elseif entry.sign == "<" and hppercent() <= entry.value then
-          say(entry.spell)
-          return
+    if entry.enabled and entry.cost < mana() then
+      if canCast(entry.spell, not currentSettings.Conditions, not currentSettings.Cooldown) then
+        if entry.origin == "HP%" then
+          if entry.sign == "=" and hppercent() == entry.value then
+            say(entry.spell)
+            return
+          elseif entry.sign == ">" and hppercent() >= entry.value then
+            say(entry.spell)
+            return
+          elseif entry.sign == "<" and hppercent() <= entry.value then
+            say(entry.spell)
+            return
+          end
+        elseif entry.origin == "HP" then
+          if entry.sign == "=" and hp() == entry.value then
+            say(entry.spell)
+            return
+          elseif entry.sign == ">" and hp() >= entry.value then
+            say(entry.spell)
+            return
+          elseif entry.sign == "<" and hp() <= entry.value then
+            say(entry.spell)
+            return
+          end
+        elseif entry.origin == "MP%" then
+          if entry.sign == "=" and manapercent() == entry.value then
+            say(entry.spell)
+            return
+          elseif entry.sign == ">" and manapercent() >= entry.value then
+            say(entry.spell)
+            return
+          elseif entry.sign == "<" and manapercent() <= entry.value then
+            say(entry.spell)
+            return
+          end
+        elseif entry.origin == "MP" then
+          if entry.sign == "=" and mana() == entry.value then
+            say(entry.spell)
+            return
+          elseif entry.sign == ">" and mana() >= entry.value then
+            say(entry.spell)
+            return
+          elseif entry.sign == "<" and mana() <= entry.value then
+            say(entry.spell)
+            return
+          end    
+        elseif entry.origin == "burst" then
+          if entry.sign == "=" and burstDamageValue() == entry.value then
+            say(entry.spell)
+            return
+          elseif entry.sign == ">" and burstDamageValue() >= entry.value then
+            say(entry.spell)
+            return
+          elseif entry.sign == "<" and burstDamageValue() <= entry.value then
+            say(entry.spell)
+            return
+          end    
         end
-      elseif entry.origin == "HP" then
-        if entry.sign == "=" and hp() == entry.value then
-          say(entry.spell)
-          return
-        elseif entry.sign == ">" and hp() >= entry.value then
-          say(entry.spell)
-          return
-        elseif entry.sign == "<" and hp() <= entry.value then
-          say(entry.spell)
-          return
-        end
-      elseif entry.origin == "MP%" then
-        if entry.sign == "=" and manapercent() == entry.value then
-          say(entry.spell)
-          return
-        elseif entry.sign == ">" and manapercent() >= entry.value then
-          say(entry.spell)
-          return
-        elseif entry.sign == "<" and manapercent() <= entry.value then
-          say(entry.spell)
-          return
-        end
-      elseif entry.origin == "MP" then
-        if entry.sign == "=" and mana() == entry.value then
-          say(entry.spell)
-          return
-        elseif entry.sign == ">" and mana() >= entry.value then
-          say(entry.spell)
-          return
-        elseif entry.sign == "<" and mana() <= entry.value then
-          say(entry.spell)
-          return
-        end    
-      elseif entry.origin == "burst" then
-        if entry.sign == "=" and burstDamageValue() == entry.value then
-          say(entry.spell)
-          return
-        elseif entry.sign == ">" and burstDamageValue() >= entry.value then
-          say(entry.spell)
-          return
-        elseif entry.sign == "<" and burstDamageValue() <= entry.value then
-          say(entry.spell)
-          return
-        end    
+      else
+        somethingIsOnCooldown = true
       end
     end
   end
-  standBySpells = true 
+  if not somethingIsOnCooldown then
+    standBySpells = true 
+  end
 end)
 
 -- items

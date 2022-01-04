@@ -245,7 +245,10 @@ if true then
   macro(500, function()
       if not CaveBot.isOn() or not settings.stake then return end
       for i, tile in ipairs(g_map.getTiles(posz())) do
-          for u,item in ipairs(tile:getItems()) do
+          local path = findPath(player:getPosition(), tile:getPosition(), 12, {precision = 1, ignoreFields = true})
+          if path and #path <= 12 then
+            local item = tile:getTopThing()
+            if item and item:isContainer() then
               if table.find(knifeBodies, item:getId()) and findItem(5908) then
                   CaveBot.delay(550)
                   useWith(5908, item)
@@ -261,6 +264,7 @@ if true then
                   useWith(3483, item)
                   return
               end
+            end
           end
       end
   end)
@@ -273,7 +277,7 @@ if true then
     if not settings.oberon then return end
     if mode == 34 then
         if string.find(text, "world will suffer for") then
-            say("Are you ever going to fight or do you prefer talking!")
+            say("Are you ever going to fight or do you prefer talking?")
         elseif string.find(text, "feet when they see me") then
             say("Even before they smell your breath?")
         elseif string.find(text, "from this plane") then
@@ -298,7 +302,6 @@ end
 
 addCheckBox("autoOpenDoors", "Auto Open Doors", true, rightPanel)
 if true then
-  local wsadWalking = modules.game_walking.wsadWalking
   local doorsIds = { 5007, 8265, 1629, 1632, 5129, 6252, 6249, 7715, 7712, 7714, 
                      7719, 6256, 1669, 1672, 5125, 5115, 5124, 17701, 17710, 1642, 
                      6260, 5107, 4912, 6251, 5291, 1683, 1696, 1692, 5006, 2179, 5116, 
@@ -316,6 +319,7 @@ if true then
   end
 
   onKeyPress(function(keys)
+    local wsadWalking = modules.game_walking.wsadWalking
     if not settings.autoOpenDoors then return end
     local pos = player:getPosition()
     if keys == 'Up' or (wsadWalking and keys == 'W') then
@@ -561,8 +565,9 @@ if true then
   end)
 end
 
-addCheckBox("title", "Open Next Loot Container", true, leftPanel)
+addCheckBox("nextBackpack", "Open Next Loot Container", true, leftPanel)
   local function openNextLootContainer()
+    if not settings.nextBackpack then return end
     local containers = getContainers()
     local lootCotaniersIds = CaveBot.GetLootContainers()
 
@@ -590,5 +595,25 @@ if true then
     schedule(100, function()
       openNextLootContainer()
     end)
+  end)
+end
+
+addCheckBox("highlightTarget", "Highlight Current Target", true, rightPanel)
+if true then
+  local function forceMarked(creature)
+    if target() == creature then
+        creature:setMarked("red")
+        return schedule(333, function() forceMarked(creature) end)
+    end
+  end
+
+  onAttackingCreatureChange(function(newCreature, oldCreature)
+    if not settings.highlightTarget then return end
+      if oldCreature then
+          oldCreature:setMarked('')
+      end
+      if newCreature then
+          forceMarked(newCreature)
+      end
   end)
 end

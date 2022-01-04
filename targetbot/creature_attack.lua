@@ -165,11 +165,10 @@ TargetBot.Creature.walk = function(creature, config, targets)
     end
   end
 
-  local lastRePosition = now
-  if not config.chase and not config.keepDistance and config.rePosition and (creature:getHealthPercent() >= storage.extras.killUnder) then
+  local currentDistance = findPath(pos, cpos, 10, {ignoreCreatures=true, ignoreNonPathable=true, ignoreCost=true})
+  if (not config.chase or #currentDistance == 1) and not config.avoidAttacks and not config.keepDistance and config.rePosition and (creature:getHealthPercent() >= storage.extras.killUnder) then
     return rePosition(config.rePositionAmount or 6)
   end
-  local currentDistance = findPath(pos, cpos, 10, {ignoreCreatures=true, ignoreNonPathable=true, ignoreCost=true})
   if ((storage.extras.killUnder > 1 and (creature:getHealthPercent() < storage.extras.killUnder)) or config.chase) and not config.keepDistance then
     if #currentDistance > 1 then
       return TargetBot.walkTo(cpos, 10, {ignoreNonPathable=true, precision=1})
@@ -237,7 +236,8 @@ onPlayerPositionChange(function(newPos, oldPos)
   if TargetBot.isOff() then return end
   if not lureMax then return end
   if storage.TargetBotDelayWhenPlayer then return end
+  if not dynamicLureDelay then return end
 
-  if dynamicLureDelay and targetCount < (delayFrom or lureMax/2) or not target() then return end
+  if targetCount < (delayFrom or lureMax/2) or not target() then return end
   CaveBot.delay(delayValue or 0)
 end)

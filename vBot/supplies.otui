@@ -1,3 +1,26 @@
+ProfileLabel < UIWidget
+  background-color: alpha
+  text-offset: 3 1
+  focusable: true
+  height: 16
+  font: verdana-11px-rounded
+  text-align: left
+
+  $focus:
+    background-color: #00000055
+
+  Button
+    id: remove
+    !text: tr('X')
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    width: 14
+    height: 14
+    margin-right: 3
+    text-align: center
+    text-offset: 0 1
+    tooltip: Remove profile from the list.
+
 SuppliesWindow < MainWindow
   !text: tr('Supplies')
   size: 430 310
@@ -31,9 +54,10 @@ SuppliesWindow < MainWindow
     anchors.top: prev.bottom
     anchors.left: sep.right
     anchors.right: parent.right
-    margin-top: 10
+    margin-top: 5
     margin-left: 10
-    text: No Soft     
+    text: No Soft
+    tooltip: Go refill if there's no more active soft boots.     
 
   BotSwitch
     id: capSwitch
@@ -45,6 +69,7 @@ SuppliesWindow < MainWindow
     margin-right: 50
     text-align: center
     text: Cap Below:
+    tooltip: Go refill if capacity is below set value.
 
   BotTextEdit
     id: capValue
@@ -64,6 +89,7 @@ SuppliesWindow < MainWindow
     margin-right: 50
     text-align: center
     text: Stamina:
+    tooltip: Go refill if stamina is below set value. (in minutes)
 
   BotTextEdit
     id: staminaValue
@@ -81,6 +107,25 @@ SuppliesWindow < MainWindow
     margin-top: 5
     margin-left: 10
     text: No Imbues
+    tooltip: Go refill when mana leech imbue has worn off.
+
+  TextList
+    id: profiles
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.left: prev.left
+    anchors.right: prev.right
+    anchors.bottom: close.top
+    margin-bottom: 20
+  
+  BotButton
+    id: newProfile
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    size: 35 15
+    text: New
+    font: cipsoftFont
+    tooltip: Create new supplies profile.
 
   BotItem
     id: item1
@@ -311,5 +356,5 @@ SuppliesWindow < MainWindow
     anchors.right: parent.right
     anchors.bottom: parent.bottom
     size: 45 21
-    margin-top: 15
-    margin-right: 5    
+    margin-top: 15   
+    tooltip: Close supplies window and save settings.

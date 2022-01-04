@@ -1,21 +1,9 @@
 setDefaultTab("Main")
-  local panelName = "playerList"
-  local ui = setupUI([[
-Panel
-  height: 18
+local tabs = {"Friends", "Enemies", "BlackList"}
+local panelName = "playerList"
+local colors = {"#03C04A", "#fc4c4e", "orange"}
 
-  Button
-    id: editList
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.right: parent.right
-    background: #292A2A
-    height: 18
-    text: Player Lists
-  ]], parent)
-  ui:setId(panelName)
-
-  if not storage[panelName] then
+if not storage[panelName] then
     storage[panelName] = {
       enemyList = {},
       friendList = {},
@@ -25,22 +13,18 @@ Panel
       marks = false,
       highlight = false
     }
-  end
+end
 
-  local config = storage[panelName]
-  -- for backward compability
-  if not config.blackList then
-    config.blackList = {}
-  end
+local config = storage[panelName]
+local playerTables = {config.friendList, config.enemyList, config.blackList}
 
+-- functions
+local function clearCachedPlayers()
+  CachedFriends = {}
+  CachedEnemies = {}
+end
 
-  -- functions
-  local function clearCachedPlayers()
-    CachedFriends = {}
-    CachedEnemies = {}
-  end
-
-  local refreshStatus = function()
+local refreshStatus = function()
     for _, spec in ipairs(getSpectators()) do
       if spec:isPlayer() and not spec:isLocalPlayer() then
         if config.outfits then
@@ -80,10 +64,10 @@ Panel
         end
       end
     end
-  end
-  refreshStatus()
+end
+refreshStatus()
 
-  local checkStatus = function(creature)
+local checkStatus = function(creature)
     if not creature:isPlayer() or creature:isLocalPlayer() then return end
   
     local specName = creature:getName()
@@ -125,141 +109,148 @@ Panel
         creature:setOutfit(specOutfit)
       end
     end
-  end
+end
 
-  -- eof
 
-  -- UI
-  rootWidget = g_ui.getRootWidget()
-  playerListWindow = UI.createWindow('PlayerListsWindow', rootWidget)
-  playerListWindow:hide()
+rootWidget = g_ui.getRootWidget()
+if rootWidget then
+    local ListWindow = UI.createWindow('PlayerListWindow', rootWidget)
+    ListWindow:hide()
 
-  playerListWindow.Members:setOn(config.groupMembers)
-  playerListWindow.Members.onClick = function(widget)
-    config.groupMembers = not config.groupMembers
-    if not config then
-      clearCachedPlayers()
-    end
-    refreshStatus()
-    widget:setOn(config.groupMembers)
-  end
-  playerListWindow.Outfit:setOn(config.outfits)
-  playerListWindow.Outfit.onClick = function(widget)
-    config.outfits = not config.outfits
-    widget:setOn(config.outfits)
-  end
-  playerListWindow.Marks:setOn(config.marks)
-  playerListWindow.Marks.onClick = function(widget)
-    config.marks = not config.marks
-    widget:setOn(config.marks)
-  end
-  playerListWindow.Highlight:setOn(config.highlight)
-  playerListWindow.Highlight.onClick = function(widget)
-    config.highlight = not config.highlight
-    widget:setOn(config.highlight)
-  end
+    UI.Button("Player Lists", function() 
+        ListWindow:show()
+        ListWindow:raise()
+        ListWindow:focus()
+    end)
 
-  if config.enemyList and #config.enemyList > 0 then
-    for _, name in ipairs(config.enemyList) do
-      local label = g_ui.createWidget("PlayerName", playerListWindow.EnemyList)
-      label.remove.onClick = function(widget)
-        table.removevalue(config.enemyList, label:getText())
-        label:destroy()
+    -- settings
+    ListWindow.settings.Members:setChecked(config.groupMembers)
+    ListWindow.settings.Members.onClick = function(widget)
+      config.groupMembers = not config.groupMembers
+      if not config.groupMembers then
+        clearCachedPlayers()
       end
-      label:setText(name)
+      refreshStatus()
+      widget:setChecked(config.groupMembers)
     end
-  end
-
-  if config.blackList and #config.blackList > 0 then
-    for _, name in ipairs(config.blackList) do
-      local label = g_ui.createWidget("PlayerName", playerListWindow.BlackList)
-      label.remove.onClick = function(widget)
-        table.removevalue(config.blackList, label:getText())
-        label:destroy()
-      end
-      label:setText(name)
-    end
-  end
-
-  if config.friendList and #config.friendList > 0 then
-    for _, name in ipairs(config.friendList) do
-      local label = g_ui.createWidget("PlayerName", playerListWindow.FriendList)
-      label.remove.onClick = function(widget)
-        table.removevalue(config.friendList, label:getText())
-        label:destroy()
-      end
-      label:setText(name)
-    end
-  end
-
-  playerListWindow.AddFriend.onClick = function(widget)
-    local friendName = playerListWindow.FriendName:getText()
-    if friendName:len() > 0 and not table.contains(config.friendList, friendName, true) then
-      table.insert(config.friendList, friendName)
-      local label = g_ui.createWidget("PlayerName", playerListWindow.FriendList)
-      label.remove.onClick = function(widget)
-        table.removevalue(config.friendList, label:getText())
-        label:destroy()
-      end
-      label:setText(friendName)
-      playerListWindow.FriendName:setText('')
-      clearCachedPlayers()
+    ListWindow.settings.Outfit:setChecked(config.outfits)
+    ListWindow.settings.Outfit.onClick = function(widget)
+      config.outfits = not config.outfits
+      widget:setChecked(config.outfits)
       refreshStatus()
     end
-  end
-  
-  playerListWindow.AddEnemy.onClick = function(widget)
-    local enemyName = playerListWindow.EnemyName:getText()
-    if enemyName:len() > 0 and not table.contains(config.enemyList, enemyName, true) then
-      table.insert(config.enemyList, enemyName)
-      local label = g_ui.createWidget("PlayerName", playerListWindow.EnemyList)
-      label.remove.onClick = function(widget)
-        table.removevalue(config.enemyList, label:getText())
-        label:destroy()
-      end
-      label:setText(enemyName)
-      playerListWindow.EnemyName:setText('')
-      clearCachedPlayers()
-      refreshStatus()
+    ListWindow.settings.NeutralsAreEnemy:setChecked(config.marks)
+    ListWindow.settings.NeutralsAreEnemy.onClick = function(widget)
+      config.marks = not config.marks
+      widget:setChecked(config.marks)
     end
-  end 
-
-  playerListWindow.AddBlack.onClick = function(widget)
-    local blackName = playerListWindow.BlackName:getText()
-    if blackName:len() > 0 and not table.contains(config.blackList, blackName, true) then
-      table.insert(config.blackList, blackName)
-      local label = g_ui.createWidget("PlayerName", playerListWindow.BlackList)
-      label.remove.onClick = function(widget)
-        table.removevalue(config.blackList, label:getText())
-        label:destroy()
-      end
-      label:setText(blackName)
-      playerListWindow.BlackName:setText('')
-      clearCachedPlayers()
-      refreshStatus()
+    ListWindow.settings.Highlight:setChecked(config.highlight)
+    ListWindow.settings.Highlight.onClick = function(widget)
+      config.highlight = not config.highlight
+      widget:setChecked(config.highlight)
     end
-  end 
 
-  ui.editList.onClick = function(widget)
-    playerListWindow:show()
-    playerListWindow:raise()
-    playerListWindow:focus()
-  end
-  playerListWindow.closeButton.onClick = function(widget)
-    playerListWindow:hide()
-  end
+    ListWindow.settings.AutoAdd:setChecked(config.autoAdd)
+    ListWindow.settings.AutoAdd.onClick = function(widget)
+      config.autoAdd = not config.autoAdd
+      widget:setChecked(config.autoAdd)
+    end
 
+    local TabBar = ListWindow.tmpTabBar
+    TabBar:setContentWidget(ListWindow.tmpTabContent)
+    local blacklistList
 
--- execution
+    for v = 1, 3 do
+        local listPanel = g_ui.createWidget("tPanel") -- Creates Panel
+        local playerList = playerTables[v]
+        listPanel:setId(tabs[v].."Tab")
+        TabBar:addTab(tabs[v], listPanel)
+
+        -- elements
+        local addButton = listPanel.add
+        local nameTab = listPanel.name
+        local list = listPanel.list
+        if v == 3 then
+          blacklistList = list
+        end
+
+        for i, name in ipairs(playerList) do
+            local label = UI.createWidget("PlayerLabel", list)
+            label:setText(name)
+            label.remove.onClick = function()
+                table.remove(playerList, table.find(playerList, name))
+                label:destroy()
+                clearCachedPlayers()
+                refreshStatus()
+            end
+        end
+
+        local tabButton = TabBar.buttonsPanel:getChildren()[v]
+
+        tabButton.onStyleApply = function(widget)
+            if TabBar:getCurrentTab() == widget then
+                widget:setColor(colors[v])
+            end 
+        end
+
+        -- callbacks
+        addButton.onClick = function()
+            local name = nameTab:getText()
+
+            if name:len() == 0 then
+                warn("vBot[PlayerList]: Name is missing!")
+            else
+                if not table.find(playerList, name) then
+                    table.insert(playerList, name)
+                    local label = UI.createWidget("PlayerLabel", list)
+                    label:setText(name)
+                    label.remove.onClick = function()
+                        table.remove(playerList, table.find(playerList, name))
+                        label:destroy()
+                    end
+                    nameTab:setText("")
+                else
+                    warn("vBot[PlayerList]: Player is already added!")
+                    nameTab:setText("")
+                end
+                clearCachedPlayers()
+                refreshStatus()
+            end
+        end
+    end
+
+    function addBlackListPlayer(name)
+      if table.find(config.blackList, name) then return end
+
+      table.insert(config.blackList, name)
+      local label = UI.createWidget("PlayerLabel", blacklistList)
+      label:setText(name)
+      label.remove.onClick = function()
+          table.remove(playerList, table.find(playerList, name))
+          label:destroy()
+      end
+    end
+end
+
+onTextMessage(function(mode,text)
+  if not config.autoAdd then return end
+  if CaveBot.isOff() or TargetBot.isOff() then return end
+  if not text:find("Warning! The murder of") then return end
+
+    text = string.split(text, "Warning! The murder of ")[1]
+    text = string.split(text, " was not justified.")[1]
+
+    addBlackListPlayer(text)
+end)
 
 onCreatureAppear(function(creature)
-  checkStatus(creature)
-end)
-
-onPlayerPositionChange(function(x,y)
-  if x.z ~= y.z then
-    schedule(20, function()
-      refreshStatus()
-    end)
-  end
-end)
+    checkStatus(creature)
+  end)
+  
+  onPlayerPositionChange(function(x,y)
+    if x.z ~= y.z then
+      schedule(20, function()
+        refreshStatus()
+      end)
+    end
+  end)

@@ -28,6 +28,7 @@ end
 local config = storage[panelName]
 
 if not storage.BotServerChannel then
+  math.randomseed(os.time())
   storage.BotServerChannel = tostring(math.random(1000000000000,9999999999999))
 end
 

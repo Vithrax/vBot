@@ -3,6 +3,7 @@ CaveBot.Extensions.BuySupplies = {}
 CaveBot.Extensions.BuySupplies.setup = function()
   CaveBot.registerAction("BuySupplies", "#C300FF", function(value, retries)
     local supplies = SuppliesConfig.supplies
+    supplies = supplies[supplies.currentProfile]
     local item1Count = itemAmount(supplies.item1)
     local item2Count = itemAmount(supplies.item2)
     local item3Count = itemAmount(supplies.item3)

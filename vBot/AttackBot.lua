@@ -1165,7 +1165,7 @@ macro(100, function()
   for i, entry in pairs(currentSettings.attackTable) do
     local attackData = entry.itemId > 100 and entry.itemId or entry.spell
     if entry.enabled and manapercent() >= entry.mana then
-      if (entry.spell and canCast(entry.spell, not currentSettings.ignoreMana, not currentSettings.Cooldown)) or (entry.itemId > 100 and (not currentSettings.Visible or findItem(entry.itemId))) then 
+      if (type(attackData) == "string" and canCast(entry.spell, not currentSettings.ignoreMana, not currentSettings.Cooldown)) or (entry.itemId > 100 and (not currentSettings.Visible or findItem(entry.itemId))) then 
         -- first PVP scenario
         if currentSettings.pvpMode and target():getHealthPercent() >= entry.minHp and target():getHealthPercent() <= entry.maxHp and target():canShoot() then
           if entry.category == 2 then
@@ -1193,7 +1193,9 @@ macro(100, function()
           local safe = currentSettings.PvpSafe and spellPatterns[pCat][entry.pattern][2] or false
           local monsterAmount = pCat ~= 8 and getMonstersInArea(entry.category, anchorParam, spellPatterns[pCat][entry.pattern][1], entry.minHp, entry.maxHp, safe, entry.monsters)
           if (pattern ~= 8 and (entry.orMore and monsterAmount >= entry.count or not entry.orMore and monsterAmount == entry.count)) or (pattern == 8 and bestSide >= entry.count and (not currentSettings.PvpSafe or getPlayers(2) == 0)) then
-            return executeAttackBotAction(entry.category, attackData, entry.cooldown)
+            if (not currentSettings.BlackListSafe or not isBlackListedPlayerInRange(currentSettings.AntiRsRange)) and (not currentSettings.Kills or killsToRs() > currentSettings.KillsAmount) then
+              return executeAttackBotAction(entry.category, attackData, entry.cooldown)
+            end
           end
         elseif entry.category == 2 then
           local pCat = entry.patternCategory
@@ -1206,7 +1208,9 @@ macro(100, function()
             pos = data.pos
           end
           if monsterAmount and (entry.orMore and monsterAmount >= entry.count or not entry.orMore and monsterAmount == entry.count) then
-            return useWith(attackData, g_map.getTile(pos):getTopUseThing())
+            if (not currentSettings.BlackListSafe or not isBlackListedPlayerInRange(currentSettings.AntiRsRange)) and (not currentSettings.Kills or killsToRs() > currentSettings.KillsAmount) then
+              return useWith(attackData, g_map.getTile(pos):getTopUseThing())
+            end
           end
         end
       end

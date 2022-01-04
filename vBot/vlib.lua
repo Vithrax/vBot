@@ -242,7 +242,6 @@ function cast(text, delay)
     local lastCast = SpellCastTable[text].t
     local spellDelay = SpellCastTable[text].d
     if now - lastCast > spellDelay then return say(text) end
-    return
 end
 
 -- canCast is a base for AttackBot and HealBot
@@ -274,10 +273,6 @@ function canCast(spell, ignoreRL, ignoreCd)
     return true
 end
 
--- exctracts data about spell from gamelib SpellInfo table
--- returns table
--- ie:['Spell Name'] = {id, words, exhaustion, premium, type, icon, mana, level, soul, group, vocations}
--- cooldown detection module
 local lastPhrase = ""
 onTalk(function(name, level, mode, text, channelId, pos)
     if name == player:getName() then
@@ -304,6 +299,11 @@ if onSpellCooldown and onGroupSpellCooldown then
 else
     warn("Outdated OTClient! update to newest version to take benefits from all scripts!")
 end
+
+-- exctracts data about spell from gamelib SpellInfo table
+-- returns table
+-- ie:['Spell Name'] = {id, words, exhaustion, premium, type, icon, mana, level, soul, group, vocations}
+-- cooldown detection module
 function getSpellData(spell)
     if not spell then return false end
     spell = spell:lower()
@@ -745,6 +745,7 @@ end
 -- returns boolean
 function hasSupplies()
     local supplies = SuppliesConfig.supplies
+    supplies = supplies[supplies.currentProfile]
     local items = {
         {ID = supplies.item1, minAmount = supplies.item1Min},
         {ID = supplies.item2, minAmount = supplies.item2Min},
