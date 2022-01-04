@@ -245,27 +245,24 @@ if true then
   macro(500, function()
       if not CaveBot.isOn() or not settings.stake then return end
       for i, tile in ipairs(g_map.getTiles(posz())) do
-          local path = findPath(player:getPosition(), tile:getPosition(), 12, {precision = 1, ignoreFields = true})
-          if path and #path <= 12 then
-            local item = tile:getTopThing()
-            if item and item:isContainer() then
-              if table.find(knifeBodies, item:getId()) and findItem(5908) then
-                  CaveBot.delay(550)
-                  useWith(5908, item)
-                  return
-              end
-              if table.find(stakeBodies, item:getId()) and findItem(5942) then
-                  CaveBot.delay(550)
-                  useWith(5942, item)
-                  return
-              end
-              if table.find(fishingBodies, item:getId()) and findItem(3483) then
-                  CaveBot.delay(550)
-                  useWith(3483, item)
-                  return
-              end
-            end
+        local item = tile:getTopThing()
+        if item and item:isContainer() then
+          if table.find(knifeBodies, item:getId()) and findItem(5908) then
+              CaveBot.delay(550)
+              useWith(5908, item)
+              return
           end
+          if table.find(stakeBodies, item:getId()) and findItem(5942) then
+              CaveBot.delay(550)
+              useWith(5942, item)
+              return
+          end
+          if table.find(fishingBodies, item:getId()) and findItem(3483) then
+              CaveBot.delay(550)
+              useWith(3483, item)
+              return
+          end
+        end
       end
   end)
 end
