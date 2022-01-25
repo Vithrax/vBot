@@ -1,9 +1,11 @@
-local version = "4.3"
+local version = "4.2"
 local currentVersion
 local hashcode
 local available = false
 
-storage.checkVersion = storage.checkVersion or os.time()
+
+storage.checkVersion = nil
+storage.checkVersion = storage.checkVersion or 0
 
 -- check max once per 12hours
 if os.time() > storage.checkVersion + (12 * 60 * 60) then
@@ -17,8 +19,8 @@ if os.time() > storage.checkVersion + (12 * 60 * 60) then
         end
 
         local t = string.split(data, ",")
-        currentVersion = data[1]:trim()
-        hashcode = data[2]:trim()
+        currentVersion = t[1]:trim()
+        hashcode = t[2]:trim()
         available = true
     end)
 
