@@ -48,7 +48,9 @@ local luaFiles = {
   "spy_level",
   "supplies",
   "depositer_config",
-  "npc_talk"
+  "npc_talk",
+  "xeno_menu",
+  "hold_target"
 }
 
 for i, file in ipairs(luaFiles) do

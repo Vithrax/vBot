@@ -18,6 +18,18 @@ function standTime()
     return now - vBot.standTime
 end
 
+function relogOnCharacter(charName)
+    local characters = g_ui.getRootWidget().charactersWindow.characters
+    for index, child in ipairs(characters:getChildren()) do
+        local name = child:getChildren()[1]:getText()
+    
+        if name:lower():find(charName:lower()) then
+            child:focus()
+            schedule(100, modules.client_entergame.CharacterList.doLogin)
+        end
+    end
+end
+
 local dmgTable = {}
 local lastDmgMessage = now
 onTextMessage(function(mode, text)
