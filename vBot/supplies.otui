@@ -24,6 +24,7 @@ ProfileLabel < UIWidget
 SuppliesWindow < MainWindow
   !text: tr('Supplies')
   size: 430 310
+  @onEscape: self:hide()
 
   VerticalSeparator
     id: sep

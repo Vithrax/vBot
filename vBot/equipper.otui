@@ -70,7 +70,7 @@ Rule < UIWidget
 
 
 ConditionPanel < Panel
-  height: 55
+  height: 53
 
   NexButton
     id: nex
@@ -115,12 +115,8 @@ ConditionPanel < Panel
 
 
 
-
-
-
-
 ListPanel < FlatPanel
-  size: 270 265
+  size: 270 300
   padding-left: 10
   padding-right: 10
   padding-bottom: 10
@@ -218,10 +214,8 @@ Unequip < Panel
 
 
 
-
-
 InputPanel < FlatPanel
-  size: 270 265
+  size: 270 300
   padding-left: 10
   padding-right: 10
   padding-bottom: 10
@@ -240,12 +234,12 @@ InputPanel < FlatPanel
     anchors.right: parent.right
     anchors.top: parent.top
     margin-top: 10
-    height: 40
+    height: 80
     layout:
       type: grid
       cell-size: 34 34
       cell-spacing: 2
-      num-columns: 9
+      num-columns: 7
 
   Button
     id: unequip
@@ -303,7 +297,7 @@ InputPanel < FlatPanel
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 8
+    margin-top: 3
 
   HorizontalSeparator
     anchors.left: parent.left
@@ -336,7 +330,7 @@ InputPanel < FlatPanel
     tooltip: On add above rule will be listed as Profile name - use friendly one!
 
 EquipWindow < MainWindow
-  size: 600 345
+  size: 600 370
   text: Equipment Manager
   @onEscape: self:hide()
 

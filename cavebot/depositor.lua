@@ -120,5 +120,6 @@ CaveBot.Extensions.Depositor.setup = function()
 	 value="no",
 	 title="Depositor",
 	 description=description,
+	 validation="(yes|Yes|YES|no|No|NO)"
 	})
 end

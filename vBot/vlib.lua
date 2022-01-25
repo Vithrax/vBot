@@ -528,6 +528,16 @@ function getActiveItemId(id)
         return 23534
     elseif id == 23529 then
         return 23530
+    elseif id == 30343 then -- Sleep Shawl
+        return 30342
+    elseif id == 30344 then -- Enchanted Pendulet
+        return 30345
+    elseif id == 30403 then -- Enchanted Theurgic Amulet
+        return 30402
+    elseif id == 31621 then -- Blister Ring
+        return 31616
+    elseif id == 32621 then -- Ring of Souls
+        return 32635
     else
         return id
     end
@@ -566,6 +576,16 @@ function getInactiveItemId(id)
         return 23533
     elseif id == 23530 then
         return 23529
+    elseif id == 30342 then -- Sleep Shawl
+        return 30343
+    elseif id == 30345 then -- Enchanted Pendulet
+        return 30344
+    elseif id == 30402 then -- Enchanted Theurgic Amulet
+        return 30403
+    elseif id == 31616 then -- Blister Ring
+        return 31621
+    elseif id == 32635 then -- Ring of Souls
+        return 32621
     else
         return id
     end

@@ -53,5 +53,6 @@ CaveBot.Extensions.OpenDoors.setup = function()
     title="Door position",
     description="doors position (x,y,z) and key id (optional)",
     multiline=false,
+    validation=[[\d{1,5},\d{1,5},\d{1,2}(?:,\d{1,5}$|$)]]
 })
 end

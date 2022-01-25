@@ -60,5 +60,6 @@ CaveBot.Extensions.SellAll.setup = function()
   value="NPC",
   title="Sell All",
   description="Insert NPC name, and 'yes' if sell with delay  ",
+  validation=[[^[^,]+(?:, yes$|, Yes$|, YES$|$)]]
  })
 end

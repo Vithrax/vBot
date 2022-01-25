@@ -50,7 +50,8 @@ local conditions = { -- always add new conditions at the bottom
     "Player is paralyzed", -- nothing 10
     "Player is in protection zone", -- nothing 11
     "Players around is more than:", -- spinbox 12
-    "Players around is less than:" -- spinbox 13
+    "Players around is less than:", -- spinbox 13
+    "TargetBot Danger is Above:" -- spinbox 14
 }
 
 local conditionNumber = 1
@@ -225,25 +226,31 @@ inputPanel.optionalCondition.pre.onClick = function()
     setCondition(false, optionalConditionNumber)
 end
 
-listPanel.up.onClick = function()
-    local n = listPanel.list:getChildIndex(listPanel.list:getFocusedChild())
+listPanel.up.onClick = function(widget)
+    local focused = listPanel.list:getFocusedChild()
+    local n = listPanel.list:getChildIndex(focused)
     local t = config.rules
 
     t[n], t[n-1] = t[n-1], t[n]
-    listPanel.up:setEnabled(false)
-    listPanel.down:setEnabled(false)
-    refreshRules()
+    if n-1 == 1 then
+      widget:setEnabled(false)
+    end
+    listPanel.down:setEnabled(true)
+    listPanel.list:moveChildToIndex(focused, n-1)
 end
 
-listPanel.down.onClick = function()
-    local n = listPanel.list:getChildIndex(listPanel.list:getFocusedChild())
+listPanel.down.onClick = function(widget)
+    local focused = listPanel.list:getFocusedChild()    
+    local n = listPanel.list:getChildIndex(focused)
     local t = config.rules
 
     t[n], t[n+1] = t[n+1], t[n]
-    listPanel.up:setEnabled(false)
-    listPanel.down:setEnabled(false)
-    refreshRules()
-end
+    if n + 1 == listPanel.list:getChildCount() then
+      widget:setEnabled(false)
+    end
+    listPanel.up:setEnabled(true)
+    listPanel.list:moveChildToIndex(focused, n+1)
+  end
 
 function getItemsFromBox()
     local t = {}
@@ -261,6 +268,19 @@ function refreshItemBox(reset)
     local max = 8
     local box = inputPanel.itemBox
     local childAmount = box:getChildCount()
+
+    --height
+    if #getItemsFromBox() < 7 then
+        mainWindow:setHeight(345)
+        inputPanel:setHeight(265)
+        listPanel:setHeight(265)
+        box:setHeight(40)
+    else
+        mainWindow:setHeight(370)
+        inputPanel:setHeight(300)
+        listPanel:setHeight(300)
+        box:setHeight(80)
+    end
 
     if reset then
         box:destroyChildren()
@@ -285,9 +305,8 @@ function refreshItemBox(reset)
                 widget:destroy()
             end
             refreshItemBox()
-            refreshItemBox()
         end
-    elseif box:getLastChild():getItemId() > 100 and childAmount < max then
+    elseif box:getLastChild():getItemId() > 100 and childAmount <= max then
         local widget = UI.createWidget("BotItem", box)
         widget.onItemChange = function(widget)
             local id = widget:getItemId()
@@ -295,7 +314,6 @@ function refreshItemBox(reset)
             if id < 100 or (table.find(getItemsFromBox(), id) ~= index) then
                 widget:destroy()
             end
-            refreshItemBox()
             refreshItemBox()
         end
     end
@@ -518,25 +536,21 @@ onKeyPress(function(keys)
 end)
 
 local function interpreteCondition(n, v)
-    local hp = hppercent()
-    local mp = manapercent()
-    local mobs = getMonsters()
-    local players = getPlayers()
 
     if n == 1 then
         return true
     elseif n == 2 then
-        return mobs > v
+        return getMonsters() > v
     elseif n == 3 then
-        return mobs < v
+        return getMonsters() < v
     elseif n == 4 then
-        return hp < v
+        return hppercent() < v
     elseif n == 5 then
-        return hp > v
+        return hppercent() > v
     elseif n == 6 then
-        return mp < v
+        return manapercent() < v
     elseif n == 7 then
-        return mp > v
+        return manapercent() > v
     elseif n == 8 then
         return target() and target():getName():lower() == v:lower() or false
     elseif n == 9 then
@@ -546,10 +560,13 @@ local function interpreteCondition(n, v)
     elseif n == 11 then
         return isInPz()
     elseif n == 12 then
-        return players > v
+        return getPlayers() > v
     elseif n == 13 then
-        return players < v
+        return getPlayers() < v
+    elseif n == 14 then
+        return TargetBot.Danger() > v and TargetBot.isOn()
     end
+    
 end
 
 local function finalCheck(first,relation,second)

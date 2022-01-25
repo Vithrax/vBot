@@ -195,27 +195,43 @@ if rootWidget then
 
         -- callbacks
         addButton.onClick = function()
-            local name = nameTab:getText()
+            local names = string.split(nameTab:getText(), ",")
 
-            if name:len() == 0 then
-                warn("vBot[PlayerList]: Name is missing!")
-            else
-                if not table.find(playerList, name) then
-                    table.insert(playerList, name)
-                    local label = UI.createWidget("PlayerLabel", list)
-                    label:setText(name)
-                    label.remove.onClick = function()
-                        table.remove(playerList, table.find(playerList, name))
-                        label:destroy()
-                    end
-                    nameTab:setText("")
-                else
-                    warn("vBot[PlayerList]: Player is already added!")
-                    nameTab:setText("")
-                end
-                clearCachedPlayers()
-                refreshStatus()
+            if #names == 0 then
+              warn("vBot[PlayerList]: Name is missing!")
+              return
             end
+
+            for i=1,#names do
+              local name = names[i]:trim()
+              if name:len() == 0 then
+                  warn("vBot[PlayerList]: Name is missing!")
+              else
+                  if not table.find(playerList, name) then
+                      table.insert(playerList, name)
+                      local label = UI.createWidget("PlayerLabel", list)
+                      label:setText(name)
+                      label.remove.onClick = function()
+                          table.remove(playerList, table.find(playerList, name))
+                          label:destroy()
+                      end
+                      nameTab:setText("")
+                  else
+                      warn("vBot[PlayerList]: Player ".. name .." is already added!")
+                      nameTab:setText("")
+                  end
+                  clearCachedPlayers()
+                  refreshStatus()
+              end
+            end
+        end
+
+        nameTab.onKeyPress = function(widget, keyCode, keyboardModifiers)
+          if keyCode ~= 5 then
+            return false
+          end
+          addButton.onClick()
+          return true
         end
     end
 

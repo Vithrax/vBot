@@ -76,9 +76,10 @@ CaveBot.Extensions.Imbuing.setup = function()
     if not item then
       -- did try before, still not found so item is unavailable
       if triedToTakeOff then
-        warn("CaveBot[Imbuing] item not found! proceeding")
-        reset()
-        return false
+        warn("CaveBot[Imbuing] item not found! skipping: "..currentId)
+        triedToTakeOff = false
+        currentIndex = currentIndex + 1
+        return "retry"
       end
       triedToTakeOff = true
       g_game.equipItemId(currentId)
@@ -99,7 +100,7 @@ CaveBot.Extensions.Imbuing.setup = function()
     useWith(shrine, item)
     currentIndex = currentIndex + 1
     warn("CaveBot[Imbuing] Using shrine on item: "..currentId)
-    delay(2000)
+    delay(4000)
     return "retry"
   end)
 

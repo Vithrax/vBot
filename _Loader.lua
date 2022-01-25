@@ -31,7 +31,7 @@ local luaFiles = {
   "pushmax",
   "combo",
   "HealBot",
-  "Sio",
+  "new healer",
   "AttackBot", -- last of major modules
   "ingame_editor",
   "Dropper",

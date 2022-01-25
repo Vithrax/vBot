@@ -76,6 +76,13 @@ Panel
   if rootWidget then
     conditionsWindow = UI.createWindow('ConditionsWindow', rootWidget)
     conditionsWindow:hide()
+    
+
+    conditionsWindow.onVisibilityChange = function(widget, visible)
+      if not visible then
+        vBotConfigSave("heal")
+      end
+    end
 
     -- text edits
     conditionsWindow.Cure.PoisonCost:setText(config.poisonCost)
@@ -220,7 +227,13 @@ Panel
     -- buttons
     conditionsWindow.closeButton.onClick = function(widget)
       conditionsWindow:hide()
-      vBotConfigSave("heal")
+    end
+
+    Conditions = {}
+    Conditions.show = function()
+      conditionsWindow:show()
+      conditionsWindow:raise()
+      conditionsWindow:focus()
     end
   end
 

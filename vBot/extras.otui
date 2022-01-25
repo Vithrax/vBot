@@ -2,7 +2,7 @@ ExtrasScrollBar < Panel
   height: 28
   margin-top: 3
 
-  Label
+  UIWidget
     id: text
     anchors.left: parent.left
     anchors.right: parent.right
@@ -23,7 +23,7 @@ ExtrasTextEdit < Panel
   height: 40
   margin-top: 7
 
-  Label
+  UIWidget
     id: text
     anchors.left: parent.left
     anchors.right: parent.right
@@ -47,7 +47,7 @@ ExtrasItem < Panel
   margin-left: 25
   margin-right: 25
 
-  Label
+  UIWidget
     id: text
     anchors.left: parent.left
     anchors.verticalCenter: next.verticalCenter

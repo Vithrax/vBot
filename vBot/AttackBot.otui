@@ -1,6 +1,6 @@
 AttackEntry < UIWidget
   background-color: alpha
-  text-offset: 18 1
+  text-offset: 35 1
   focusable: true
   height: 16
   font: verdana-11px-rounded
@@ -14,6 +14,22 @@ AttackEntry < UIWidget
     height: 15
     margin-top: 2
     margin-left: 3
+
+  UIItem
+    id: id
+    anchors.left: prev.right
+    anchors.verticalCenter: parent.verticalCenter
+    size: 16 16
+    focusable: false
+    visible: false
+
+  UIWidget
+    id: spell
+    anchors.left: enabled.right
+    anchors.verticalCenter: parent.verticalCenter
+    size: 12 12
+    margin-left: 1
+    image-source: /images/game/dangerous
 
   $focus:
     background-color: #00000055
@@ -537,6 +553,7 @@ AttackBotWindow < MainWindow
   size: 535 300
   padding: 15
   text: AttackBot v2
+  @onEscape: self:hide()
 
   Label
     id: mainLabel

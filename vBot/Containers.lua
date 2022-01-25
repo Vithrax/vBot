@@ -75,9 +75,10 @@ renameContui:setId(panelName)
 g_ui.loadUIFromString([[
 BackpackName < Label
   background-color: alpha
-  text-offset: 18 0
+  text-offset: 18 2
   focusable: true
-  height: 16
+  height: 17
+  font: verdana-11px-rounded
 
   CheckBox
     id: enabled
@@ -85,7 +86,7 @@ BackpackName < Label
     anchors.verticalCenter: parent.verticalCenter
     width: 15
     height: 15
-    margin-top: 2
+    margin-top: 1
     margin-left: 3
 
   $focus:
@@ -95,29 +96,41 @@ BackpackName < Label
     id: state
     !text: tr('M')
     anchors.right: remove.left
-    margin-right: 5
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 1
     width: 15
     height: 15
 
   Button
     id: remove
-    !text: tr('x')
+    !text: tr('X')
     !tooltip: tr('Remove')
     anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
     margin-right: 15
     width: 15
     height: 15
 
+  Button
+    id: openNext
+    !text: tr('N')
+    anchors.right: state.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 1
+    width: 15
+    height: 15
+    tooltip: Open container inside with the same ID.
+
 ContListsWindow < MainWindow
   !text: tr('Container Names')
-  size: 445 170
+  size: 465 170
   @onEscape: self:hide()
 
   TextList
     id: itemList
     anchors.left: parent.left
     anchors.top: parent.top
-    size: 180 83
+    size: 200 90
     margin-top: 3
     margin-bottom: 3
     margin-left: 3
@@ -396,15 +409,19 @@ if rootWidget then
                     entry.min = not entry.min
                     label.state:setChecked(entry.min)
                     label.state:setColor(entry.min and '#00FF00' or '#FF0000')
-                    label.state:setTooltip(entry.min and 'Open Minimised' or 'Do not minimise')
                 end
-
+                label.openNext.onClick = function(widget)
+                    entry.openNext = not entry.openNext
+                    label.openNext:setChecked(entry.openNext)
+                    label.openNext:setColor(entry.openNext and '#00FF00' or '#FF0000')
+                end
                 label:setText(entry.value)
                 label.enabled:setChecked(entry.enabled)
                 label.enabled:setTooltip(entry.enabled and 'Disable' or 'Enable')
                 label.enabled:setImageColor(entry.enabled and '#00FF00' or '#FF0000')
                 label.state:setColor(entry.min and '#00FF00' or '#FF0000')
                 label.state:setTooltip(entry.min and 'Open Minimised' or 'Do not minimise')
+                label.openNext:setColor(entry.openNext and '#00FF00' or '#FF0000')
 
                 if tFocus and entry.item == tFocus then
                     tFocus = label
@@ -440,25 +457,55 @@ if rootWidget then
 end
 
 onContainerOpen(function(container, previousContainer)
-    if renameContui.title:isOn() then
-        if not container.window then return end
-        local containerWindow = container.window
-        if not previousContainer then
-            containerWindow:setContentHeight(34)
-        end
-        local storageVal = config.list
-        if storageVal and #storageVal > 0 then
-            for _, entry in pairs(storageVal) do
-                if entry.enabled and string.find(container:getContainerItem():getId(), entry.item) then
-                    if entry.min then
-                        containerWindow:minimize()
-                    end
+    if not container.window then return end
+    local containerWindow = container.window
+    if not previousContainer then
+        containerWindow:setContentHeight(34)
+    end
+
+    local storageVal = config.list
+    if storageVal and #storageVal > 0 then
+        for _, entry in pairs(storageVal) do
+            if entry.enabled and string.find(container:getContainerItem():getId(), entry.item) then
+                if entry.min then
+                    containerWindow:minimize()
+                end
+                if renameContui.title:isOn() then
                     containerWindow:setText(entry.value)
+                end
+                if entry.openNext then
+                    for i, item in ipairs(container:getItems()) do
+                        if item:getId() == entry.item then
+                            local time = #storageVal * 250
+                            schedule(time, function()
+                                time = time + 250
+                                g_game.open(item)
+                            end)
+                        end
+                    end
                 end
             end
         end
     end
 end)
+
+local function nameContainersOnLogin()
+    for i, container in ipairs(getContainers()) do
+        if renameContui.title:isOn() then
+            if not container.window then return end
+            local containerWindow = container.window
+            local storageVal = config.list
+            if storageVal and #storageVal > 0 then
+                for _, entry in pairs(storageVal) do
+                    if entry.enabled and string.find(container:getContainerItem():getId(), entry.item) then
+                        containerWindow:setText(entry.value)
+                    end
+                end
+            end
+        end
+    end
+end
+nameContainersOnLogin()
 
 local function moveItem(item, destination)
     return g_game.move(item, destination:getSlotPosition(destination:getItemsCount()), item:getCount())

@@ -1,3 +1,9 @@
+SettingCheckBox < CheckBox
+  text-wrap: true
+  text-auto-resize: true
+  margin-top: 3
+  font: verdana-11px-rounded
+
 SpellSourceBoxPopupMenu < ComboBoxPopupMenu
 SpellSourceBoxPopupMenuButton < ComboBoxPopupMenuButton
 SpellSourceBox < ComboBox
@@ -18,9 +24,10 @@ SpellConditionBox < ComboBox
 
 SpellEntry < Label
   background-color: alpha
-  text-offset: 18 0
+  text-offset: 18 1
   focusable: true
   height: 16
+  font: verdana-11px-rounded
 
   CheckBox
     id: enabled
@@ -39,14 +46,33 @@ SpellEntry < Label
     !text: tr('x')
     anchors.right: parent.right
     margin-right: 15
+    text-offset: 1 0
     width: 15
-    height: 15
+    height: 15   
 
 ItemEntry < Label
   background-color: alpha
-  text-offset: 2 0
+  text-offset: 40 1
   focusable: true
   height: 16
+  font: verdana-11px-rounded
+
+  CheckBox
+    id: enabled
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    width: 15
+    height: 15
+    margin-top: 2
+    margin-left: 3
+
+  UIItem
+    id: id
+    anchors.left: prev.right
+    margin-left: 3
+    anchors.verticalCenter: parent.verticalCenter
+    size: 15 15
+    focusable: false
 
   $focus:
     background-color: #00000055
@@ -56,30 +82,37 @@ ItemEntry < Label
     !text: tr('x')
     anchors.right: parent.right
     margin-right: 15
+    text-offset: 1 0
     width: 15
-    height: 15                       
+    height: 15               
 
-SpellHealing < Panel
-  image-source: /images/ui/panel_flat
-  image-border: 6
-  padding: 3
+SpellHealing < FlatPanel
   size: 490 130
+
+  Label
+    id: title
+    anchors.verticalCenter: parent.top
+    anchors.left: parent.left
+    margin-left: 5
+    text: Spell Healing
+    color: #269e26
+    font: verdana-11px-rounded
+
+  SpellSourceBox
+    id: spellSource
+    anchors.top: spellList.top
+    anchors.left: spellList.right
+    margin-left: 80
+    width: 125
+    font: verdana-11px-rounded
 
   Label
     id: whenSpell
     anchors.left: spellList.right
-    anchors.top: parent.top
+    anchors.verticalCenter: prev.verticalCenter
     text: When
-    margin-top: 10
     margin-left: 7
-
-  SpellSourceBox
-    id: spellSource
-    anchors.top: parent.top
-    anchors.left: whenSpell.right
-    margin-top: 5
-    margin-left: 35
-    width: 128
+    font: verdana-11px-rounded
 
   Label
     id: isSpell
@@ -88,6 +121,7 @@ SpellHealing < Panel
     text: Is
     margin-top: 9
     margin-left: 7 
+    font: verdana-11px-rounded
 
   SpellConditionBox
     id: spellCondition
@@ -95,13 +129,15 @@ SpellHealing < Panel
     anchors.top: spellSource.bottom   
     marin-top: 15
     width: 80
+    font: verdana-11px-rounded
 
   TextEdit
     id: spellValue
     anchors.left: spellCondition.right
     anchors.top: spellCondition.top
     anchors.bottom: spellCondition.bottom
-    width: 49
+    anchors.right: spellSource.right
+    font: verdana-11px-rounded
 
   Label
     id: castSpell
@@ -109,12 +145,14 @@ SpellHealing < Panel
     anchors.top: isSpell.bottom
     text: Cast  
     margin-top: 9
+    font: verdana-11px-rounded
 
   TextEdit
     id: spellFormula
     anchors.left: spellCondition.left
     anchors.top: spellCondition.bottom
     anchors.right: spellValue.right
+    font: verdana-11px-rounded
 
   Label
     id: manaSpell
@@ -122,21 +160,26 @@ SpellHealing < Panel
     anchors.top: castSpell.bottom
     text: Mana Cost:
     margin-top: 8
+    font: verdana-11px-rounded
 
   TextEdit
     id: manaCost
     anchors.left: spellFormula.left
     anchors.top: spellFormula.bottom
     width: 40 
+    font: verdana-11px-rounded
 
   TextList
     id: spellList
     anchors.left: parent.left
     anchors.bottom: parent.bottom
+    anchors.top: parent.top
     padding: 1
-    size: 270 116    
-    margin-bottom: 3
-    margin-left: 3
+    padding-top: 2
+    width: 270  
+    margin-bottom: 7
+    margin-left: 7
+    margin-top: 10
     vertical-scrollbar: spellListScrollBar
 
   VerticalScrollBar
@@ -150,9 +193,7 @@ SpellHealing < Panel
   Button
     id: addSpell
     anchors.right: spellFormula.right
-    anchors.bottom: parent.bottom
-    margin-bottom: 2
-    margin-right: 10
+    anchors.bottom: spellList.bottom
     text: Add
     size: 40 17
     font: cipsoftFont
@@ -160,8 +201,7 @@ SpellHealing < Panel
   Button
     id: MoveUp
     anchors.right: prev.left
-    anchors.bottom: parent.bottom
-    margin-bottom: 2
+    anchors.bottom: prev.bottom
     margin-right: 5
     text: Move Up
     size: 55 17
@@ -170,34 +210,39 @@ SpellHealing < Panel
   Button
     id: MoveDown
     anchors.right: prev.left
-    anchors.bottom: parent.bottom
-    margin-bottom: 2
+    anchors.bottom: prev.bottom
     margin-right: 5
     text: Move Down
     size: 55 17
     font: cipsoftFont  
 
-ItemHealing < Panel
-  image-source: /images/ui/panel_flat
-  image-border: 6
-  padding: 3
-  size: 490 130
+ItemHealing < FlatPanel
+  size: 490 120
+
+  Label
+    id: title
+    anchors.verticalCenter: parent.top
+    anchors.left: parent.left
+    margin-left: 5
+    text: Item Healing
+    color: #ff4513
+    font: verdana-11px-rounded
+
+  SpellSourceBox
+    id: itemSource
+    anchors.top: itemList.top
+    anchors.right: parent.right
+    margin-right: 10
+    width: 128
+    font: verdana-11px-rounded
 
   Label
     id: whenItem
     anchors.left: itemList.right
-    anchors.top: parent.top
+    anchors.verticalCenter: prev.verticalCenter
     text: When
-    margin-top: 10
     margin-left: 7
-
-  SpellSourceBox
-    id: itemSource
-    anchors.top: parent.top
-    anchors.left: whenItem.right
-    margin-top: 5
-    margin-left: 35
-    width: 128
+    font: verdana-11px-rounded
 
   Label
     id: isItem
@@ -206,6 +251,7 @@ ItemHealing < Panel
     text: Is
     margin-top: 9
     margin-left: 7 
+    font: verdana-11px-rounded
 
   SpellConditionBox
     id: itemCondition
@@ -213,6 +259,7 @@ ItemHealing < Panel
     anchors.top: itemSource.bottom   
     marin-top: 15
     width: 80
+    font: verdana-11px-rounded
 
   TextEdit
     id: itemValue
@@ -220,6 +267,7 @@ ItemHealing < Panel
     anchors.top: itemCondition.top
     anchors.bottom: itemCondition.bottom
     width: 49
+    font: verdana-11px-rounded
 
   Label
     id: useItem
@@ -227,6 +275,7 @@ ItemHealing < Panel
     anchors.top: isItem.bottom
     text: Use  
     margin-top: 15
+    font: verdana-11px-rounded
 
   BotItem
     id: itemId
@@ -237,11 +286,13 @@ ItemHealing < Panel
     id: itemList
     anchors.left: parent.left
     anchors.bottom: parent.bottom
+    anchors.top: parent.top
     padding: 1
-    size: 270 116  
-    margin-top: 3
-    margin-bottom: 3
-    margin-left: 3
+    padding-top: 2
+    width: 270  
+    margin-top: 10
+    margin-bottom: 7
+    margin-left: 8
     vertical-scrollbar: itemListScrollBar
 
   VerticalScrollBar
@@ -255,9 +306,7 @@ ItemHealing < Panel
   Button
     id: addItem
     anchors.right: itemValue.right
-    anchors.bottom: parent.bottom
-    margin-bottom: 2
-    margin-right: 10
+    anchors.bottom: itemList.bottom
     text: Add
     size: 40 17
     font: cipsoftFont
@@ -265,8 +314,7 @@ ItemHealing < Panel
   Button
     id: MoveUp
     anchors.right: prev.left
-    anchors.bottom: parent.bottom
-    margin-bottom: 2
+    anchors.bottom: prev.bottom
     margin-right: 5
     text: Move Up
     size: 55 17
@@ -275,20 +323,19 @@ ItemHealing < Panel
   Button
     id: MoveDown
     anchors.right: prev.left
-    anchors.bottom: parent.bottom
-    margin-bottom: 2
+    anchors.bottom: prev.bottom
     margin-right: 5
     text: Move Down
     size: 55 17
-    font: cipsoftFont 
+    font: cipsoftFont
 
-HealWindow < MainWindow
-  !text: tr('Self Healer')
-  size: 800 350
+HealerPanel < Panel
+  size: 510 275
 
   SpellHealing
     id: spells
     anchors.top: parent.top
+    margin-top: 8
     anchors.left: parent.left
 
   ItemHealing
@@ -297,95 +344,128 @@ HealWindow < MainWindow
     anchors.left: parent.left
     margin-top: 10
 
+HealBotSettingsPanel < Panel
+  size: 500 267
+  padding-top: 8
+
+  FlatPanel
+    id: list
+    anchors.fill: parent
+    margin-right: 240
+    padding-left: 6
+    padding-right: 6
+    padding-top: 6
+    layout:
+      type: verticalBox
+
+    Label
+      text: Additional Settings
+      text-align: center
+      font: verdana-11px-rounded
+      
+    HorizontalSeparator
+
+    SettingCheckBox
+      id: Cooldown
+      text: Check spell cooldowns
+      margin-top: 10
+
+    SettingCheckBox
+      id: Visible
+      text: Items must be visible (recommended)
+
+    SettingCheckBox
+      id: Delay
+      text: Don't use items when interacting
+
+    SettingCheckBox
+      id: Interval
+      text: Additional delay when looting corpses
+
+    SettingCheckBox
+      id: Conditions
+      text: Also check conditions from RL Tibia
+
+    SettingCheckBox
+      id: MessageDelay
+      text: Cooldown based on "Aaaah..." message
+
   VerticalSeparator
-    id: sep
-    anchors.top: parent.top
+    anchors.top: prev.top
+    anchors.bottom: prev.bottom
     anchors.left: prev.right
-    anchors.bottom: separator.top
-    margin-left: 10
-    margin-bottom: 5
+    margin-left: 8
+
+  FlatPanel
+    id: profiles
+    anchors.fill: parent
+    anchors.left: prev.left
+    margin-left: 8
+    margin-right: 8
+    padding: 8
+
+    Label
+      text: Profile Settings
+      text-align: center
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      font: verdana-11px-rounded
+
+    HorizontalSeparator
+      anchors.top: prev.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+
+    Label
+      anchors.top: prev.bottom
+      margin-top: 30
+      anchors.left: parent.left
+      anchors.right: parent.right
+      text-align: center
+      font: verdana-11px-rounded
+      text: Profile Name:
+
+    TextEdit
+      id: Name
+      anchors.top: prev.bottom
+      margin-top: 3
+      anchors.left: parent.left
+      anchors.right: parent.right     
+
+    Button
+      id: ResetSettings
+      anchors.bottom: parent.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      text: Reset Current Profile
+      text-auto-resize: true
+      color: #ff4513
+
+HealWindow < MainWindow
+  !text: tr('Self Healer')
+  size: 520 360
+  @onEscape: self:hide()
 
   Label
-    anchors.left: prev.right
-    anchors.right: parent.right
+    id: title
+    anchors.left: parent.left
     anchors.top: parent.top
-    text-align: center
-    text: Additional Options
+    margin-left: 2
+    !text: tr('More important methods come first (Example: Exura gran above Exura)')
+    text-align: left
+    font: verdana-11px-rounded
+    color: #aeaeae  
 
-  HorizontalSeparator
-    anchors.left: prev.left
-    anchors.top: prev.bottom  
-    anchors.right: prev.right
-    margin-top: 5
-    margin-left: 10
-
-  CheckBox 
-    id: Cooldown
+  HealerPanel
+    id: healer
     anchors.top: prev.bottom
-    anchors.left: prev.left
-    margin-top: 10
-    margin-left: 5
-    width: 200
-    text: Check spell cooldowns
+    anchors.left: parent.left
 
-  CheckBox 
-    id: Visible
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    margin-top: 8
-    width: 250
-    text: Items must be visible (recommended)
-
-  CheckBox 
-    id: Delay
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    margin-top: 8
-    width: 250
-    text: Don't use items when interacting
-
-  CheckBox 
-    id: Interval
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    margin-top: 8
-    width: 250
-    text: Additional delay when looting corpses
-
-  CheckBox 
-    id: Conditions
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    margin-top: 8
-    width: 250
-    text: Also check conditions from RL Tibia
-
-  CheckBox 
-    id: MessageDelay
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    margin-top: 8
-    width: 250
-    text: Cooldown based on "Aaaah..." message
-
-  Label
-    anchors.left: Visible.left
-    anchors.bottom: separator.top
-    margin-bottom: 8
-    text: Profile:
-
-  TextEdit
-    id: Name
-    anchors.verticalCenter: prev.verticalCenter
-    anchors.left: prev.right
-    margin-left: 5
-
-  Button
-    id: ResetSettings
-    anchors.verticalCenter: prev.verticalCenter
-    anchors.right: parent.right
-    text: Reset Settings
-    margin-top: 1
+  HealBotSettingsPanel
+    id: settings
+    anchors.top: title.bottom
+    anchors.left: parent.left
+    visible: false
 
   HorizontalSeparator
     id: separator
@@ -401,5 +481,12 @@ HealWindow < MainWindow
     anchors.right: parent.right
     anchors.bottom: parent.bottom
     size: 45 21
-    margin-top: 15
     margin-right: 5
+
+  Button
+    id: settingsButton
+    !text: tr('Settings')
+    font: cipsoftFont
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    size: 45 21

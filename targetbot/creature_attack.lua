@@ -145,8 +145,10 @@ TargetBot.Creature.walk = function(creature, config, targets)
   delayFrom = config.delayFrom
 
   -- luring
+  if config.closeLure and config.closeLureAmount <= getMonsters(1) then
+    return TargetBot.allowCaveBot(150)
+  end
   if TargetBot.canLure() and (config.lure or config.lureCavebot or config.dynamicLure) and not (creature:getHealthPercent() < (storage.extras.killUnder or 30)) and not isTrapped then
-    local monsters = 0
     if targetBotLure then
       anchorPosition = nil
       return TargetBot.allowCaveBot(150)

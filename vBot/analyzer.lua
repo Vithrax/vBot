@@ -469,14 +469,18 @@ local function getColor(v)
         return "#5F8DF7"
     elseif v >= 1000 then -- 1k, green
         return "#00FF00"
+    elseif v >= 200 then
+        return "#FFFFFF" -- 50gp, white
     else
-        return "#FFFFFF" -- less than 1k, white
+      return "#aaaaaa" -- less than 100gp, grey
     end
 end
 
 local function formatStr(str)
     if string.starts(str, "a ") then
         str = str:sub(2, #str)
+    elseif string.starts(str, "an ") then
+      str = str:sub(3, #str)
     end
 
     local n = getFirstNumberInText(str)
@@ -797,13 +801,13 @@ settingsWindow.closeButton.onClick = function()
 end
 
 local function getFrame(v)
-  if v > 1000000 then
+  if v >= 1000000 then
       return '/images/ui/rarity_gold'
-  elseif v > 100000 then
+  elseif v >= 100000 then
       return '/images/ui/rarity_purple'
-  elseif v > 10000 then
+  elseif v >= 10000 then
       return '/images/ui/rarity_blue'
-  elseif v > 1000 then
+  elseif v >= 1000 then
       return '/images/ui/rarity_green'
   else
       return '/images/ui/item'
@@ -1267,6 +1271,8 @@ onTextMessage(function(mode, text)
       else
         usedItems[id].count = usedItems[id].count + 1
       end
+    else
+      useData[name] = amount
     end
     refreshWaste()
   end
@@ -1484,3 +1490,55 @@ macro(500, function()
     partyBalanceLabel:setColor('white')
   end
 end)
+
+-- public functions
+-- global namespace
+Analyzer = {}
+
+Analyzer.getKillsAmount = function(name)
+  return killList[name] or 0
+end
+
+Analyzer.getLootedAmount = function(nameOrId)
+  if type(nameOrId) == "number" then
+    return lootedItems[nameOrId].count or 0
+  else
+    local nameOrId = nameOrId:lower()
+    for k,v in pairs(lootedItems) do
+      if v.name == nameOrId then
+        return v.count
+      end
+    end
+  end
+  return 0
+end
+
+Analyzer.getTotalProfit = function()
+  local lootWorth, wasteWorth, balance = bottingStats()
+
+  return lootWorth
+end
+
+Analyzer.getTotalWaste = function()
+  local lootWorth, wasteWorth, balance = bottingStats()
+
+  return wasteWorth
+end
+
+Analyzer.getBalance = function()
+  local lootWorth, wasteWorth, balance = bottingStats()
+
+  return balance
+end
+
+Analyzer.getXpGained = function()
+  return expGained()
+end
+
+Analyzer.getXpHour = function()
+  return expPerHour()
+end
+
+Analyzer.getTimeToNextLevel = function()
+  return timeToLevel()
+end

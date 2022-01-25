@@ -38,6 +38,12 @@ if rootWidget then
   SuppliesWindow = UI.createWindow('SuppliesWindow', rootWidget)
   SuppliesWindow:hide()
 
+  SuppliesWindow.onVisibilityChange = function(widget, visible)
+    if not visible then
+      vBotConfigSave("supply")
+    end
+  end
+
   local function loadVariables()
     config.item1 = config.item1 or 0
     config.item2 = config.item2 or 0
@@ -108,7 +114,7 @@ if rootWidget then
           vBotConfigSave("supply")
         end
         label.onDoubleClick = function(widget)
-          local window = modules.client_textedit.show(widget)
+          local window = modules.client_textedit.show(widget, {title = "Set Profile Name", description = "Enter a new name for selected profile"})
           schedule(50, function() 
             window:raise()
             window:focus() 
@@ -353,6 +359,13 @@ if rootWidget then
     config.item6Max = text
     end
   end
+
+  Supplies = {}
+  Supplies.show = function()
+    SuppliesWindow:show()
+    SuppliesWindow:raise()
+    SuppliesWindow:focus()
+  end
 end
 
 UI.Button("Supplies", function()
@@ -363,7 +376,6 @@ end)
 
 SuppliesWindow.close.onClick = function(widget)
   SuppliesWindow:hide()
-  vBotConfigSave("supply")
 end
 end
 

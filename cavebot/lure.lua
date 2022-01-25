@@ -24,5 +24,6 @@ CaveBot.Extensions.Lure.setup = function()
     title="Lure",
     description="TargetBot: start, stop, toggle",
     multiline=false,
+    validation=[[(start|stop|toggle)$]]
 })
 end

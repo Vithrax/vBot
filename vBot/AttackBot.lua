@@ -624,6 +624,12 @@ if rootWidget then
   windowUI = UI.createWindow("AttackBotWindow", rootWidget)
   windowUI:hide()
 
+  windowUI.onVisibilityChange = function(widget, visible)
+    if not visible then
+      vBotConfigSave("atk")
+    end
+  end
+
   local panel = windowUI.mainPanel
   local settingsUI = windowUI.settingsPanel
 
@@ -725,6 +731,11 @@ if rootWidget then
       for i, entry in pairs(currentSettings.attackTable) do
         local label = UI.createWidget("AttackEntry", panel.entryList)
         label:setText(entry.description)
+        if entry.itemId > 0 then
+          label.spell:setVisible(false)
+          label.id:setVisible(true)
+          label.id:setItemId(entry.itemId)
+        end
         label:setTooltip(entry.tooltip)
         label.remove.onClick = function(widget)
           table.remove(currentSettings.attackTable, i)
@@ -838,23 +849,29 @@ if rootWidget then
     -- moving values
     -- up
     panel.up.onClick = function(widget)
-      local n = panel.entryList:getChildIndex(panel.entryList:getFocusedChild())
+      local focused = panel.entryList:getFocusedChild()
+      local n = panel.entryList:getChildIndex(focused)
       local t = currentSettings.attackTable
 
       t[n], t[n-1] = t[n-1], t[n]
-      panel.up:setEnabled(false)
-      panel.down:setEnabled(false)
-      refreshAttacks()
+      if n-1 == 1 then
+        widget:setEnabled(false)
+      end
+      panel.down:setEnabled(true)
+      panel.entryList:moveChildToIndex(focused, n-1)
     end
     -- down
     panel.down.onClick = function(widget)
-      local n = panel.entryList:getChildIndex(panel.entryList:getFocusedChild())
+      local focused = panel.entryList:getFocusedChild()
+      local n = panel.entryList:getChildIndex(focused)
       local t = currentSettings.attackTable
 
       t[n], t[n+1] = t[n+1], t[n]
-      panel.up:setEnabled(false)
-      panel.down:setEnabled(false)
-      refreshAttacks()
+      if n + 1 == panel.entryList:getChildCount() then
+        widget:setEnabled(false)
+      end
+      panel.up:setEnabled(true)
+      panel.entryList:moveChildToIndex(focused, n+1)
     end
 
   -- [[settings panel]] --
@@ -912,7 +929,6 @@ if rootWidget then
     toggleSettings()
     resetFields()
     windowUI:hide()
-    vBotConfigSave("atk")
   end
 
   -- core functions
@@ -1019,6 +1035,12 @@ if rootWidget then
         AttackBotConfig.currentBotProfile = n
         profileChange()
       end
+    end
+
+    AttackBot.show = function()
+      windowUI:show()
+      windowUI:raise()
+      windowUI:focus()
     end
 end
 

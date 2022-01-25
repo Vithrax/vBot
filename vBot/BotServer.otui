@@ -185,4 +185,4 @@ BotServerWindow < MainWindow
     anchors.bottom: parent.bottom
     size: 45 21
     margin-top: 15
-    margin-right: 5    
+    margin-right: 5

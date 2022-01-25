@@ -116,5 +116,6 @@ CaveBot.Extensions.SupplyCheck.setup = function()
    value=function() return "startHunt," .. posx() .. "," .. posy() .. "," .. posz() end,
    title="Supply check label",
    description="Insert here hunting start label",
+   validation=[[[^,]+,\d{1,5},\d{1,5},\d{1,2}$]]
  })  
 end

@@ -181,6 +181,10 @@ TargetBot.setStatus = function(text)
   return ui.status.right:setText(text)
 end
 
+TargetBot.getStatus = function()
+  return ui.status.right:getText()
+end
+
 TargetBot.isOn = function()
   return config.isOn()
 end

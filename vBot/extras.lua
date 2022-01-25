@@ -19,13 +19,24 @@ local rightPanel = extrasWindow.content.right
 local leftPanel = extrasWindow.content.left
 
 -- objects made by Kondrah - taken from creature editor, minor changes to adapt
-local addCheckBox = function(id, title, defaultValue, dest)
+local addCheckBox = function(id, title, defaultValue, dest, tooltip)
   local widget = UI.createWidget('ExtrasCheckBox', dest)
   widget.onClick = function()
     widget:setOn(not widget:isOn())
     settings[id] = widget:isOn()
+    if id == "checkPlayer" then
+      local label = rootWidget.newHealer.targetSettings.vocations.title
+      if not widget:isOn() then
+        label:setColor("#d9321f")
+        label:setTooltip("! WARNING ! \nTurn on check players in extras to use this feature!")
+      else
+          label:setColor("#dfdfdf")
+          label:setTooltip("")
+      end
+    end
   end
   widget:setText(title)
+  widget:setTooltip(tooltip)
   if settings[id] == nil then
     widget:setOn(defaultValue)
   else
@@ -34,9 +45,11 @@ local addCheckBox = function(id, title, defaultValue, dest)
   settings[id] = widget:isOn()
 end
 
-local addItem = function(id, title, defaultItem, dest)
+local addItem = function(id, title, defaultItem, dest, tooltip)
   local widget = UI.createWidget('ExtrasItem', dest)
   widget.text:setText(title)
+  widget.text:setTooltip(tooltip)
+  widget.item:setTooltip(tooltip)
   widget.item:setItemId(settings[id] or defaultItem)
   widget.item.onItemChange = function(widget)
     settings[id] = widget:getItemId()
@@ -44,18 +57,20 @@ local addItem = function(id, title, defaultItem, dest)
   settings[id] = settings[id] or defaultItem
 end
 
-local addTextEdit = function(id, title, defaultValue, dest)
+local addTextEdit = function(id, title, defaultValue, dest, tooltip)
   local widget = UI.createWidget('ExtrasTextEdit', dest)
   widget.text:setText(title)
   widget.textEdit:setText(settings[id] or defaultValue or "")
+  widget.text:setTooltip(tooltip)
   widget.textEdit.onTextChange = function(widget,text)
     settings[id] = text
   end
   settings[id] = settings[id] or defaultValue or ""
 end
 
-local addScrollBar = function(id, title, min, max, defaultValue, dest)
+local addScrollBar = function(id, title, min, max, defaultValue, dest, tooltip)
   local widget = UI.createWidget('ExtrasScrollBar', dest)
+  widget.text:setTooltip(tooltip)
   widget.scroll.onValueChange = function(scroll, value)
     widget.text:setText(title .. ": " .. value)
     if value == 0 then
@@ -64,6 +79,7 @@ local addScrollBar = function(id, title, min, max, defaultValue, dest)
     settings[id] = value
   end
   widget.scroll:setRange(min, max)
+  widget.scroll:setTooltip(tooltip)
   if max-min > 1000 then
     widget.scroll:setStep(100)
   elseif max-min > 100 then
@@ -86,20 +102,20 @@ UI.Separator()
 --- add callback (optional)
 --- optionals should be addionaly sandboxed (if true then end)
 
-addItem("rope", "Rope Item", 9596, leftPanel)
-addItem("shovel", "Shovel Item", 9596, leftPanel)
-addItem("machete", "Machete Item", 9596, leftPanel)
-addItem("scythe", "Scythe Item", 9596, leftPanel)
-addScrollBar("talkDelay", "Global NPC Talk Delay", 0, 2000, 1000, leftPanel)
-addScrollBar("looting", "Max Loot Distance", 0, 50, 40, leftPanel)
-addScrollBar("huntRoutes", "Hunting Routes Limit", 0, 300, 50, leftPanel)
-addScrollBar("killUnder", "Kill monsters below", 0, 100, 1, leftPanel)
-addScrollBar("gotoMaxDistance", "Max GoTo Distance", 0, 127, 30, leftPanel)
-addCheckBox("lootLast", "Start loot from last corpse", true, leftPanel)
-addCheckBox("joinBot", "Join TargetBot and CaveBot", false, leftPanel)
-addCheckBox("reachable", "Target only pathable mobs", false, leftPanel)
+addItem("rope", "Rope Item", 9596, leftPanel, "This item will be used in various bot related scripts as default rope item.")
+addItem("shovel", "Shovel Item", 9596, leftPanel, "This item will be used in various bot related scripts as default shovel item.")
+addItem("machete", "Machete Item", 9596, leftPanel, "This item will be used in various bot related scripts as default machete item.")
+addItem("scythe", "Scythe Item", 9596, leftPanel, "This item will be used in various bot related scripts as default scythe item.")
+addScrollBar("talkDelay", "Global NPC Talk Delay", 0, 2000, 1000, leftPanel, "Breaks between each talk action in cavebot (time in miliseconds).")
+addScrollBar("looting", "Max Loot Distance", 0, 50, 40, leftPanel, "Every loot corpse futher than set distance (in sqm) will be ignored and forgotten.")
+addScrollBar("huntRoutes", "Hunting Rounds Limit", 0, 300, 50, leftPanel, "Round limit for supply check, if character already made more rounds than set, on next supply check will return to city.")
+addScrollBar("killUnder", "Kill monsters below", 0, 100, 1, leftPanel, "Force TargetBot to kill added creatures when they are below set percentage of health - will ignore all other TargetBot settings.")
+addScrollBar("gotoMaxDistance", "Max GoTo Distance", 0, 127, 30, leftPanel, "Maximum distance to next goto waypoint for the bot to try to reach.")
+addCheckBox("lootLast", "Start loot from last corpse", true, leftPanel, "Looting sequence will be reverted and bot will start looting newest bodies.")
+addCheckBox("joinBot", "Join TargetBot and CaveBot", false, leftPanel, "Cave and Target tabs will be joined into one.")
+addCheckBox("reachable", "Target only pathable mobs", false, leftPanel, "Ignore monsters that can't be reached.")
 
-addCheckBox("title", "Custom Window Title", true, rightPanel)
+addCheckBox("title", "Custom Window Title", true, rightPanel, "Personalize OTCv8 window name according to character specific.")
 if true then
   local vocText = ""
 
@@ -126,7 +142,7 @@ if true then
   end)
 end
 
-addCheckBox("separatePm", "Open PM's in new Window", false, rightPanel)
+addCheckBox("separatePm", "Open PM's in new Window", false, rightPanel, "PM's will be automatically opened in new tab after receiving one.")
 if true then
   onTalk(function(name, level, mode, text, channelId, pos)
     if mode == 4 and settings.separatePm then
@@ -141,7 +157,7 @@ if true then
   end)
 end
 
-addTextEdit("useAll", "Use All Hotkey", "space", rightPanel)
+addTextEdit("useAll", "Use All Hotkey", "space", rightPanel, "Set hotkey for universal actions - rope, shovel, scythe, use, open doors")
 if true then
   local useId = { 34847, 1764, 21051, 30823, 6264, 5282, 20453, 20454, 20474, 11708, 11705, 
                   6257, 6256, 2772, 27260, 2773, 1632, 1633, 1948, 435, 6252, 6253, 5007, 4911, 
@@ -187,7 +203,7 @@ if true then
 end
 
 
-addCheckBox("timers", "MW & WG Timers", true, rightPanel)
+addCheckBox("timers", "MW & WG Timers", true, rightPanel, "Show times for Magic Walls and Wild Growths.")
 if true then
   local activeTimers = {}
 
@@ -226,7 +242,7 @@ if true then
 end
 
 
-addCheckBox("antiKick", "Anti - Kick", true, rightPanel)
+addCheckBox("antiKick", "Anti - Kick", true, rightPanel, "Turn every 10 minutes to prevent kick.")
 if true then
   macro(600*1000, function()
     if not settings.antiKick then return end
@@ -237,7 +253,7 @@ if true then
 end
 
 
-addCheckBox("stake", "Skin Monsters", false, leftPanel)
+addCheckBox("stake", "Skin Monsters", false, leftPanel, "Automatically skin & stake corpses when cavebot is enabled")
 if true then
   local knifeBodies = {4286, 4272, 4173, 4011, 4025, 4047, 4052, 4057, 4062, 4112, 4212, 4321, 4324, 4327, 10352, 10356, 10360, 10364} 
   local stakeBodies = {4097, 4137, 8738, 18958}
@@ -268,7 +284,7 @@ if true then
 end
 
 
-addCheckBox("oberon", "Auto Reply Oberon", true, rightPanel)
+addCheckBox("oberon", "Auto Reply Oberon", true, rightPanel, "Auto reply to Grand Master Oberon talk minigame.")
 if true then
   onTalk(function(name, level, mode, text, channelId, pos)
     if not settings.oberon then return end
@@ -297,7 +313,7 @@ if true then
 end
 
 
-addCheckBox("autoOpenDoors", "Auto Open Doors", true, rightPanel)
+addCheckBox("autoOpenDoors", "Auto Open Doors", true, rightPanel, "Open doors when trying to step on them.")
 if true then
   local doorsIds = { 5007, 8265, 1629, 1632, 5129, 6252, 6249, 7715, 7712, 7714, 
                      7719, 6256, 1669, 1672, 5125, 5115, 5124, 17701, 17710, 1642, 
@@ -345,7 +361,7 @@ if true then
 end
 
 
-addCheckBox("bless", "Buy bless at login", true, rightPanel)
+addCheckBox("bless", "Buy bless at login", true, rightPanel, "Say !bless at login.")
 if true then
   local blessed = false
   onTextMessage(function(mode,text) 
@@ -372,7 +388,7 @@ if true then
 end
 
 
-addCheckBox("reUse", "Keep Crosshair", false, rightPanel)
+addCheckBox("reUse", "Keep Crosshair", false, rightPanel, "Keep crosshair after using with item")
 if true then
   local excluded = {268, 237, 238, 23373, 266, 236, 239, 7643, 23375, 7642, 23374, 5908, 5942} 
 
@@ -389,7 +405,7 @@ if true then
 end
 
 
-addCheckBox("suppliesControl", "TargetBot off if low supply", false, leftPanel)
+addCheckBox("suppliesControl", "TargetBot off if low supply", false, leftPanel, "Turn off TargetBot if either one of supply amount is below 50% of minimum.")
 if true then
   macro(500, function()
     if not settings.suppliesControl then return end
@@ -401,7 +417,7 @@ if true then
   end)
 end
 
-addCheckBox("holdMwall", "Hold MW/WG", true, rightPanel)
+addCheckBox("holdMwall", "Hold MW/WG", true, rightPanel, "Mark tiles with below hotkeys to automatically use Magic Wall or Wild Growth")
 addTextEdit("holdMwHot", "Magic Wall Hotkey: ", "F5", rightPanel)
 addTextEdit("holdWgHot", "Wild Growth Hotkey: ", "F6", rightPanel)
 if true then
@@ -497,7 +513,7 @@ if true then
   end)
 end
 
-addCheckBox("checkPlayer", "Check Players", true, rightPanel)
+addCheckBox("checkPlayer", "Check Players", true, rightPanel, "Auto look on players and mark level and vocation on character model")
 if true then
   local found
   local function checkPlayers()
@@ -562,7 +578,7 @@ if true then
   end)
 end
 
-addCheckBox("nextBackpack", "Open Next Loot Container", true, leftPanel)
+addCheckBox("nextBackpack", "Open Next Loot Container", true, leftPanel, "Auto open next loot container if full - has to have the same ID.")
   local function openNextLootContainer()
     if not settings.nextBackpack then return end
     local containers = getContainers()
@@ -595,7 +611,7 @@ if true then
   end)
 end
 
-addCheckBox("highlightTarget", "Highlight Current Target", true, rightPanel)
+addCheckBox("highlightTarget", "Highlight Current Target", true, rightPanel, "Additionaly hightlight current target with red glow")
 if true then
   local function forceMarked(creature)
     if target() == creature then

@@ -1,8 +1,11 @@
 local standBySpells = false
 local standByItems = false
 
+local red = "#ff0800" -- "#ff0800" / #ea3c53 best
+local blue = "#7ef9ff"
+
 setDefaultTab("HP")
-healPanelName = "healbot"
+local healPanelName = "healbot"
 local ui = setupUI([[
 Panel
   height: 38
@@ -168,9 +171,9 @@ activeProfileColor()
 
 ui.title:setOn(currentSettings.enabled)
 ui.title.onClick = function(widget)
-currentSettings.enabled = not currentSettings.enabled
-widget:setOn(currentSettings.enabled)
-vBotConfigSave("heal")
+  currentSettings.enabled = not currentSettings.enabled
+  widget:setOn(currentSettings.enabled)
+  vBotConfigSave("heal")
 end
 
 ui.settings.onClick = function(widget)
@@ -184,45 +187,65 @@ if rootWidget then
   healWindow = UI.createWindow('HealWindow', rootWidget)
   healWindow:hide()
 
+  healWindow.onVisibilityChange = function(widget, visible)
+    if not visible then
+      vBotConfigSave("heal")
+      healWindow.healer:show()
+      healWindow.settings:hide()
+      healWindow.settingsButton:setText("Settings")
+    end
+  end
+
+  healWindow.settingsButton.onClick = function(widget)
+    if healWindow.healer:isVisible() then
+      healWindow.healer:hide()
+      healWindow.settings:show()
+      widget:setText("Back")
+    else
+      healWindow.healer:show()
+      healWindow.settings:hide()
+      widget:setText("Settings")
+    end
+  end
+
   local setProfileName = function()
     ui.name:setText(currentSettings.name)
   end
-  healWindow.Name.onTextChange = function(widget, text)
+  healWindow.settings.profiles.Name.onTextChange = function(widget, text)
     currentSettings.name = text
     setProfileName()
   end
-  healWindow.Visible.onClick = function(widget)
+  healWindow.settings.list.Visible.onClick = function(widget)
     currentSettings.Visible = not currentSettings.Visible
-    healWindow.Visible:setChecked(currentSettings.Visible)
+    healWindow.settings.list.Visible:setChecked(currentSettings.Visible)
   end
-  healWindow.Cooldown.onClick = function(widget)
+  healWindow.settings.list.Cooldown.onClick = function(widget)
     currentSettings.Cooldown = not currentSettings.Cooldown
-    healWindow.Cooldown:setChecked(currentSettings.Cooldown)
+    healWindow.settings.list.Cooldown:setChecked(currentSettings.Cooldown)
   end
-  healWindow.Interval.onClick = function(widget)
+  healWindow.settings.list.Interval.onClick = function(widget)
     currentSettings.Interval = not currentSettings.Interval
-    healWindow.Interval:setChecked(currentSettings.Interval)
+    healWindow.settings.list.Interval:setChecked(currentSettings.Interval)
   end
-  healWindow.Conditions.onClick = function(widget)
+  healWindow.settings.list.Conditions.onClick = function(widget)
     currentSettings.Conditions = not currentSettings.Conditions
-    healWindow.Conditions:setChecked(currentSettings.Conditions)
+    healWindow.settings.list.Conditions:setChecked(currentSettings.Conditions)
   end
-  healWindow.Delay.onClick = function(widget)
+  healWindow.settings.list.Delay.onClick = function(widget)
     currentSettings.Delay = not currentSettings.Delay
-    healWindow.Delay:setChecked(currentSettings.Delay)
+    healWindow.settings.list.Delay:setChecked(currentSettings.Delay)
   end
-  healWindow.MessageDelay.onClick = function(widget)
+  healWindow.settings.list.MessageDelay.onClick = function(widget)
     currentSettings.MessageDelay = not currentSettings.MessageDelay
-    healWindow.MessageDelay:setChecked(currentSettings.MessageDelay)
+    healWindow.settings.list.MessageDelay:setChecked(currentSettings.MessageDelay)
   end
 
   local refreshSpells = function()
     if currentSettings.spellTable then
-      for i, child in pairs(healWindow.spells.spellList:getChildren()) do
-        child:destroy()
-      end
+      healWindow.healer.spells.spellList:destroyChildren()
       for _, entry in pairs(currentSettings.spellTable) do
-        local label = UI.createWidget("SpellEntry", healWindow.spells.spellList)
+        local label = UI.createWidget("SpellEntry", healWindow.healer.spells.spellList)
+        label:setColor(entry.origin:find("MP") and blue or entry.origin:find("HP") and red or "#FFFFFF")
         label.enabled:setChecked(entry.enabled)
         label.enabled.onClick = function(widget)
           standBySpells = false
@@ -237,7 +260,7 @@ if rootWidget then
           reindexTable(currentSettings.spellTable)
           label:destroy()
         end
-        label:setText("(MP>" .. entry.cost .. ") " .. entry.origin .. entry.sign .. entry.value .. ":" .. entry.spell)
+        label:setText("(MP>" .. entry.cost .. ") " .. entry.origin .. entry.sign .. entry.value .. ": " .. entry.spell)
       end
     end
   end
@@ -245,11 +268,10 @@ if rootWidget then
 
   local refreshItems = function()
     if currentSettings.itemTable then
-      for i, child in pairs(healWindow.items.itemList:getChildren()) do
-        child:destroy()
-      end
+      healWindow.healer.items.itemList:destroyChildren()
       for _, entry in pairs(currentSettings.itemTable) do
-        local label = UI.createWidget("SpellEntry", healWindow.items.itemList)
+        local label = UI.createWidget("ItemEntry", healWindow.healer.items.itemList)
+        label:setColor(entry.origin:find("MP") and blue or entry.origin:find("HP") and red or "#FFFFFF")
         label.enabled:setChecked(entry.enabled)
         label.enabled.onClick = function(widget)
           standBySpells = false
@@ -264,138 +286,87 @@ if rootWidget then
           reindexTable(currentSettings.itemTable)
           label:destroy()
         end
-        label:setText(entry.origin .. entry.sign .. entry.value .. ":" .. entry.item)
+        label.id:setItemId(entry.item)
+        label:setText(entry.origin .. entry.sign .. entry.value .. ": " .. entry.item)
       end
     end
   end
   refreshItems()
 
-  healWindow.spells.MoveUp.onClick = function(widget)
-    local input = healWindow.spells.spellList:getFocusedChild()
+  healWindow.healer.spells.MoveUp.onClick = function(widget)
+    local input = healWindow.healer.spells.spellList:getFocusedChild()
     if not input then return end
-    local index = healWindow.spells.spellList:getChildIndex(input)
+    local index = healWindow.healer.spells.spellList:getChildIndex(input)
     if index < 2 then return end
 
-    local move
-    if currentSettings.spellTable and #currentSettings.spellTable > 0 then
-      for _, entry in pairs(currentSettings.spellTable) do
-        if entry.index == index -1 then
-          move = entry
-        end
-        if entry.index == index then
-          move.index = index
-          entry.index = index -1
-        end
-      end
-    end
-    table.sort(currentSettings.spellTable, function(a,b) return a.index < b.index end)
+    local t = currentSettings.spellTable
 
-    healWindow.spells.spellList:moveChildToIndex(input, index - 1)
-    healWindow.spells.spellList:ensureChildVisible(input)
+    t[index],t[index-1] = t[index-1], t[index]
+    healWindow.healer.spells.spellList:moveChildToIndex(input, index - 1)
+    healWindow.healer.spells.spellList:ensureChildVisible(input)
   end
 
-  healWindow.spells.MoveDown.onClick = function(widget)
-    local input = healWindow.spells.spellList:getFocusedChild()
+  healWindow.healer.spells.MoveDown.onClick = function(widget)
+    local input = healWindow.healer.spells.spellList:getFocusedChild()
     if not input then return end
-    local index = healWindow.spells.spellList:getChildIndex(input)
-    if index >= healWindow.spells.spellList:getChildCount() then return end
+    local index = healWindow.healer.spells.spellList:getChildIndex(input)
+    if index >= healWindow.healer.spells.spellList:getChildCount() then return end
 
-    local move
-    local move2
-    if currentSettings.spellTable and #currentSettings.spellTable > 0 then
-      for _, entry in pairs(currentSettings.spellTable) do
-        if entry.index == index +1 then
-          move = entry
-        end
-        if entry.index == index then
-          move2 = entry
-        end
-      end
-      if move and move2 then
-        move.index = index
-        move2.index = index + 1
-      end
-    end
-    table.sort(currentSettings.spellTable, function(a,b) return a.index < b.index end)
+    local t = currentSettings.spellTable
 
-    healWindow.spells.spellList:moveChildToIndex(input, index + 1)
-    healWindow.spells.spellList:ensureChildVisible(input)
+    t[index],t[index+1] = t[index+1],t[index]
+    healWindow.healer.spells.spellList:moveChildToIndex(input, index + 1)
+    healWindow.healer.spells.spellList:ensureChildVisible(input)
   end
 
-  healWindow.items.MoveUp.onClick = function(widget)
-    local input = healWindow.items.itemList:getFocusedChild()
+  healWindow.healer.items.MoveUp.onClick = function(widget)
+    local input = healWindow.healer.items.itemList:getFocusedChild()
     if not input then return end
-    local index = healWindow.items.itemList:getChildIndex(input)
+    local index = healWindow.healer.items.itemList:getChildIndex(input)
     if index < 2 then return end
 
-    local move
-    if currentSettings.itemTable and #currentSettings.itemTable > 0 then
-      for _, entry in pairs(currentSettings.itemTable) do
-        if entry.index == index -1 then
-          move = entry
-        end
-        if entry.index == index then
-          move.index = index
-          entry.index = index - 1
-        end
-      end
-    end
-    table.sort(currentSettings.itemTable, function(a,b) return a.index < b.index end)
+    local t = currentSettings.itemTable
 
-    healWindow.items.itemList:moveChildToIndex(input, index - 1)
-    healWindow.items.itemList:ensureChildVisible(input)
+    t[index],t[index-1] = t[index-1], t[index]
+    healWindow.healer.items.itemList:moveChildToIndex(input, index - 1)
+    healWindow.healer.items.itemList:ensureChildVisible(input)
   end
 
-  healWindow.items.MoveDown.onClick = function(widget)
-    local input = healWindow.items.itemList:getFocusedChild()
+  healWindow.healer.items.MoveDown.onClick = function(widget)
+    local input = healWindow.healer.items.itemList:getFocusedChild()
     if not input then return end
-    local index = healWindow.items.itemList:getChildIndex(input)
-    if index >= healWindow.items.itemList:getChildCount() then return end
+    local index = healWindow.healer.items.itemList:getChildIndex(input)
+    if index >= healWindow.healer.items.itemList:getChildCount() then return end
 
-    local move
-    local move2
-    if currentSettings.itemTable and #currentSettings.itemTable > 0 then
-      for _, entry in pairs(currentSettings.itemTable) do
-        if entry.index == index +1 then
-          move = entry
-        end
-        if entry.index == index then
-          move2 = entry
-        end
-      end
-      if move and move2 then
-        move.index = index
-        move2.index = index + 1
-      end
-    end
-    table.sort(currentSettings.itemTable, function(a,b) return a.index < b.index end)
+    local t = currentSettings.itemTable
 
-    healWindow.items.itemList:moveChildToIndex(input, index + 1)
-    healWindow.items.itemList:ensureChildVisible(input)
+    t[index],t[index+1] = t[index+1],t[index]
+    healWindow.healer.items.itemList:moveChildToIndex(input, index + 1)
+    healWindow.healer.items.itemList:ensureChildVisible(input)
   end
 
-  healWindow.spells.addSpell.onClick = function(widget)
+  healWindow.healer.spells.addSpell.onClick = function(widget)
  
-    local spellFormula = healWindow.spells.spellFormula:getText():trim()
-    local manaCost = tonumber(healWindow.spells.manaCost:getText())
-    local spellTrigger = tonumber(healWindow.spells.spellValue:getText())
-    local spellSource = healWindow.spells.spellSource:getCurrentOption().text
-    local spellEquasion = healWindow.spells.spellCondition:getCurrentOption().text
+    local spellFormula = healWindow.healer.spells.spellFormula:getText():trim()
+    local manaCost = tonumber(healWindow.healer.spells.manaCost:getText())
+    local spellTrigger = tonumber(healWindow.healer.spells.spellValue:getText())
+    local spellSource = healWindow.healer.spells.spellSource:getCurrentOption().text
+    local spellEquasion = healWindow.healer.spells.spellCondition:getCurrentOption().text
     local source
     local equasion
 
     if not manaCost then  
       warn("HealBot: incorrect mana cost value!")       
-      healWindow.spells.spellFormula:setText('')
-      healWindow.spells.spellValue:setText('')
-      healWindow.spells.manaCost:setText('') 
+      healWindow.healer.spells.spellFormula:setText('')
+      healWindow.healer.spells.spellValue:setText('')
+      healWindow.healer.spells.manaCost:setText('') 
       return 
     end
     if not spellTrigger then  
       warn("HealBot: incorrect condition value!") 
-      healWindow.spells.spellFormula:setText('')
-      healWindow.spells.spellValue:setText('')
-      healWindow.spells.manaCost:setText('')
+      healWindow.healer.spells.spellFormula:setText('')
+      healWindow.healer.spells.spellValue:setText('')
+      healWindow.healer.spells.manaCost:setText('')
       return 
     end
 
@@ -421,28 +392,28 @@ if rootWidget then
 
     if spellFormula:len() > 0 then
       table.insert(currentSettings.spellTable,  {index = #currentSettings.spellTable+1, spell = spellFormula, sign = equasion, origin = source, cost = manaCost, value = spellTrigger, enabled = true})
-      healWindow.spells.spellFormula:setText('')
-      healWindow.spells.spellValue:setText('')
-      healWindow.spells.manaCost:setText('')
+      healWindow.healer.spells.spellFormula:setText('')
+      healWindow.healer.spells.spellValue:setText('')
+      healWindow.healer.spells.manaCost:setText('')
     end
     standBySpells = false
     standByItems = false
     refreshSpells()
   end
 
-  healWindow.items.addItem.onClick = function(widget)
+  healWindow.healer.items.addItem.onClick = function(widget)
  
-    local id = healWindow.items.itemId:getItemId()
-    local trigger = tonumber(healWindow.items.itemValue:getText())
-    local src = healWindow.items.itemSource:getCurrentOption().text
-    local eq = healWindow.items.itemCondition:getCurrentOption().text
+    local id = healWindow.healer.items.itemId:getItemId()
+    local trigger = tonumber(healWindow.healer.items.itemValue:getText())
+    local src = healWindow.healer.items.itemSource:getCurrentOption().text
+    local eq = healWindow.healer.items.itemCondition:getCurrentOption().text
     local source
     local equasion
 
     if not trigger then
       warn("HealBot: incorrect trigger value!")
-      healWindow.items.itemId:setItemId(0)
-      healWindow.items.itemValue:setText('')
+      healWindow.healer.items.itemId:setItemId(0)
+      healWindow.healer.items.itemValue:setText('')
       return
     end
 
@@ -471,28 +442,27 @@ if rootWidget then
       standBySpells = false
       standByItems = false
       refreshItems()
-      healWindow.items.itemId:setItemId(0)
-      healWindow.items.itemValue:setText('')
+      healWindow.healer.items.itemId:setItemId(0)
+      healWindow.healer.items.itemValue:setText('')
     end
   end
 
   healWindow.closeButton.onClick = function(widget)
     healWindow:hide()
-    vBotConfigSave("heal")
   end
 
   local loadSettings = function()
     ui.title:setOn(currentSettings.enabled)
     setProfileName()
-    healWindow.Name:setText(currentSettings.name)
+    healWindow.settings.profiles.Name:setText(currentSettings.name)
     refreshSpells()
     refreshItems()
-    healWindow.Visible:setChecked(currentSettings.Visible)
-    healWindow.Cooldown:setChecked(currentSettings.Cooldown)
-    healWindow.Delay:setChecked(currentSettings.Delay)
-    healWindow.MessageDelay:setChecked(currentSettings.MessageDelay)
-    healWindow.Interval:setChecked(currentSettings.Interval)
-    healWindow.Conditions:setChecked(currentSettings.Conditions)
+    healWindow.settings.list.Visible:setChecked(currentSettings.Visible)
+    healWindow.settings.list.Cooldown:setChecked(currentSettings.Cooldown)
+    healWindow.settings.list.Delay:setChecked(currentSettings.Delay)
+    healWindow.settings.list.MessageDelay:setChecked(currentSettings.MessageDelay)
+    healWindow.settings.list.Interval:setChecked(currentSettings.Interval)
+    healWindow.settings.list.Conditions:setChecked(currentSettings.Conditions)
   end
   loadSettings()
 
@@ -525,7 +495,7 @@ if rootWidget then
     end
   end
 
-  healWindow.ResetSettings.onClick = function()
+  healWindow.settings.profiles.ResetSettings.onClick = function()
     resetSettings()
     loadSettings()
   end
@@ -565,6 +535,12 @@ if rootWidget then
       HealBotConfig.currentHealBotProfile = n
       profileChange()
     end
+  end
+
+  HealBot.show = function()
+    healWindow:show()
+    healWindow:raise()
+    healWindow:focus()
   end
 end
 

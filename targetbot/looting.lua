@@ -313,6 +313,13 @@ onCreatureDisappear(function(creature)
     if not container or not container:isContainer() then return end
     if not findPath(player:getPosition(), mpos, 6, {ignoreNonPathable=true, ignoreCreatures=true, ignoreCost=true}) then return end
     table.insert(TargetBot.Looting.list, {pos=mpos, creature=name, container=container:getId(), added=now, tries=0})
+
+    table.sort(TargetBot.Looting.list, function(a,b) 
+      a.dist = distanceFromPlayer(a.pos)
+      b.dist = distanceFromPlayer(b.pos)
+
+      return a.dist > b.dist
+    end)
     container:setMarked('#000088')
   end)
 end)

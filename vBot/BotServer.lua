@@ -4,7 +4,6 @@ local panelName = "BOTserver"
 local ui = setupUI([[
 Panel
   height: 18
-
   Button
     id: botServer
     anchors.left: parent.left
