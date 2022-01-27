@@ -237,6 +237,7 @@ listPanel.up.onClick = function(widget)
     end
     listPanel.down:setEnabled(true)
     listPanel.list:moveChildToIndex(focused, n-1)
+    listPanel.list:ensureChildVisible(focused)
 end
 
 listPanel.down.onClick = function(widget)
@@ -250,6 +251,7 @@ listPanel.down.onClick = function(widget)
     end
     listPanel.up:setEnabled(true)
     listPanel.list:moveChildToIndex(focused, n+1)
+    listPanel.list:ensureChildVisible(focused)
   end
 
 function getItemsFromBox()

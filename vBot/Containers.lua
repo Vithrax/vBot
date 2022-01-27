@@ -161,12 +161,14 @@ ContListsWindow < MainWindow
     text: Name:
     margin-left: 10
     margin-top: 3
+    font: verdana-11px-rounded
 
   TextEdit
     id: contName
     anchors.left: lblName.right
     anchors.top: sep.top
     anchors.right: parent.right
+    font: verdana-11px-rounded
 
   Label
     id: lblCont
@@ -174,6 +176,7 @@ ContListsWindow < MainWindow
     anchors.verticalCenter: contId.verticalCenter
     width: 70
     text: Container:
+    font: verdana-11px-rounded
 
   BotItem
     id: contId
@@ -194,6 +197,7 @@ ContListsWindow < MainWindow
     anchors.verticalCenter: prev.verticalCenter
     width: 70
     text: Items: 
+    font: verdana-11px-rounded
 
   Button
     id: addItem
@@ -221,6 +225,7 @@ ContListsWindow < MainWindow
     height: 15
     margin-top: 2
     margin-left: 3
+    font: verdana-11px-rounded
 
   CheckBox
     id: sort
@@ -232,6 +237,7 @@ ContListsWindow < MainWindow
     height: 15
     margin-top: 2
     margin-left: 15
+    font: verdana-11px-rounded
 
   CheckBox
     id: forceOpen
@@ -243,6 +249,7 @@ ContListsWindow < MainWindow
     height: 15
     margin-top: 2
     margin-left: 15
+    font: verdana-11px-rounded
 
   Button
     id: closeButton
@@ -409,6 +416,7 @@ if rootWidget then
                     entry.min = not entry.min
                     label.state:setChecked(entry.min)
                     label.state:setColor(entry.min and '#00FF00' or '#FF0000')
+                    label.state:setTooltip(entry.min and 'Open Minimised' or 'Do not minimise')
                 end
                 label.openNext.onClick = function(widget)
                     entry.openNext = not entry.openNext

@@ -245,7 +245,6 @@ if rootWidget then
       healWindow.healer.spells.spellList:destroyChildren()
       for _, entry in pairs(currentSettings.spellTable) do
         local label = UI.createWidget("SpellEntry", healWindow.healer.spells.spellList)
-        label:setColor(entry.origin:find("MP") and blue or entry.origin:find("HP") and red or "#FFFFFF")
         label.enabled:setChecked(entry.enabled)
         label.enabled.onClick = function(widget)
           standBySpells = false
@@ -271,7 +270,6 @@ if rootWidget then
       healWindow.healer.items.itemList:destroyChildren()
       for _, entry in pairs(currentSettings.itemTable) do
         local label = UI.createWidget("ItemEntry", healWindow.healer.items.itemList)
-        label:setColor(entry.origin:find("MP") and blue or entry.origin:find("HP") and red or "#FFFFFF")
         label.enabled:setChecked(entry.enabled)
         label.enabled.onClick = function(widget)
           standBySpells = false

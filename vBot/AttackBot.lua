@@ -859,6 +859,7 @@ if rootWidget then
       end
       panel.down:setEnabled(true)
       panel.entryList:moveChildToIndex(focused, n-1)
+      panel.entryList:ensureChildVisible(focused)
     end
     -- down
     panel.down.onClick = function(widget)
@@ -872,6 +873,7 @@ if rootWidget then
       end
       panel.up:setEnabled(true)
       panel.entryList:moveChildToIndex(focused, n+1)
+      panel.entryList:ensureChildVisible(focused)
     end
 
   -- [[settings panel]] --

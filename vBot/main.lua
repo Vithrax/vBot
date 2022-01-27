@@ -1,10 +1,8 @@
-local version = "4.2"
+local version = "4.3"
 local currentVersion
 local hashcode
 local available = false
 
-
-storage.checkVersion = nil
 storage.checkVersion = storage.checkVersion or 0
 
 -- check max once per 12hours
