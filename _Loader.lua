@@ -50,7 +50,8 @@ local luaFiles = {
   "depositer_config",
   "npc_talk",
   "xeno_menu",
-  "hold_target"
+  "hold_target",
+  "cavebot_control_panel"
 }
 
 for i, file in ipairs(luaFiles) do

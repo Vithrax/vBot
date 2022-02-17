@@ -1,36 +1,67 @@
-ItemLabel < Label
-  background-color: alpha
-  text-offset: 2 0
-  focusable: true
-  height: 16
+StashItem < Panel
+  height: 40
 
-  $focus:
-    background-color: #00000055
+  BotItem
+    id: item
+    anchors.top: parent.top
+    margin-top: 2
+    anchors.left: parent.left
 
-  Button
-    id: remove
-    !text: tr('x')
+  UIWidget
+    id: name
+    anchors.top: prev.top
+    margin-top: 1
+    anchors.bottom: prev.verticalCenter
+    anchors.left: prev.right
     anchors.right: parent.right
-    margin-right: 15
-    width: 15
-    height: 15
+    margin-left: 5
+    text-align:left
+    text: item name
+    font: verdana-11px-rounded
+    color: #FFFFFF
+
+  UIWidget
+    id: slot
+    anchors.top: prev.bottom
+    margin-top: 3
+    anchors.bottom: Item.bottom
+    anchors.left: prev.left
+    anchors.right: parent.right    
+    font: verdana-11px-rounded
+    text-align:left
+    text: Add item to select locker.
+    color: #CCCCCC
 
 DepositerPanel < MainWindow
-  size: 250 450
+  size: 230 380
   !text: tr('Depositer Panel')
   @onEscape: self:hide()
 
-  TextList
-    id: DepositerList
+  UIWidget
+    id: title
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: parent.right
-    margin-top: 15
-    margin-bottom: 5
-    margin-right: 3
-    padding: 1
-    height: 300
+    text: Double click here to add item.
+    text-align: left
+    font: verdana-11px-rounded
+    color: #aeaeae           
+
+  ScrollablePanel
+    id: DepositerList
+    image-source: /images/ui/panel_flat
+    image-border: 1
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: sep.top
+    margin-bottom: 10
+    padding: 2
+    padding-left: 4
     vertical-scrollbar: DepositerScrollBar
+    layout:
+      type: verticalBox
 
   VerticalScrollBar
     id: DepositerScrollBar
@@ -39,48 +70,30 @@ DepositerPanel < MainWindow
     anchors.right: DepositerList.right
     step: 14
     pixels-scroll: true
+    visible: false
 
-  BotItem
-    id: ID
-    anchors.top: DepositerList.bottom
-    margin-top: 3
-    anchors.left: DepositerList.left
-    
-  SpinBox
-    id: Index
-    anchors.top: DepositerList.bottom
-    margin-top: 3
-    anchors.left: prev.right
+  ResizeBorder
+    id: bottomResizeBorder
+    anchors.fill: next
+    height: 3
+    minimum: 180
+    maximum: 800
     margin-left: 3
-    anchors.bottom: prev.bottom
-    width: 50
-    minimum: 3
-    maximum: 17
-    step: 1
-    text-align: center    
-
-  Button
-    id: Add
-    anchors.top: DepositerList.bottom
-    margin-top: 3
-    anchors.left: prev.right
-    margin-left: 3
-    anchors.right: DepositerList.right
-    anchors.bottom: prev.bottom
-    !text: tr('Add Item')
+    margin-right: 3
+    background: #ffffff88
 
   HorizontalSeparator
-    anchors.bottom: CloseButton.top
-    margin-bottom: 5
-    anchors.left: parent.left
+    id: sep
     anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: CloseButton.top
+    margin-bottom: 8    
 
   Button
     id: CloseButton
-    anchors.right: parent.right
-    anchors.bottom: parent.bottom
-    margin-right: 5
-    margin-bottom: 5
     !text: tr('Close')
     font: cipsoftFont
-    size: 41 25
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-right: 5

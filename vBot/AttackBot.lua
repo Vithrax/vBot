@@ -7,6 +7,7 @@ local showItem = false
 local category = 1
 local patternCategory = 1
 local pattern = 1
+local mainWindow
 
 -- label library
 
@@ -614,38 +615,40 @@ ui.title.onClick = function(widget)
 end
   
 ui.settings.onClick = function(widget)
-  windowUI:show()
-  windowUI:raise()
-  windowUI:focus()
+  mainWindow:show()
+  mainWindow:raise()
+  mainWindow:focus()
 end
 
-rootWidget = g_ui.getRootWidget()
-if rootWidget then
-  windowUI = UI.createWindow("AttackBotWindow", rootWidget)
-  windowUI:hide()
+  mainWindow = UI.createWindow("AttackBotWindow")
+  mainWindow:hide()
 
-  windowUI.onVisibilityChange = function(widget, visible)
+  local panel = mainWindow.mainPanel
+  local settingsUI = mainWindow.settingsPanel
+
+  mainWindow.onVisibilityChange = function(widget, visible)
     if not visible then
+      currentSettings.attackTable = {}
+      for i, child in ipairs(panel.entryList:getChildren()) do
+        table.insert(currentSettings.attackTable, child.params)
+      end
       vBotConfigSave("atk")
     end
   end
-
-  local panel = windowUI.mainPanel
-  local settingsUI = windowUI.settingsPanel
 
   -- main panel
 
     -- functions
     function toggleSettings()
       panel:setVisible(not showSettings)
-      windowUI.shooterLabel:setVisible(not showSettings)
+      mainWindow.shooterLabel:setVisible(not showSettings)
       settingsUI:setVisible(showSettings)
-      windowUI.settingsLabel:setVisible(showSettings)
-      windowUI.settings:setText(showSettings and "Back" or "Settings")
+      mainWindow.settingsLabel:setVisible(showSettings)
+      mainWindow.settings:setText(showSettings and "Back" or "Settings")
     end
     toggleSettings()
 
-    windowUI.settings.onClick = function()
+    mainWindow.settings.onClick = function()
       showSettings = not showSettings
       toggleSettings()
     end
@@ -723,67 +726,72 @@ if rootWidget then
     -- eo in/de/crementation
 
   ------- [[core table function]] -------
+    function setupWidget(widget)
+      local params = widget.params
+
+      widget:setText(params.description)
+      if params.itemId > 0 then
+        widget.spell:setVisible(false)
+        widget.id:setVisible(true)
+        widget.id:setItemId(params.itemId)
+      end
+      widget:setTooltip(params.tooltip)
+      widget.remove.onClick = function()
+        panel.up:setEnabled(false)
+        panel.down:setEnabled(false)
+        widget:destroy()
+      end
+      widget.enabled:setChecked(params.enabled)
+      widget.enabled.onClick = function()
+        params.enabled = not params.enabled
+        widget.enabled:setChecked(params.enabled)
+      end
+      -- will serve as edit
+      widget.onDoubleClick = function(widget)
+        panel.manaPercent:setValue(params.mana)
+        panel.creatures:setValue(params.count)
+        panel.minHp:setValue(params.minHp)
+        panel.maxHp:setValue(params.maxHp)
+        panel.cooldown:setValue(params.cooldown)
+        showItem = params.itemId > 100 and true or false
+        panel.itemId:setItemId(params.itemId)
+        panel.spellName:setText(params.spell or "")
+        panel.orMore:setChecked(params.orMore)
+        toggleItem()
+        category = params.category
+        patternCategory = params.patternCategory
+        pattern = params.pattern
+        setPatternText()
+        setCategoryText()
+        widget:destroy()
+      end
+      widget.onClick = function(widget)
+        if #panel.entryList:getChildren() == 1 then
+          panel.up:setEnabled(false)
+          panel.down:setEnabled(false)
+        elseif panel.entryList:getChildIndex(widget) == 1 then
+          panel.up:setEnabled(false)
+          panel.down:setEnabled(true)
+        elseif panel.entryList:getChildIndex(widget) == panel.entryList:getChildCount() then
+          panel.up:setEnabled(true)
+          panel.down:setEnabled(false)
+        else
+          panel.up:setEnabled(true)
+          panel.down:setEnabled(true)
+        end
+      end
+    end
+
+
     -- refreshing values
     function refreshAttacks()
       if not currentSettings.attackTable then return end
 
-      for i, child in pairs(panel.entryList:getChildren()) do child:destroy() end
+      panel.entryList:destroyChildren()
       for i, entry in pairs(currentSettings.attackTable) do
         local label = UI.createWidget("AttackEntry", panel.entryList)
-        label:setText(entry.description)
-        if entry.itemId > 0 then
-          label.spell:setVisible(false)
-          label.id:setVisible(true)
-          label.id:setItemId(entry.itemId)
-        end
-        label:setTooltip(entry.tooltip)
-        label.remove.onClick = function(widget)
-          table.remove(currentSettings.attackTable, i)
-          label:destroy()
-          panel.up:setEnabled(false)
-          panel.down:setEnabled(false)
-          refreshAttacks()
-        end
-        label.enabled:setChecked(entry.enabled)
-        label.enabled.onClick = function(widget)
-          entry.enabled = not entry.enabled
-          label.enabled:setChecked(entry.enabled)
-        end
-        -- will serve as edit
-        label.onDoubleClick = function(widget)
-          table.remove(currentSettings.attackTable, i)
-          label:destroy()
-          panel.manaPercent:setValue(entry.mana)
-          panel.creatures:setValue(entry.count)
-          panel.minHp:setValue(entry.minHp)
-          panel.maxHp:setValue(entry.maxHp)
-          panel.cooldown:setValue(entry.cooldown)
-          showItem = entry.itemId > 100 and true or false
-          panel.itemId:setItemId(entry.itemId)
-          panel.spellName:setText(entry.spell or "")
-          panel.orMore:setChecked(entry.orMore)
-          toggleItem()
-          category = entry.category
-          patternCategory = entry.patternCategory
-          pattern = entry.pattern
-          setPatternText()
-          setCategoryText()
-        end
-        label.onClick = function(widget)
-          if #panel.entryList:getChildren() == 1 then
-            panel.up:setEnabled(false)
-            panel.down:setEnabled(false)
-          elseif panel.entryList:getChildIndex(panel.entryList:getFocusedChild()) == 1 then
-            panel.up:setEnabled(false)
-            panel.down:setEnabled(true)
-          elseif panel.entryList:getChildIndex(panel.entryList:getFocusedChild()) == #panel.entryList:getChildren() then
-            panel.up:setEnabled(true)
-            panel.down:setEnabled(false)
-          else
-            panel.up:setEnabled(true)
-            panel.down:setEnabled(true)
-          end
-        end
+        label.params = entry
+        setupWidget(label)
       end
     end
     refreshAttacks()
@@ -821,7 +829,7 @@ if rootWidget then
 
       local countDescription = orMore and count.."+" or count
 
-      local entry = {
+      local params = {
         creatures = creatures,
         monsters = monsters,
         mana = mana,
@@ -840,9 +848,9 @@ if rootWidget then
         description = '['..type..'] '..countDescription.. ' '..specificMonsters..': '..attackType..', '..categoryName..' ('..minHp..'%-'..maxHp..'%)'
       }
 
-      -- inserting to table
-      table.insert(currentSettings.attackTable, entry)
-      refreshAttacks()
+      local label = UI.createWidget("AttackEntry", panel.entryList)
+      label.params = params
+      setupWidget(label)
       resetFields()
     end
 
@@ -851,9 +859,7 @@ if rootWidget then
     panel.up.onClick = function(widget)
       local focused = panel.entryList:getFocusedChild()
       local n = panel.entryList:getChildIndex(focused)
-      local t = currentSettings.attackTable
 
-      t[n], t[n-1] = t[n-1], t[n]
       if n-1 == 1 then
         widget:setEnabled(false)
       end
@@ -865,9 +871,7 @@ if rootWidget then
     panel.down.onClick = function(widget)
       local focused = panel.entryList:getFocusedChild()
       local n = panel.entryList:getChildIndex(focused)
-      local t = currentSettings.attackTable
 
-      t[n], t[n+1] = t[n+1], t[n]
       if n + 1 == panel.entryList:getChildCount() then
         widget:setEnabled(false)
       end
@@ -926,11 +930,11 @@ if rootWidget then
 
 
    -- window elements
-  windowUI.closeButton.onClick = function()
+  mainWindow.closeButton.onClick = function()
     showSettings = false
     toggleSettings()
     resetFields()
-    windowUI:hide()
+    mainWindow:hide()
   end
 
   -- core functions
@@ -1040,11 +1044,11 @@ if rootWidget then
     end
 
     AttackBot.show = function()
-      windowUI:show()
-      windowUI:raise()
-      windowUI:focus()
+      mainWindow:show()
+      mainWindow:raise()
+      mainWindow:focus()
     end
-end
+
 
 -- otui covered, now support functions
 function getPattern(category, pattern, safe)
@@ -1186,7 +1190,8 @@ macro(100, function()
           }
           ]]
 
-  for i, entry in pairs(currentSettings.attackTable) do
+  for i, child in ipairs(panel.entryList:getChildren()) do
+    local entry = child.params
     local attackData = entry.itemId > 100 and entry.itemId or entry.spell
     if entry.enabled and manapercent() >= entry.mana then
       if (type(attackData) == "string" and canCast(entry.spell, not currentSettings.ignoreMana, not currentSettings.Cooldown)) or (entry.itemId > 100 and (not currentSettings.Visible or findItem(entry.itemId))) then 

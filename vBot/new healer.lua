@@ -442,13 +442,10 @@ macro(100, function()
 
     for i=1,#spectators do
         local spec = spectators[i]
-
         if distanceFromPlayer(spec:getPosition()) <= 3 then
             inMasResRange = inMasResRange + 1
         end 
-
         table.insert(finalTable, spec)
-        table.remove(spectators, i)
     end
 
     -- no targets, return

@@ -236,6 +236,60 @@ CaveBot.gotoNextWaypointInRange = function()
   return false
 end
 
+local function reverseTable(t, max)
+  local reversedTable = {}
+  local itemCount = max or #t
+  for i, v in ipairs(t) do
+      reversedTable[itemCount + 1 - i] = v
+  end
+  return reversedTable
+end
+
+function rpairs(t)
+  test()
+	return function(t, i)
+		i = i - 1
+		if i ~= 0 then
+			return i, t[i]
+		end
+	end, t, #t + 1
+end
+
+CaveBot.gotoFirstPreviousReachableWaypoint = function()
+  local currentAction = ui.list:getFocusedChild()
+  local currentIndex = ui.list:getChildIndex(currentAction)
+  local index = ui.list:getChildIndex(currentAction)
+
+  -- check up to 100 childs
+  for i=0,100 do
+    index = index - i
+    if index <= 0 or index > currentIndex or math.abs(index-currentIndex) > 100 then
+      break
+    end
+
+    local child = ui.list:getChildByIndex(index)
+
+    if child then
+      local text = child:getText()
+      if string.starts(text, "goto:") then
+        local re = regexMatch(text, [[(?:goto:)([^,]+),([^,]+),([^,]+)]])
+        local pos = {x = tonumber(re[1][2]), y = tonumber(re[1][3]), z = tonumber(re[1][4])}
+
+        if posz() == pos.z then
+          if distanceFromPlayer(pos) <= storage.extras.gotoMaxDistance/2 then
+            print("found pos, going back "..currentIndex-index.. " waypoints.")
+            return ui.list:focusChild(child)
+          end
+        end
+      end
+    end
+  end
+
+  -- not found
+  print("previous pos not found, proceeding")
+  return false
+end
+
 CaveBot.getFirstWaypointBeforeLabel = function(label)
   label = "label:"..label
   label = label:lower()

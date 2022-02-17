@@ -26,16 +26,20 @@ CaveBot.Extensions.PosCheck.setup = function()
         return true
     else
         posCheckRetries = posCheckRetries + 1
-        CaveBot.gotoLabel(data[1])
-        print("CaveBot[CheckPos]: position not-reached, going back to label: " .. data[1])
-        return false
+        if data[1] == "last" then
+          CaveBot.gotoFirstPreviousReachableWaypoint()
+          print("CaveBot[CheckPos]: position not-reached, going back to first reachable waypoint.")
+          return false
+        else
+          CaveBot.gotoLabel(data[1])
+          print("CaveBot[CheckPos]: position not-reached, going back to label: " .. data[1])
+          return false
+        end
     end
-
-
   end)
 
   CaveBot.Editor.registerAction("poscheck", "pos check", {
-    value=function() return "label" .. "," .. "10" .. "," .. posx() .. "," .. posy() .. "," .. posz() end,
+    value=function() return "last" .. "," .. "10" .. "," .. posx() .. "," .. posy() .. "," .. posz() end,
     title="Location Check",
     description="label name, accepted dist from coordinates, x, y, z",
     multiline=false,

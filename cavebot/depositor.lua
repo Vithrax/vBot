@@ -15,6 +15,17 @@ local function resetCache()
 			g_game.close(container)
 		end
 	end
+
+	if storage.caveBot.backStop then
+		storage.caveBot.backStop = false
+		CaveBot.setOff()
+	elseif storage.caveBot.backTrainers then
+		storage.caveBot.backTrainers = false
+		CaveBot.gotoLabel('toTrainers')
+	elseif storage.caveBot.backOffline then
+		storage.caveBot.backOffline = false
+		CaveBot.gotoLabel('toOfflineTraining')
+	end
 end
 
 local description = g_game.getClientVersion() > 960 and "No - just deposit \n Yes - also reopen loot containers" or "currently not supported, will be added in near future"
@@ -23,6 +34,7 @@ CaveBot.Extensions.Depositor.setup = function()
 	CaveBot.registerAction("depositor", "#002FFF", function(value, retries)
 		-- version check, TODO old tibia
 		if g_game.getClientVersion() < 960 then
+			resetCache()
 			warn("CaveBot[Depositor]: unsupported Tibia version, will be added in near future")
 			return false
 		end

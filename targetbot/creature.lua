@@ -25,7 +25,7 @@ TargetBot.Creature.addConfig = function(config, focus)
       if config.regex:len() > 0 then
         config.regex = config.regex .. "|"
       end
-      config.regex = config.regex .. "^" .. part:trim():lower():gsub("%*", ".*"):gsub("%?", ".?") .. "$"    
+      config.regex = config.regex .. "^" .. part:trim():lower():gsub("%*", ".*"):gsub("%?", ".?") .. "$"
     end
   end
 

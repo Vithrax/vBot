@@ -1,3 +1,5 @@
+setDefaultTab("Tools")
+
 local targetID = nil
 
 -- escape when attacking will reset hold target

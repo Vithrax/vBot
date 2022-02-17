@@ -3,6 +3,7 @@ local panelName = "renameContainers"
 if type(storage[panelName]) ~= "table" then
     storage[panelName] = {
         enabled = false;
+        height = 170,
         purse = true;
         list = {
             {
@@ -130,9 +131,10 @@ ContListsWindow < MainWindow
     id: itemList
     anchors.left: parent.left
     anchors.top: parent.top
-    size: 200 90
+    anchors.bottom: separator.top
+    width: 200
+    margin-bottom: 6
     margin-top: 3
-    margin-bottom: 3
     margin-left: 3
     vertical-scrollbar: itemListScrollBar
 
@@ -189,12 +191,13 @@ ContListsWindow < MainWindow
     anchors.left: prev.left
     anchors.right: parent.right
     anchors.top: prev.bottom
+    anchors.bottom: separator.top
+    margin-bottom: 6
     margin-top: 3
-    height: 32
 
   Label
     anchors.left: lblCont.left
-    anchors.verticalCenter: prev.verticalCenter
+    anchors.verticalCenter: sortList.verticalCenter
     width: 70
     text: Items: 
     font: verdana-11px-rounded
@@ -251,6 +254,18 @@ ContListsWindow < MainWindow
     margin-left: 15
     font: verdana-11px-rounded
 
+  CheckBox
+    id: lootBag
+    anchors.left: prev.right
+    anchors.bottom: parent.bottom
+    text: Loot Bag
+    tooltip: Open Loot Bag (gunzodus franchaise)
+    width: 85
+    height: 15
+    margin-top: 2
+    margin-left: 15
+    font: verdana-11px-rounded
+
   Button
     id: closeButton
     !text: tr('Close')
@@ -259,6 +274,16 @@ ContListsWindow < MainWindow
     anchors.bottom: parent.bottom
     size: 45 21
     margin-top: 15
+
+  ResizeBorder
+    id: bottomResizeBorder
+    anchors.fill: separator
+    height: 3
+    minimum: 170
+    maximum: 245
+    margin-left: 3
+    margin-right: 3
+    background: #ffffff88
 ]])
 
 function findItemsInArray(t, tfind)
@@ -328,13 +353,20 @@ function reopenBackpacks()
         end
     end)
     
-
 end
 
 rootWidget = g_ui.getRootWidget()
 if rootWidget then
     contListWindow = UI.createWindow('ContListsWindow', rootWidget)
     contListWindow:hide()
+
+    contListWindow.onGeometryChange = function(widget, old, new)
+        if old.height == 0 then return end
+        
+        config.height = new.height
+    end
+
+    contListWindow:setHeight(config.height or 170)
 
     renameContui.editContList.onClick = function(widget)
         contListWindow:show()
@@ -372,7 +404,13 @@ if rootWidget then
         config.forceOpen = not config.forceOpen
         contListWindow.forceOpen:setChecked(config.forceOpen)
     end
-    contListWindow.forceOpen:setChecked(config.forceOpen)  
+    contListWindow.forceOpen:setChecked(config.forceOpen)
+    
+    contListWindow.lootBag.onClick = function(widget)
+        config.lootBag = not config.lootBag
+        contListWindow.lootBag:setChecked(config.lootBag)
+    end
+    contListWindow.lootBag:setChecked(config.lootBag)
 
     local function refreshSortList(k, t)
         t = t or {}
@@ -576,6 +614,13 @@ macro(500, function()
     end
     if config.purse and config.forceOpen and not getContainerByItem(23396) then
         return use(getPurse())
+    end
+    if config.lootBag and config.forceOpen and not getContainerByItem(23721) then
+        if findItem(23721) then
+            g_game.open(findItem(23721), getContainerByItem(23396))
+        else
+            return use(getPurse())
+        end
     end
     delay(1500)
 end)

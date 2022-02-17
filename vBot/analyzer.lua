@@ -11,6 +11,33 @@
   br, Vithrax
 ]]
 
+
+local lootWorth = 0
+local wasteWorth = 0
+local balance = 0
+local balanceDesc = ""
+local hourDesc = ""
+local desc = ""
+local hour = ""
+local launchTime = now
+local startExp = exp()
+local dmgTable = {}
+local healTable = {}
+local expTable = {}
+local totalDmg = 0
+local totalHeal = 0
+local dmgDistribution = {}
+local first = {l="-", r="0"}
+local second = {l="-", r="0"}
+local third = {l="-", r="0"}
+local fourth = {l="-", r="0"}
+local five = {l="-", r="0"}
+storage.bestHit = storage.bestHit or 0
+storage.bestHeal = storage.bestHeal or 0
+local lootedItems = {}
+local useData = {}
+local usedItems ={}
+local lastDataSend = {0, 0}
 local analyzerButton
 local killList = {}
 local membersData = {}
@@ -47,10 +74,8 @@ local huntingWindow = UI.createMiniWindow("HuntingAnalyzer")
 huntingWindow:hide()
 local lootWindow = UI.createMiniWindow("LootAnalyzer")
 lootWindow:hide()
-lootWindow:setContentMaximumHeight(215)
 local supplyWindow = UI.createMiniWindow("SupplyAnalyzer")
 supplyWindow:hide()
-supplyWindow:setContentMaximumHeight(215)
 local impactWindow = UI.createMiniWindow("ImpactAnalyzer")
 impactWindow:hide()
 impactWindow:setContentMaximumHeight(615)
@@ -469,7 +494,7 @@ local function getColor(v)
         return "#5F8DF7"
     elseif v >= 1000 then -- 1k, green
         return "#00FF00"
-    elseif v >= 200 then
+    elseif v >= 50 then
         return "#FFFFFF" -- 50gp, white
     else
       return "#aaaaaa" -- less than 100gp, grey
@@ -494,6 +519,7 @@ end
 
 local function getPrice(name)
     name = formatStr(name)
+    name = name:lower()
     -- first check custom prices
     if storage.analyzers.customPrices[name] then
       return storage.analyzers.customPrices[name]
@@ -522,6 +548,57 @@ local function getPrice(name)
     return 0
 end
 
+local expGained = function()
+  return exp() - startExp
+end
+
+function format_thousand(v, comma)
+  comma = comma and "," or "."
+  if not v then return 0 end
+  local s = string.format("%d", math.floor(v))
+  local pos = string.len(s) % 3
+  if pos == 0 then pos = 3 end
+  return string.sub(s, 1, pos)
+  .. string.gsub(string.sub(s, pos+1), "(...)", comma.."%1")
+end
+
+local expLeft = function()
+  local level = lvl()+1
+  return math.floor((50*level*level*level)/3 - 100*level*level + (850*level)/3 - 200) - exp()
+end
+
+niceTimeFormat = function(v) -- v in seconds
+  local hours = string.format("%02.f", math.floor(v/3600))
+  local mins = string.format("%02.f", math.floor(v/60 - (hours*60)))
+ return hours .. ":" .. mins .. "h"
+end
+local uptime
+sessionTime = function()
+  uptime = math.floor((now - launchTime)/1000)
+  return niceTimeFormat(uptime)
+end
+sessionTime()
+
+local expPerHour = function(calculation)
+  local r = 0
+  if #expTable > 0 then
+      r = exp() - expTable[1]
+  else
+      return "-"
+  end
+
+  if uptime < 15*60 then
+      r = math.ceil((r/uptime)*60*60)
+  else
+      r = math.ceil(r*8)
+  end
+  if calculation then
+      return r
+  else
+      return format_thousand(r)
+  end
+end
+
 local function add(t, text, color, last)
     table.insert(t, text)
     table.insert(t, color)
@@ -537,8 +614,29 @@ local function sendData()
     local totalDmg, totalHeal, lootWorth, wasteWorth, balance = getHuntingData()
     local outfit = player:getOutfit()
     outfit.mount = 0
-    local t = {totalDmg, totalHeal, balance, hppercent(), manapercent(), outfit, player:isPartyLeader(), lootWorth, wasteWorth}
-    BotServer.send("partyHunt", t)
+    local t = {
+      totalDmg, 
+      totalHeal, 
+      balance, 
+      hppercent(), 
+      manapercent(), 
+      outfit, 
+      player:isPartyLeader(), 
+      lootWorth, 
+      wasteWorth,
+      modules.game_skills.skillsWindow.contentsPanel.stamina.value:getText(),
+      format_thousand(expGained()),
+      expPerHour(),
+      balanceDesc .. " (" .. hourDesc .. ")",
+      sessionTime()
+    }
+
+    -- validation
+    if lastDataSend.totalDmg ~= t[1] and lastDataSend.totalHeal ~= t[2] then
+      BotServer.send("partyHunt", t)
+      lastDataSend[1] = t[1]
+      lastDataSend[2] = t[2]
+    end
   end
 end
 
@@ -558,21 +656,43 @@ BotServer.listen("partyHunt", function(name, message)
       outfit = message[6], 
       leader = message[7], 
       loot = message[8], 
-      waste = message[9]
+      waste = message[9],
+      stamina = message[10],
+      expGained = message[11],
+      expH = message[12],
+      balanceH = message[13],
+      session = message[14]
     }
 
     local widgetName = "Widget"..name
     local widget = partyHuntWindow.contentsPanel[widgetName] or UI.createWidget("MemberWidget", partyHuntWindow.contentsPanel)
     widget:setId(widgetName)
+    widget.lastUpdate = now
+
 
     local t = membersData[name]
     widget.name:setText(name)
+    widget.name:setColor("white")
     if t.leader then
       widget.name:setColor('#f8db38')
     end
+    schedule(10*1000, function()
+      if widget and widget.lastUpdate and now - widget.lastUpdate > 10000 then
+        widget.name:setText(widget.name:getText().. " [inactive]")
+        widget.name:setColor("#aeaeae")
+        widget.health:setBackgroundColor("#aeaeae")
+        widget.mana:setBackgroundColor("#aeaeae")
+        widget.balance.value:setText("-")
+        widget.damage.value:setText("-")
+        widget.healing.value:setText("-")
+        widget.creature:disable()
+      end
+    end)
     widget.creature:setOutfit(t.outfit)
     widget.health:setPercent(t.hp)
+    widget.health:setBackgroundColor("#00c000")
     widget.mana:setPercent(t.mana)
+    widget.mana:setBackgroundColor("#0000FF")
     widget.balance.value:setText(format_thousand(t.balance))
     if t.balance < 0 then
       widget.balance.value:setColor('#ff9854')
@@ -588,6 +708,15 @@ BotServer.listen("partyHunt", function(name, message)
       membersData[name] = nil
       widget:destroy()
     end
+
+    --tooltip
+    local tooltip = "Session: "..t.session.."\n"..
+                    "Stamina: "..t.stamina.."\n"..
+                    "Exp Gained: "..t.expGained.."\n"..
+                    "Exp per Hour: "..t.expH.."\n"..
+                    "Balance: "..t.balanceH
+    
+    widget.creature:setTooltip(tooltip)
   end
 end)
 
@@ -729,26 +858,6 @@ local function niceFormat(v)
     end
     return formatted
 end
-
-
-local launchTime = now
-local startExp = exp()
-local dmgTable = {}
-local healTable = {}
-local expTable = {}
-local totalDmg = 0
-local totalHeal = 0
-local dmgDistribution = {}
-local first = {l="-", r="0"}
-local second = {l="-", r="0"}
-local third = {l="-", r="0"}
-local fourth = {l="-", r="0"}
-local five = {l="-", r="0"}
-storage.bestHit = storage.bestHit or 0
-storage.bestHeal = storage.bestHeal or 0
-local lootedItems = {}
-local useData = {}
-local usedItems ={}
 
 resetAnalyzerSessionData = function()
     launchTime = now
@@ -918,56 +1027,6 @@ settingsWindow.RarityFrames.onClick = function(widget)
   setFrames()
 end
 
-function format_thousand(v, comma)
-    comma = comma and "," or "."
-    if not v then return 0 end
-    local s = string.format("%d", math.floor(v))
-    local pos = string.len(s) % 3
-    if pos == 0 then pos = 3 end
-    return string.sub(s, 1, pos)
-    .. string.gsub(string.sub(s, pos+1), "(...)", comma.."%1")
-  end
-
-local expGained = function()
-    return exp() - startExp
-end
-local expLeft = function()
-    local level = lvl()+1
-    return math.floor((50*level*level*level)/3 - 100*level*level + (850*level)/3 - 200) - exp()
-end
-
-niceTimeFormat = function(v) -- v in seconds
-    local hours = string.format("%02.f", math.floor(v/3600))
-    local mins = string.format("%02.f", math.floor(v/60 - (hours*60)))
-   return hours .. ":" .. mins .. "h"
-end
-local uptime
-sessionTime = function()
-    uptime = math.floor((now - launchTime)/1000)
-    return niceTimeFormat(uptime)
-end
-sessionTime()
-
-local expPerHour = function(calculation)
-    local r = 0
-    if #expTable > 0 then
-        r = exp() - expTable[1]
-    else
-        return "-"
-    end
-
-    if uptime < 15*60 then
-        r = math.ceil((r/uptime)*60*60)
-    else
-        r = math.ceil(r*8)
-    end
-    if calculation then
-        return r
-    else
-        return format_thousand(r)
-    end
-end
-
 local timeToLevel = function()
     local t = 0
     if expPerHour(true) == 0 or expPerHour() == "-" then
@@ -1115,11 +1174,11 @@ end
 
 function refreshLoot()
 
-    lootItems.List:destroyChildren()
+    lootItems:destroyChildren()
     lootList:destroyChildren()
 
     for k,v in pairs(lootedItems) do
-        local label1 = UI.createWidget("AnalyzerLootItem", lootItems.List)
+        local label1 = UI.createWidget("AnalyzerLootItem", lootItems)
         local price = v.count and getPrice(v.name) * v.count or getPrice(v.name)
 
         label1:setItemId(k)
@@ -1133,21 +1192,14 @@ function refreshLoot()
         local label2 = UI.createWidget("ListLabel", lootList)
         label2:setText(v.count .. "x " .. v.name)
     end
-    if lootItems.List:getChildCount() == 0 then
+    if lootItems:getChildCount() == 0 then
       local label = UI.createWidget("ListLabel", lootList)
       label:setText("None")
-      lootList:setHeight(15)
-    else
-      lootList:setHeight(lootItems.List:getChildCount() * 15)
     end
-    local height = getPanelHeight(lootItems)
-    lootItems:setHeight(height)
-    lootWindow:setContentMaximumHeight(height+220)
 end
 refreshLoot()
 
 function refreshKills()
-
     killedList:destroyChildren()
     local kills = 0
     for k,v in pairs(killList) do
@@ -1159,18 +1211,15 @@ function refreshKills()
     if kills == 0 then
       local label = UI.createWidget("ListLabel", killedList)
       label:setText("None")
-      killedList:setHeight(15)
-    else
-      killedList:setHeight(kills * 15)
     end
 end
 refreshKills()
 
 function refreshWaste()
 
-    supplyItems.List:destroyChildren()
+    supplyItems:destroyChildren()
     for k,v in pairs(usedItems) do
-      local label1 = UI.createWidget("AnalyzerLootItem", supplyItems.List)
+      local label1 = UI.createWidget("AnalyzerLootItem", supplyItems)
       local price = v.count and getPrice(v.name) * v.count or getPrice(v.name)
 
       label1:setItemId(k)
@@ -1181,12 +1230,7 @@ function refreshWaste()
       local tooltipName = v.count > 1 and v.name.."s" or v.name
       label1:setTooltip(v.count .. "x " .. tooltipName .. " (Value: "..format_thousand(getPrice(v.name)).."gp, Sum: "..format_thousand(price).."gp)")
     end
-    local height = getPanelHeight(supplyItems)
-    supplyItems:setHeight(height)    
-    supplyWindow:setContentMaximumHeight(height+215)
 end
-
-
 
 -- loot analyzer
 -- adding
@@ -1282,15 +1326,6 @@ function hourVal(v)
   v = v or 0
   return (v/uptime)*3600
 end
-
-local lootWorth 
-local wasteWorth
-local balance
-local balanceDesc
-local hourDesc
-local desc
-local hour
-
 
 function bottingStats()
   lootWorth = 0
@@ -1467,7 +1502,7 @@ macro(60*1000, function()
 end)
 
 --party hunt analyzer
-macro(500, function()
+macro(2000, function()
   if not BotServer._websocket then return end
 
   -- send data

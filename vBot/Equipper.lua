@@ -344,6 +344,7 @@ function refreshRules()
     list:destroyChildren()
     for i,v in pairs(config.rules) do
         local widget = UI.createWidget('Rule', list)
+        widget:setId(v.name)
         widget:setText(v.name)
         widget.remove.onClick = function()
             widget:destroy()
@@ -447,10 +448,12 @@ inputPanel.addButton.onClick = function()
     local name = inputPanel.name:getText()
     local items = getItemsFromBox()
     local unequip = {}
+    local hasUnequip = false
 
     for i, child in pairs(inputPanel.unequipPanel:getChildren()) do
         if child:isChecked() then
             table.insert(unequip, true)
+            hasUnequip = true
         else
             table.insert(unequip, false)
         end
@@ -490,8 +493,8 @@ inputPanel.addButton.onClick = function()
         end
     end
 
-    if #items == 0 then
-        return warn("[vBot Equipper] Please add items.")
+    if #items == 0 and not hasUnequip then
+        return warn("[vBot Equipper] Please add items or select unequip slots.")
     end
 
     if #name == 0 then
@@ -533,8 +536,15 @@ end
 --"Player is paralyzed", -- nothing 10
 
 local pressedKey = ""
+local lastPress = now
 onKeyPress(function(keys)
     pressedKey = keys
+    lastPress = now
+    schedule(100, function()
+        if now - lastPress > 20 then
+            pressedKey = ""
+        end
+    end)
 end)
 
 local function interpreteCondition(n, v)
@@ -624,7 +634,16 @@ EquipManager = macro(50, function()
     if #config.rules == 0 then return end
 
     for i, rule in ipairs(config.rules) do
+        local widget = listPanel.list:getChildById(rule.name)
+        if mainWindow:isVisible() then
+            for i, child in ipairs(listPanel.list:getChildren()) do
+                if child ~= widget then
+                    child:setColor('white')
+                end
+            end
+        end
         if rule.enabled then
+            widget:setColor('green')
             local firstCondition = interpreteCondition(rule.mainCondition, rule.mainValue)
             local optionalCondition = nil
             if rule.relation ~= "-" then

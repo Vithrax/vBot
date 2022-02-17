@@ -134,11 +134,12 @@ AnalyzerPriceLabel < Label
     height: 15
 
 AnalyzerListPanel < Panel
-  height: 20
   padding-left: 4
   padding-right: 4
   layout:
     type: verticalBox
+    fit-children: true
+
 
 ListLabel < Label
   height: 15
@@ -146,18 +147,14 @@ ListLabel < Label
   text-offset: 15 0
 
 AnalyzerItemsPanel < Panel
-  height: 0
-
-  Panel
-    id: List
-    anchors.fill: parent
-    margin-top: 3
-    padding: 2
-    layout:
-      type: grid
-      cell-size: 32 32
-      cell-spacing: 3
-      num-columns: 5
+  id: List
+  padding: 2
+  layout:
+    type: grid
+    cell-size: 33 33
+    cell-spacing: 1
+    num-columns: 5
+    fit-children: true
 
 AnalyzerLootItem < UIItem
   opacity: 0.87

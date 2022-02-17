@@ -43,8 +43,29 @@ CaveBot.Extensions.SupplyCheck.setup = function()
   local totalItem4 = itemAmount(supplies.item4)
   local totalItem5 = itemAmount(supplies.item5)
   local totalItem6 = itemAmount(supplies.item6)
- 
-  if supplyRetries > (storage.extras.huntRoutes or 50) then
+
+  if storage.caveBot.forceRefill then
+    print("CaveBot[SupplyCheck]: User forced, going back on refill. Last round took: " .. round)
+    storage.caveBot.forceRefill = false
+    supplyRetries = 0
+    missedChecks = 0
+    return false
+  elseif storage.caveBot.backStop then
+    print("CaveBot[SupplyCheck]: User forced, going back to city and turning off CaveBot. Last round took: " .. round)
+    supplyRetries = 0
+    missedChecks = 0
+    return false   
+  elseif storage.caveBot.backTrainers then
+    print("CaveBot[SupplyCheck]: User forced, going back to city, then on trainers. Last round took: " .. round)
+    supplyRetries = 0
+    missedChecks = 0
+    return false     
+  elseif storage.caveBot.backOffline then
+    print("CaveBot[SupplyCheck]: User forced, going back to city, then on offline training. Last round took: " .. round)
+    supplyRetries = 0
+    missedChecks = 0
+    return false    
+  elseif supplyRetries > (storage.extras.huntRoutes or 50) then
     print("CaveBot[SupplyCheck]: Round limit reached, going back on refill. Last round took: " .. round)
     supplyRetries = 0
     missedChecks = 0

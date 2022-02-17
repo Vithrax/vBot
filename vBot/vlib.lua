@@ -30,6 +30,12 @@ function relogOnCharacter(charName)
     end
 end
 
+function castSpell(text)
+    if canCast(text) then
+        say(text)
+    end
+end
+
 local dmgTable = {}
 local lastDmgMessage = now
 onTextMessage(function(mode, text)

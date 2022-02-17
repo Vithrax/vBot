@@ -14,6 +14,14 @@ extrasWindow.closeButton.onClick = function(widget)
   extrasWindow:hide()
 end
 
+extrasWindow.onGeometryChange = function(widget, old, new)
+  if old.height == 0 then return end
+  
+  settings.height = new.height
+end
+
+extrasWindow:setHeight(settings.height or 360)
+
 -- available options for dest param
 local rightPanel = extrasWindow.content.right
 local leftPanel = extrasWindow.content.left
@@ -165,7 +173,7 @@ if true then
                   31118, 20474, 5737, 5736, 5734, 5733, 31202, 31228, 31199, 31200, 33262, 30824, 
                   5125, 5126, 5116, 5117, 8257, 8258, 8255, 8256, 5120, 30777, 30776, 23873, 23877,
                   5736, 6264, 31262, 31130, 31129, 6250, 6249, 5122, 30049, 7131, 7132, 7727 }
-  local shovelId = { 606, 593, 867 }
+  local shovelId = { 606, 593, 867, 608 }
   local ropeId = { 17238, 12202, 12935, 386, 421, 21966, 14238 }
   local macheteId = { 2130, 3696 }
   local scytheId = { 3653 }
@@ -525,7 +533,9 @@ if true then
     end
   end
   if settings.checkPlayer then 
-    checkPlayers()
+    schedule(500, function()
+      checkPlayers()
+    end)
   end
 
   onPlayerPositionChange(function(x,y)
