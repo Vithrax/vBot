@@ -281,7 +281,11 @@ TargetBot.Looting.lootItem = function(lootContainers, item)
   end
 
   local container = lootContainers[1]
-  g_game.move(item, container:getSlotPosition(container:getItemsCount()), 1)
+  if container:hasPages() then
+    g_game.move(item, container:getSlotPosition(1), 1)
+  else
+    g_game.move(item, container:getSlotPosition(container:getItemsCount()), 1)
+  end
   waitTill = now + 300 -- give it 0.3s to move item
 end
 
