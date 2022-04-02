@@ -12,7 +12,7 @@ foodContainer:setHeight(35)
 foodContainer:setItems(storage.foodItems)
 
 
-macro(500, "Eat Food", function()
+macro(15000, "Eat Food", function()
   if player:getRegenerationTime() > 400 or not storage.foodItems[1] then return end
   -- search for food in containers
   for _, container in pairs(g_game.getContainers()) do
