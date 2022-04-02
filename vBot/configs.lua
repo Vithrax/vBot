@@ -17,6 +17,12 @@ for i=1,10 do
   end
 end
 
+-- make storages dir
+local path = "/bot/".. configName .."/storages/"
+if not g_resources.directoryExists(path) then
+  g_resources.makeDir(path)
+end
+
 local profile = g_settings.getNumber('profile')
 
 HealBotConfig = {}
@@ -25,6 +31,8 @@ AttackBotConfig = {}
 local attackBotFile = "/bot/" .. configName .. "/vBot_configs/profile_".. profile .. "/AttackBot.json"
 SuppliesConfig = {}
 local suppliesFile = "/bot/" .. configName .. "/vBot_configs/profile_".. profile .. "/Supplies.json"
+PlayerBotConfig = {}
+local playerBotFile = "/bot/" .. configName .. "/storages/" .. player:getName() .. ".json"
 
 
 --healbot
@@ -60,6 +68,17 @@ if g_resources.fileExists(suppliesFile) then
     SuppliesConfig = result
 end
 
+--playerbot
+if g_resources.fileExists(playerBotFile) then
+  local status, result = pcall(function() 
+    return json.decode(g_resources.readFileContents(playerBotFile)) 
+  end)
+  if not status then
+    return onError("Error while reading config file (" .. playerBotFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
+  end
+  PlayerBotConfig = result
+end
+
 function vBotConfigSave(file)
   -- file can be either
   --- heal
@@ -78,6 +97,9 @@ function vBotConfigSave(file)
   elseif file == "supply" then
       configFile = suppliesFile
       configTable = SuppliesConfig
+  elseif file == "player" then
+      configFile = playerBotFile
+      configTable = PlayerBotConfig
   else
     return
   end
