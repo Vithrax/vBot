@@ -1,4 +1,4 @@
-local version = "4.5"
+local version = "1.0"
 local currentVersion
 local available = false
 
@@ -9,7 +9,7 @@ if os.time() > storage.checkVersion + (12 * 60 * 60) then
 
     storage.checkVersion = os.time()
     
-    HTTP.get("https://raw.githubusercontent.com/Vithrax/vBot/main/vBot/version.txt", function(data, err)
+    HTTP.get("https://raw.githubusercontent.com/tonireinbold/vBot/main/vBot/version.txt", function(data, err)
         if err then
           warn("[vBot updater]: Unable to check version:\n" .. err)
           return
@@ -21,8 +21,8 @@ if os.time() > storage.checkVersion + (12 * 60 * 60) then
 
 end
 
-UI.Label("vBot v".. version .." \n Vithrax#5814")
-UI.Button("Official OTCv8 Discord!", function() g_platform.openUrl("https://discord.gg/yhqBE4A") end)
+UI.Label("vBot v".. version .." \n Toni Reinbold")
+UI.Button("Toni Discord!", function() g_platform.openUrl("https://discord.gg/rvaYmYEH25") end)
 UI.Separator()
 
 schedule(5000, function()
@@ -32,7 +32,7 @@ schedule(5000, function()
         
         UI.Separator()
         UI.Label("New vBot is available for download! v"..currentVersion)
-        UI.Button("Go to vBot GitHub Page", function() g_platform.openUrl("https://github.com/Vithrax/vBot") end)
+        UI.Button("Go to vBot GitHub Page", function() g_platform.openUrl("https://github.com/tonireinbold/vBot") end)
         UI.Separator()
         
     end
