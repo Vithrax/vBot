@@ -2,7 +2,7 @@ setDefaultTab("Main")
 
 -- montaria sempre
 
-macro(10000, "Montar Sempre", function()
+macro(10000, "Mount", function()
    local player = g_game.getLocalPlayer()
   if player then 
     player:mount()
