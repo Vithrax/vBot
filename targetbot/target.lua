@@ -326,3 +326,44 @@ end
 TargetBot.canLure = function()
   return lureEnabled
 end
+
+UI.Separator()
+
+UI.Label("Runas")
+
+-- runas de alvo único
+
+macro(200, "SD on Target", function()
+    if g_game.isAttacking() then
+        usewith(3155, g_game.getAttackingCreature()) -- 3155 eh o id da sd, pode trocar por qualquer runa
+        delay(400)
+    end
+end)
+
+macro(200, "Icicle on Target", function()
+    if g_game.isAttacking() then
+        usewith(3158, g_game.getAttackingCreature()) -- 3158 eh o id da icicle, pode trocar por qualquer runa
+        delay(400)
+    end
+end)
+
+macro(200, "GFB on Target", function()
+    if g_game.isAttacking() then
+        usewith(3191, g_game.getAttackingCreature()) -- 3158 eh o id da icicle, pode trocar por qualquer runa
+        delay(400)
+    end
+end)
+
+macro(200, "Avalanche on Target", function()
+    if g_game.isAttacking() then
+        usewith(3161, g_game.getAttackingCreature()) -- 3158 eh o id da icicle, pode trocar por qualquer runa
+        delay(400)
+    end
+end)
+
+macro(200, "Fireball on Target", function()
+    if g_game.isAttacking() then
+        usewith(3189, g_game.getAttackingCreature()) -- 3158 eh o id da icicle, pode trocar por qualquer runa
+        delay(400)
+    end
+end)
