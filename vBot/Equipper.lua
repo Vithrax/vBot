@@ -399,7 +399,7 @@ local function refreshRules()
             optionalConditionNumber = ruleData.optionalCondition
             setCondition(false, optionalConditionNumber)
             setCondition(true, conditionNumber)
-            inputPanel.useSecondCondition:setCurrentOption(ruleData.relation)
+            inputPanel.useSecondCondition:setOption(ruleData.relation)
             namePanel.profileName:setText(v.name)
 
             if type(ruleData.mainValue) == "string" then
@@ -566,19 +566,6 @@ bossPanel.add.onClick = function()
     bossPanel.name:setText('')
 end
 
-
-local pressedKey = ""
-local lastPress = now
-onKeyPress(function(keys)
-    pressedKey = keys
-    lastPress = now
-    schedule(100, function()
-        if now - lastPress > 20 then
-            pressedKey = ""
-        end
-    end)
-end)
-
 local function interpreteCondition(n, v)
 
     if n == 1 then
@@ -598,7 +585,7 @@ local function interpreteCondition(n, v)
     elseif n == 8 then
         return target() and target():getName():lower() == v:lower() or false
     elseif n == 9 then
-        return pressedKey == v
+        return g_keyboard.isKeyPressed(v)
     elseif n == 10 then
         return isParalyzed()
     elseif n == 11 then
@@ -693,6 +680,7 @@ local function equipItem(id, slot)
         slot = 5
     end
 
+
     if g_game.getClientVersion() >= 910 then
         -- new tibia
         return g_game.equipItemId(id)
@@ -703,6 +691,22 @@ local function equipItem(id, slot)
     end
 end
 
+
+local function markChild(child)
+    if mainWindow:isVisible() then
+        for i, child in ipairs(listPanel.list:getChildren()) do
+            if child ~= widget then
+                child:setColor('white')
+            end
+        end
+        widget:setColor('green')
+    end
+end
+
+
+local missingItem = false
+local lastRule = false
+local correctEq = false
 EquipManager = macro(50, function()
     if not config.enabled then return end
     if #config.rules == 0 then return end
@@ -710,43 +714,57 @@ EquipManager = macro(50, function()
     for i, widget in ipairs(listPanel.list:getChildren()) do
         local rule = widget.ruleData
         if rule.enabled then
+
+            -- conditions
             local firstCondition = interpreteCondition(rule.mainCondition, rule.mainValue)
             local optionalCondition = nil
             if rule.relation ~= "-" then
                 optionalCondition = interpreteCondition(rule.optionalCondition, rule.optValue)
             end
 
+            -- checks
             if finalCheck(firstCondition, rule.relation, optionalCondition) then
+
+                -- performance edits, loop reset
+                local resetLoop = not missingItem and correctEq and lastRule ==  rule
+                if resetLoop then return end
+
+                -- reset executed rule
+
+
+                -- first check unequip
                 if unequipItem(rule.data) == true then
                     delay(200)
                     return
                 end
+
+                -- equiploop 
                 for slot, item in ipairs(rule.data) do
-                    if type(item) == "number" then
+                    if type(item) == "number" and item > 100 then
                         if not isEquipped(item) then
-                            if mainWindow:isVisible() then
-                                for i, child in ipairs(listPanel.list:getChildren()) do
-                                    if child ~= widget then
-                                        child:setColor('white')
-                                    end
-                                end
-                                widget:setColor('green')
-                            end
                             if rule.visible then
-                                if itemAmount(item) > 0 then
+                                if findItem(item) then
+                                    missingItem = false
                                     delay(200)
                                     return equipItem(item, slot)
+                                else
+                                    missingItem = true
                                 end
                             else
+                                missingItem = false
                                 delay(200)
                                 return equipItem(item, slot)
                             end
                         end
                     end
                 end
+
+                correctEq = not missingItem and true or false
+                -- even if nothing was done, exit function to hold rule
                 return
             end
+
+
         end
     end
-    pressedKey = ""
 end)

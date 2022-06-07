@@ -420,7 +420,7 @@ if true then
     if not settings.suppliesControl then return end
     if TargetBot.isOff() then return end
     if CaveBot.isOff() then return end
-    if not hasSupplies() then
+    if type(hasSupplies()) == 'table' then
         TargetBot.setOff()
     end
   end)
@@ -554,7 +554,7 @@ if true then
     end
   end)
 
-  local regex = [[You see ([a-z 'A-z-]*) \(Level ([0-9]*)\)((?:.)* of the ([\w ]*),|)]]
+  local regex = [[You see ([^\(]*) \(Level ([0-9]*)\)((?:.)* of the ([\w ]*),|)]]
   onTextMessage(function(mode, text)
     if not settings.checkPlayer then return end
 

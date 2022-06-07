@@ -974,24 +974,39 @@ local function getFrame(v)
   end
 end
 
+
+displayCondition = function(menuPosition, lookThing, useThing, creatureThing)
+  if lookThing and not lookThing:isCreature() and not lookThing:isNotMoveable() and lookThing:isPickupable() then
+    return true
+  end
+end
+local interface = modules.game_interface
+
 local function setFrames()
   if not storage.analyzers.rarityFrames then return end
   for _, container in pairs(getContainers()) do
       local window = container.itemsPanel
       for i, child in pairs(window:getChildren()) do
           local id = child:getItemId()
+          local price = 0
 
           if id ~= 0 then -- there's item
               local item = Item.create(id)
               local name = item:getMarketData().name:lower()
+              price = getPrice(name)
 
-              local price = getPrice(name)
               -- set rarity frame
               child:setImageSource(getFrame(price))
           else -- empty widget
               -- revert any possible changes
               child:setImageSource("/images/ui/item")
           end
+          child.onHoverChange = function(widget, hovered)
+            if id == 0 or not hovered then
+              return interface.removeMenuHook('analyzer')
+            end
+            interface.addMenuHook('analyzer', 'Price:', function() end, displayCondition, price)          
+        end
       end
   end 
 end 
@@ -1359,6 +1374,7 @@ end)
 
 -- waste
 local regex3 = [[\d ([a-z A-Z]*)s...]]
+local lackOfData = {}
 onTextMessage(function(mode, text)
   text = text:lower()
   if not text:find("using one of") then return end
@@ -1367,6 +1383,16 @@ onTextMessage(function(mode, text)
   local re = regexMatch(text, regex3)
   local name = re[1][2]
   local id = WasteItems[name]
+
+  if not id then
+
+    if not lackOfData[name] then
+      lackOfData[name] = true
+      print("[Analyzer] no data for item: "..name.. "inside items.lua -> WasteItems")
+    end
+
+    return
+  end
 
   if not useData[name] then
     useData[name] = amount
