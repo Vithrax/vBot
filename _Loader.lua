@@ -41,7 +41,6 @@ local luaFiles = {
   "tools",
   "antiRs",
   "depot_withdraw",
-  "cast_food",
   "eat_food",
   "equip",
   "exeta",

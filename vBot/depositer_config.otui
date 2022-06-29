@@ -70,7 +70,6 @@ DepositerPanel < MainWindow
     anchors.right: DepositerList.right
     step: 14
     pixels-scroll: true
-    visible: false
 
   ResizeBorder
     id: bottomResizeBorder

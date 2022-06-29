@@ -1,9 +1,10 @@
 setDefaultTab("Main")
-
+local regex = [["(.*?)"]]
 local panelName = "BOTserver"
 local ui = setupUI([[
 Panel
   height: 18
+
   Button
     id: botServer
     anchors.left: parent.left
@@ -25,6 +26,7 @@ if not storage[panelName] then
 end
 
 local config = storage[panelName]
+config.mwalls = {}
 
 if not storage.BotServerChannel then
   math.randomseed(os.time())
@@ -32,15 +34,43 @@ if not storage.BotServerChannel then
 end
 
 local channel = tostring(storage.BotServerChannel)
-BotServer.init(name(), channel)
+if config.enabled then
+  BotServer.init(name(), channel)
+end
 
 vBot.BotServerMembers = {}
 
 rootWidget = g_ui.getRootWidget()
 if rootWidget then
-  botServerWindow = g_ui.createWidget('BotServerWindow', rootWidget)
+  botServerWindow = UI.createWindow('BotServerWindow')
   botServerWindow:hide()
 
+
+  botServerWindow.enabled:setOn(config.enabled)
+  botServerWindow.enabled.onClick = function()
+    config.enabled = not config.enabled
+    botServerWindow.enabled:setOn(config.enabled)
+    if config.enabled then
+      channel = tostring(storage.BotServerChannel)
+      BotServer.init(name(), channel)
+      botServerWindow.Data.ServerStatus:setText("CONNECTING...")
+      ui.botServer:setColor('#FFF380')
+      botServerWindow.Data.ServerStatus:setColor('#FFF380')
+    else 
+      if BotServer._websocket then
+        BotServer.terminate()
+      end
+      botServerWindow.Data.ServerStatus:setText("DISCONNECTED")
+      ui.botServer:setColor('#E3242B')
+      botServerWindow.Data.ServerStatus:setColor('#E3242B')
+      botServerWindow.Data.Participants:setText("-")
+      botServerWindow.Data.Members:setTooltip('') 
+      ServerMembers = {}
+      serverCount = {}
+    end
+    initBotServerListenFunctions()
+    schedule(2000, updateStatusText)
+  end
 
   botServerWindow.Data.Channel:setText(storage.BotServerChannel)
   botServerWindow.Data.Channel.onTextChange = function(widget, text)
@@ -86,11 +116,60 @@ if rootWidget then
   end
 end
 
+function initBotServerListenFunctions()
+  if not BotServer._websocket then return end
+  if not config.enabled then return end
+
+  -- list
+  BotServer.listen("list", function(name, data)
+    serverCount = regexMatch(json.encode(data), regex)  
+    ServerMembers = json.encode(data)
+  end)
+
+  -- mwalls
+  BotServer.listen("mwall", function(name, message)
+    if config.mwallInfo then
+      if not config.mwalls[message["pos"]] or config.mwalls[message["pos"]] < now then
+        config.mwalls[message["pos"]] = now + message["duration"] - 150 -- 150 is latency correction
+      end
+    end
+  end)
+
+  -- mana
+  BotServer.listen("mana", function(name, message)
+    if config.manaInfo then
+      local creature = getPlayerByName(name)
+      if creature then
+        creature:setManaPercent(message["mana"])
+      end
+    end
+  end)
+
+  -- vocation
+  BotServer.listen("voc", function(name, message)
+    if message == "yes" and config.vocation then
+      BotServer.send("voc", player:getVocation())
+    else
+      vBot.BotServerMembers[name] = message
+    end
+  end)
+
+  -- broadcast
+  BotServer.listen("broadcast", function(name, message)
+    if config.broadcasts then
+      broadcastMessage(name..": "..message)
+    end
+  end)  
+end
+initBotServerListenFunctions()
+
 function updateStatusText()
   if BotServer._websocket then 
     botServerWindow.Data.ServerStatus:setText("CONNECTED")
+    botServerWindow.Data.ServerStatus:setColor('#03AC13')
+    ui.botServer:setColor('#03AC13')
     if serverCount then
-      botServerWindow.Data.Members:setText("Members: "..#serverCount)
+      botServerWindow.Data.Participants:setText(#serverCount)
       if ServerMembers then
         local text = ""
         local regex = [["([a-z 'A-z-]*)"*]]
@@ -108,21 +187,18 @@ function updateStatusText()
     end
   else
     botServerWindow.Data.ServerStatus:setText("DISCONNECTED")
+    ui.botServer:setColor('#E3242B')
+    botServerWindow.Data.ServerStatus:setColor('#E3242B')
     botServerWindow.Data.Participants:setText("-")
   end
 end
 
-macro(2000, function()
+macro(1000, function()
   if BotServer._websocket then
     BotServer.send("list")
   end
   updateStatusText()
-end)
-
-local regex = [["(.*?)"]]
-BotServer.listen("list", function(name, data)
-  serverCount = regexMatch(json.encode(data), regex)  
-  ServerMembers = json.encode(data)
+  delay(9000)
 end)
 
 ui.botServer.onClick = function(widget)
@@ -135,20 +211,9 @@ botServerWindow.closeButton.onClick = function(widget)
     botServerWindow:hide()
 end
 
--- scripts
-
--- mwalls
-config.mwalls = {}
-BotServer.listen("mwall", function(name, message)
-  if config.mwallInfo then
-    if not config.mwalls[message["pos"]] or config.mwalls[message["pos"]] < now then
-      config.mwalls[message["pos"]] = now + message["duration"] - 150 -- 150 is latency correction
-    end
-  end
-end)
 
 onAddThing(function(tile, thing)
-  if config.mwallInfo then
+  if config.mwallInfo and BotServer._websocket then
     if thing:isItem() and thing:getId() == 2129 then
       local pos = tile:getPosition().x .. "," .. tile:getPosition().y .. "," .. tile:getPosition().z
       if not config.mwalls[pos] or config.mwalls[pos] < now then
@@ -162,7 +227,7 @@ end)
 -- mana
 local lastMana = 0
 macro(500, function()
-  if config.manaInfo then
+  if config.manaInfo and BotServer._websocket then
     if manapercent() ~= lastMana then
       lastMana = manapercent()
       BotServer.send("mana", {mana=lastMana})
@@ -170,34 +235,10 @@ macro(500, function()
   end
 end)
 
-BotServer.listen("mana", function(name, message)
-  if config.manaInfo then
-    local creature = getPlayerByName(name)
-    if creature then
-      creature:setManaPercent(message["mana"])
-    end
-  end
-end)
-
 -- vocation
-if config.vocation then
+if config.vocation and BotServer._websocket then
   BotServer.send("voc", player:getVocation())
   BotServer.send("voc", "yes")
 end
-
-BotServer.listen("voc", function(name, message)
-  if message == "yes" and config.vocation then
-    BotServer.send("voc", player:getVocation())
-  else
-    vBot.BotServerMembers[name] = message
-  end
-end)
-
--- broadcast
-BotServer.listen("broadcast", function(name, message)
-  if config.broadcasts then
-    broadcastMessage(name..": "..message)
-  end
-end)
 
 addSeparator()

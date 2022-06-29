@@ -121,3 +121,16 @@ function getStashingIndex(id)
         end
     end
 end
+
+UI.Separator()
+UI.Label("Sell Exeptions")
+
+if type(storage.cavebotSell) ~= "table" then
+  storage.cavebotSell = {23544, 3081}
+end
+
+local sellContainer = UI.Container(function(widget, items)
+  storage.cavebotSell = items
+end, true)
+sellContainer:setHeight(35)
+sellContainer:setItems(storage.cavebotSell)

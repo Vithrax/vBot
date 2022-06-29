@@ -54,7 +54,9 @@ local conditions = { -- always add new conditions at the bottom
     "Players around is less than:", -- spinbox 13
     "TargetBot Danger is Above:", -- spinbox 14
     "Blacklist player in range (sqm)", -- spinbox 15
-    "Target is Boss" -- nothing
+    "Target is Boss", -- nothing 16
+    "Player is NOT in protection zone", -- nothing 17
+    "CaveBot is ON, TargetBot is OFF" -- nothing 18
 }
 
 local conditionNumber = 1
@@ -96,7 +98,7 @@ local function setCondition(first, n)
     spinBox:setValue(0)
     textEdit:setText('')
 
-    if n == 1 or n == 10 or n == 11 or n == 16 then
+    if n == 1 or n == 10 or n == 11 or n == 16 or n == 17 or n == 18 then
         spinBox:hide()
         textEdit:hide()
     elseif n == 9 or n == 8 then
@@ -600,8 +602,11 @@ local function interpreteCondition(n, v)
         return isBlackListedPlayerInRange(v)
     elseif n == 16 then
         return target() and table.find(config.bosses, target():getName():lower(), true) and true or false
+    elseif n == 17 then
+        return not isInPz()
+    elseif n == 18 then
+        return CaveBot.isOn() and TargetBot.isOff()
     end
-    
 end
 
 local function finalCheck(first,relation,second)

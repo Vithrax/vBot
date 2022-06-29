@@ -11,6 +11,14 @@
   br, Vithrax
 ]]
 
+-- here you can fix incorrect bosses names in cooldown messages
+local BOSSES = {
+  -- {in message, correct one}
+  {"Scarlet Etzel", "Scarlett Etzel"},
+  {"Leiden", "Ravenous Hunger"},
+  {"Urmahlulu", "Urmahlullu"}
+}
+
 vBot.CaveBotData = vBot.CaveBotData or {
   refills = 0,
   rounds = 0,
@@ -52,15 +60,18 @@ HuntingSessionStart = os.date('%Y-%m-%d, %H:%M:%S')
 if not storage.analyzers then
   storage.analyzers = {
     trackedLoot = {},
+    trackedBoss = {},
+    outfits = {},
     customPrices = {},
     lootChannel = true,
-    rarityFrames = true
+    rarityFrames = true,
   }
 end
 
 storage.analyzers = storage.analyzers or {}
 storage.analyzers.trackedLoot = storage.analyzers.trackedLoot or {}
-
+storage.analyzers.trackedBoss = storage.analyzers.trackedBoss or {}
+storage.analyzers.outfits = storage.analyzers.outfits or {}
 local trackedLoot = storage.analyzers.trackedLoot
 
 --destroy old windows
@@ -72,7 +83,8 @@ local windowsTable = {"MainAnalyzerWindow",
                       "XPAnalyzerWindow", 
                       "PartyAnalyzerWindow", 
                       "DropTracker", 
-                      "CaveBotStats"
+                      "CaveBotStats",
+                      "BossTracker"
                      }
 
                       for i, window in ipairs(windowsTable) do
@@ -85,7 +97,7 @@ end
 
 local mainWindow = UI.createMiniWindow("MainAnalyzerWindow")
 mainWindow:hide()
-mainWindow:setContentMaximumHeight(240)
+mainWindow:setContentMaximumHeight(267)
 local huntingWindow = UI.createMiniWindow("HuntingAnalyzer")
 huntingWindow:hide()
 local lootWindow = UI.createMiniWindow("LootAnalyzer")
@@ -106,6 +118,8 @@ local dropTrackerWindow = UI.createMiniWindow("DropTracker")
 dropTrackerWindow:hide()
 local statsWindow = UI.createMiniWindow("CaveBotStats")
 statsWindow:hide()
+local bossWindow = UI.createMiniWindow("BossTracker")
+bossWindow:hide()
 
 --f
 local toggle = function()
@@ -214,6 +228,91 @@ end
 mainWindow.contentsPanel.Stats.onClick = function()
   toggleAnalyzer(statsWindow)
 end
+mainWindow.contentsPanel.BossTracker.onClick = function()
+  toggleAnalyzer(bossWindow)
+end
+
+-- boss tracker
+bossWindow.contentsPanel.search.onTextChange = function(widget, newText)
+  newText = newText:lower()
+  for i, child in ipairs(bossWindow.contentsPanel:getChildren()) do
+    local text = child:getId():lower()
+    if child:getId() ~= "search" then
+      child:setVisible(text:find(newText))
+    end
+  end
+end
+
+-- on login
+newTimeFormat = function(v) -- v in seconds
+  local hours = string.format("%02.f", math.floor(v/3600))
+  local mins = string.format("%02.f", math.floor(v/60 - (hours*60)))
+
+  local final = hours.. "h "..mins.."min"
+  return final
+end
+
+function createBossPanel(bossName, dueTime)
+  local widget = bossWindow.contentsPanel[bossName] or UI.createWidget("BossCreaturePanel", bossWindow.contentsPanel)
+  local outfit = storage.analyzers.outfits[bossName]
+
+  widget.time = dueTime
+  widget:setId(bossName)
+  if outfit then
+    widget.creature:setOutfit(outfit)
+  else
+    widget.creature:setTooltip("Outfit preview not available.\nTo get one you need to 'attack' ".. bossName.."\nOr you need to correct the boss name inside analyzers.lua file, const BOSSES")
+  end
+  widget.name:setText(bossName)
+
+  local timeLeft = os.difftime(dueTime, os.time())
+  if timeLeft > 0 then
+    widget.cooldown:setText(newTimeFormat(timeLeft))
+    widget.cooldown:setColor('#f29257')
+  else
+    widget.cooldown:setText("No Cooldown")
+    widget.cooldown:setColor('#b8b8b8')
+  end
+end
+
+for bossName, dueTime in pairs(storage.analyzers.trackedBoss) do
+  createBossPanel(bossName, dueTime)
+end
+
+local bossRegex = [[You (?:can|may) challenge ([\w\W]*) again in ([\d]*)]]
+onTalk(function(name, level, mode, text, channelId, pos)
+  if mode == 34 then
+    local re = regexMatch(text, bossRegex)
+    local name = re and re[1] and re[1][2]
+    local cd = re and re[1] and re[1][3]
+
+    for i=1,#BOSSES do
+      local bad = BOSSES[i][1]
+      local good = BOSSES[i][2]
+
+      if name == bad then
+        name = good
+      end
+    end
+
+    if not cd then return end
+
+    cd = tonumber(cd) * 60 * 60 -- cd in seconds
+
+    storage.analyzers.trackedBoss[name] = os.time() + cd
+    createBossPanel(name, os.time() + cd)
+  end
+end)
+
+-- save outfits
+onAttackingCreatureChange(function(newCreature, oldCreature)
+  local name = newCreature and newCreature:getName()
+  local outfit = newCreature and newCreature:getOutfit()
+
+  if name then
+    storage.analyzers.outfits[name] = storage.analyzers.outfits[name] or outfit
+  end
+end)
 
 --stats window
 local totalRounds = UI.DualLabel("Total Rounds:", "0", {}, statsWindow.contentsPanel).right
@@ -685,84 +784,86 @@ local function sendData()
 end
 
 -- process data
-BotServer.listen("partyHunt", function(name, message)
-  if message == true then
-    sendData()
-  elseif message == false then
-    resetAnalyzerSessionData()
-  else
-    membersData[name] = {
-      damage = message[1], 
-      heal = message[2], 
-      balance = message[3], 
-      hp = message[4], 
-      mana = message[5], 
-      outfit = message[6], 
-      leader = message[7], 
-      loot = message[8], 
-      waste = message[9],
-      stamina = message[10],
-      expGained = message[11],
-      expH = message[12],
-      balanceH = message[13],
-      session = message[14]
-    }
-
-    local widgetName = "Widget"..name
-    local widget = partyHuntWindow.contentsPanel[widgetName] or UI.createWidget("MemberWidget", partyHuntWindow.contentsPanel)
-    widget:setId(widgetName)
-    widget.lastUpdate = now
-
-
-    local t = membersData[name]
-    widget.name:setText(name)
-    widget.name:setColor("white")
-    if t.leader then
-      widget.name:setColor('#f8db38')
-    end
-    schedule(10*1000, function()
-      if widget and widget.lastUpdate and now - widget.lastUpdate > 10000 then
-        widget.name:setText(widget.name:getText().. " [inactive]")
-        widget.name:setColor("#aeaeae")
-        widget.health:setBackgroundColor("#aeaeae")
-        widget.mana:setBackgroundColor("#aeaeae")
-        widget.balance.value:setText("-")
-        widget.damage.value:setText("-")
-        widget.healing.value:setText("-")
-        widget.creature:disable()
-      end
-    end)
-    widget.creature:setOutfit(t.outfit)
-    widget.health:setPercent(t.hp)
-    widget.health:setBackgroundColor("#00c000")
-    widget.mana:setPercent(t.mana)
-    widget.mana:setBackgroundColor("#0000FF")
-    widget.balance.value:setText(format_thousand(t.balance))
-    if t.balance < 0 then
-      widget.balance.value:setColor('#ff9854')
-    elseif t.balance > 0 then
-      widget.balance.value:setColor('#45ad25')
+if BotServer._websocket then
+  BotServer.listen("partyHunt", function(name, message)
+    if message == true then
+      sendData()
+    elseif message == false then
+      resetAnalyzerSessionData()
     else
-      widget.balance.value:setColor('white')
-    end
-    widget.damage.value:setText(format_thousand(t.damage))
-    widget.healing.value:setText(format_thousand(t.heal))
+      membersData[name] = {
+        damage = message[1], 
+        heal = message[2], 
+        balance = message[3], 
+        hp = message[4], 
+        mana = message[5], 
+        outfit = message[6], 
+        leader = message[7], 
+        loot = message[8], 
+        waste = message[9],
+        stamina = message[10],
+        expGained = message[11],
+        expH = message[12],
+        balanceH = message[13],
+        session = message[14]
+      }
 
-    widget.onDoubleClick = function()
-      membersData[name] = nil
-      widget:destroy()
-    end
+      local widgetName = "Widget"..name
+      local widget = partyHuntWindow.contentsPanel[widgetName] or UI.createWidget("MemberWidget", partyHuntWindow.contentsPanel)
+      widget:setId(widgetName)
+      widget.lastUpdate = now
 
-    --tooltip
-    local tooltip = "Session: "..t.session.."\n"..
-                    "Stamina: "..t.stamina.."\n"..
-                    "Exp Gained: "..t.expGained.."\n"..
-                    "Exp per Hour: "..t.expH.."\n"..
-                    "Balance: "..t.balanceH
-    
-    widget.creature:setTooltip(tooltip)
-  end
-end)
+
+      local t = membersData[name]
+      widget.name:setText(name)
+      widget.name:setColor("white")
+      if t.leader then
+        widget.name:setColor('#f8db38')
+      end
+      schedule(10*1000, function()
+        if widget and widget.lastUpdate and now - widget.lastUpdate > 10000 then
+          widget.name:setText(widget.name:getText().. " [inactive]")
+          widget.name:setColor("#aeaeae")
+          widget.health:setBackgroundColor("#aeaeae")
+          widget.mana:setBackgroundColor("#aeaeae")
+          widget.balance.value:setText("-")
+          widget.damage.value:setText("-")
+          widget.healing.value:setText("-")
+          widget.creature:disable()
+        end
+      end)
+      widget.creature:setOutfit(t.outfit)
+      widget.health:setPercent(t.hp)
+      widget.health:setBackgroundColor("#00c000")
+      widget.mana:setPercent(t.mana)
+      widget.mana:setBackgroundColor("#0000FF")
+      widget.balance.value:setText(format_thousand(t.balance))
+      if t.balance < 0 then
+        widget.balance.value:setColor('#ff9854')
+      elseif t.balance > 0 then
+        widget.balance.value:setColor('#45ad25')
+      else
+        widget.balance.value:setColor('white')
+      end
+      widget.damage.value:setText(format_thousand(t.damage))
+      widget.healing.value:setText(format_thousand(t.heal))
+
+      widget.onDoubleClick = function()
+        membersData[name] = nil
+        widget:destroy()
+      end
+
+      --tooltip
+      local tooltip = "Session: "..t.session.."\n"..
+                      "Stamina: "..t.stamina.."\n"..
+                      "Exp Gained: "..t.expGained.."\n"..
+                      "Exp per Hour: "..t.expH.."\n"..
+                      "Balance: "..t.balanceH
+
+      widget.creature:setTooltip(tooltip)
+    end
+  end)
+end
 
 
 function hightlightText(widget, color, duration)
@@ -1636,6 +1737,10 @@ macro(2000, function()
     partyBalanceLabel:setColor('#45ad25')
   else
     partyBalanceLabel:setColor('white')
+  end
+
+  for bossName, dueTime in pairs(storage.analyzers.trackedBoss) do
+    createBossPanel(bossName, dueTime)
   end
 end)
 

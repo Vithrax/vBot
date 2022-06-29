@@ -1,3 +1,54 @@
+BossCreaturePanel < Panel
+  height: 38
+
+  UICreature
+    id: creature
+    size: 35 35
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    old-scaling: true
+    margin-left: 3
+
+  Label
+    id: name
+    anchors.left: creature.right
+    margin: 1
+    margin-left: 5
+    margin-top: 4
+    anchors.top: parent.top
+    anchors.bottom: creature.verticalCenter
+    anchors.right: parent.right
+    font: verdana-11px-rounded
+    color: #FFFFFF
+    text: Duke Krule
+
+  Label
+    id: cooldown
+    anchors.left: creature.right
+    margin: 1
+    margin-left: 5
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    anchors.top: creature.verticalCenter
+    font: verdana-11px-rounded
+    text: 19h 20min
+
+
+SearchPanel < TextEdit
+  placeholder: Type to search
+  margin-top: 1
+  @onClick: modules.client_textedit.show(self)
+
+  Button
+    id: clear
+    anchors.right: parent.right
+    margin-right: -2
+    anchors.verticalCenter: parent.verticalCenter
+    size: 18 18
+    text: X
+    @onClick: |
+      self:getParent():setText("")
+
 TrackerItem < Panel
   height: 40
 
@@ -206,7 +257,7 @@ AnalyzerButton < Button
 MainAnalyzerWindow < MiniWindow
   id: MainAnalyzerWindow
   text: Analytics Selector
-  height: 266
+  height: 293
   icon: /images/topbuttons/analyzers
 
   MiniWindowContents
@@ -248,6 +299,11 @@ MainAnalyzerWindow < MiniWindow
       id: PartyHunt
       text: Party Hunt
       color: #3895D3
+
+    AnalyzerButton
+      id: BossTracker
+      text: Boss Cooldowns
+      color: #df3afb
 
     AnalyzerButton
       id: Settings
@@ -340,6 +396,21 @@ CaveBotStats < MiniWindow
     padding-right: 3
     padding-top: 1
     layout: verticalBox
+
+BossTracker < MiniWindow
+  id: BossTracker
+  text: Boss Cooldowns
+  height: 200
+  icon: /images/topbuttons/analyzers
+
+  MiniWindowContents
+    padding-left: 3
+    padding-right: 3
+    padding-top: 1
+    layout: verticalBox
+
+    SearchPanel
+      id: search
 
 FeaturesWindow < MainWindow
   id: FeaturesWindow

@@ -376,6 +376,48 @@ local function friendHealerAction(spec, targetsInRange)
     end
 end
 
+local function isCandidate(spec)
+    if spec:isLocalPlayer() or not spec:isPlayer() then 
+        return nil 
+    end
+    if not spec:canShoot() then
+        return false
+    end
+    
+    local curHp = spec:getHealthPercent()
+    if curHp == 100 or (config.customPlayers[name] and curHp > config.customPlayers[name]) then
+        return false
+    end
+
+    local specText = spec:getText()
+    local name = spec:getName()
+    -- check players is enabled and spectator already verified
+    if storage.extras.checkPlayer and specText:len() > 0 then
+        if specText:find("EK") and not config.conditions.knights or
+           specText:find("RP") and not config.conditions.paladins or
+           specText:find("ED") and not config.conditions.druids or
+           specText:find("MS") and not config.conditions.sorcerers then
+           if not config.customPlayers[name] then
+               return nil
+           end
+        end
+    end
+
+    local okParty = config.conditions.party and spec:isPartyMember()
+    local okFriend = config.conditions.friends and isFriend(spec)
+    local okGuild = config.conditions.guild and spec:getEmblem() == 1
+    local okBotServer = config.conditions.botserver and vBot.BotServerMembers[spec:getName()]
+
+    if not (okParty or okFriend or okGuild or okBotServer) then
+        return nil
+    end
+
+    local health = config.customPlayers[name] and curHp/2 or curHp
+    local dist = distanceFromPlayer(spec:getPosition())
+
+    return health, dist
+end
+
 macro(100, function()
     if not config.enabled then return end
     if modules.game_cooldown.isGroupCooldownIconActive(2) then return end
@@ -383,8 +425,7 @@ macro(100, function()
     local minHp = config.settings[7].value
     local minMp = config.settings[8].value
 
-    -- first index will be heal target
-    local finalTable = {}
+    local healTarget = {creature=nil, hp=100}
     local inMasResRange = 0
 
     -- check basic 
@@ -393,63 +434,23 @@ macro(100, function()
     -- get all spectators
     local spectators = getSpectators()
 
-    -- clear table from irrelevant spectators
-    for i, spec in ipairs(getSpectators()) do
-        if spec:isLocalPlayer() or not spec:isPlayer() or not spec:canShoot() then
-            if not config.customPlayers[name] then
-                table.remove(spectators, table.find(spectators, spec))
-            end
-        else
-            local specText = spec:getText()
-            -- check players is enabled and spectator already verified
-            if storage.extras.checkPlayer and specText:len() > 0 then
-                if specText:find("EK") and not config.conditions.knights or
-                   specText:find("RP") and not config.conditions.paladins or
-                   specText:find("ED") and not config.conditions.druids or
-                   specText:find("MS") and not config.conditions.sorcerers then
-                    if not config.customPlayers[name] then
-                        table.remove(spectators, table.find(spectators, spec))
-                    end
-                end
-            end
-            local okParty = config.conditions.party and spec:isPartyMember()
-            local okFriend = config.conditions.friends and isFriend(spec)
-            local okGuild = config.conditions.guild and spec:getEmblem() == 1
-            local okBotServer = config.conditions.botserver and vBot.BotServerMembers[spec:getName()]
-            if not (okParty or okFriend or okGuild or okBotServer) then
-                if not config.customPlayers[name] then
-                    table.remove(spectators, table.find(spectators, spec))
-                end
+    -- main check
+    local healtR
+    for i, spec in ipairs(spectators) do
+        local health, dist = isCandidate(spec)
+        --mas san
+        if dist then
+            inMasResRange = dist <= 3 and inMasResRange+1 or inMasResRange
+
+            -- best target
+            if health < healTarget.hp then
+                healTarget = {creature = spec, hp = health}
             end
         end
     end
 
-    -- no targets, return
-    if #spectators == 0 then return end
-
-    for name, health in pairs(config.customPlayers) do
-        for i, spec in ipairs(spectators) do
-            local specHp = spec:getHealthPercent()
-            if spec:getName() == name and specHp <= health then
-                if distanceFromPlayer(spec:getPosition()) <= 2 then
-                    inMasResRange = inMasResRange + 1
-                end 
-                table.insert(finalTable, spec)
-                table.remove(spectators, i)
-            end
-        end
+    -- action
+    if healTarget.creature then
+        return friendHealerAction(healTarget.creature, inMasResRange)
     end
-
-    for i=1,#spectators do
-        local spec = spectators[i]
-        if distanceFromPlayer(spec:getPosition()) <= 3 then
-            inMasResRange = inMasResRange + 1
-        end 
-        table.insert(finalTable, spec)
-    end
-
-    -- no targets, return
-    if #finalTable == 0 then return end
-    
-    friendHealerAction(finalTable[1], inMasResRange)
 end)

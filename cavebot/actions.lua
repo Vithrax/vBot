@@ -365,7 +365,11 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
                   if path then
                       foundMonster = true
                       if g_game.getAttackingCreature() ~= creature then
-                        attack(creature)
+                        if distanceFromPlayer(creature:getPosition()) > 3 then
+                          CaveBot.walkTo(creature:getPosition(), 7, { ignoreNonPathable = true, precision = 1 })
+                        else
+                          attack(creature)
+                        end
                       end
                       g_game.setChaseMode(1)
                       CaveBot.delay(100)

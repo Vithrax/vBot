@@ -1077,10 +1077,16 @@ function getMonstersInArea(category, posOrCreature, pattern, minHp, maxHp, safeP
   end 
 
   if category == 1 or category == 3 or category == 4 then
+    if category == 1 or category == 3 then
+      local name = getTarget() and getTarget():getName()
+      if #t ~= 0 and not table.find(t, name, true) then
+        return 0
+      end
+    end
     for i, spec in pairs(getSpectators()) do
       local specHp = spec:getHealthPercent()
       local name = spec:getName():lower()
-      monsters = spec:isMonster() and specHp >= minHp and specHp <= maxHp and (#t == 0 or table.find(t, name)) and
+      monsters = spec:isMonster() and specHp >= minHp and specHp <= maxHp and (#t == 0 or table.find(t, name, true)) and
                  (g_game.getClientVersion() < 960 or spec:getType() < 3) and monsters + 1 or monsters
     end
     return monsters
@@ -1122,7 +1128,7 @@ function executeAttackBotAction(categoryOrPos, idOrFormula, cooldown)
   cooldown = cooldown or 0
   if categoryOrPos == 4 or categoryOrPos == 5 or categoryOrPos == 1 then
     cast(idOrFormula, cooldown)
-  elseif categoryOrPos == 3 then
+  elseif categoryOrPos == 3 then 
     useWith(idOrFormula, target())
   end
 end

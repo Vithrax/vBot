@@ -47,6 +47,16 @@ CaveBot.Extensions.SellAll.setup = function()
     else
       sellAllCap = freecap()
     end
+
+    storage.cavebotSell = storage.cavebotSell or {}
+    for i, item in ipairs(storage.cavebotSell) do
+      local data = type(item) == 'number' and item or item.id
+      if not table.find(val, data) then
+        table.insert(val, data)
+      end
+    end
+
+    table.dump(val)
     
     modules.game_npctrade.sellAll(wait, val)
     if wait then

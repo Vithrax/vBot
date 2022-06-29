@@ -161,7 +161,7 @@ TargetBot.Looting.process = function(targets, dangerLevel)
   end
 
   g_game.open(container)
-  waitTill = now + math.min(g_game.getPing(),100)
+  waitTill = now + (storage.extras.lootDelay or 200)
   waitingForContainer = container:getId()
 
   return true

@@ -49,19 +49,20 @@ BotServerData < Panel
     text-align: center
     text: Status: 
 
-  BotLabel
+  Label
     id: ServerStatus
     anchors.left: prev.right
     anchors.bottom: parent.bottom
     margin-left: 10
+    width: 150
     margin-bottom: 4
-    text-align: center
-    text: CONNECTED      
+    text-align: left  
 
-  BotLabel
+  Label
     id: Participants
     anchors.right: parent.right
     anchors.bottom: parent.bottom
+    width: 20
     margin-right: 8
     margin-bottom: 4
     text-align: center
@@ -186,3 +187,16 @@ BotServerWindow < MainWindow
     size: 45 21
     margin-top: 15
     margin-right: 5
+
+  BotSwitch
+    id: enabled
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: parent.left
+    margin-left: 5
+    height: 21
+    
+    $!on:
+      text: BotServer: OFF
+
+    $on:
+      text: BotServer: ON
