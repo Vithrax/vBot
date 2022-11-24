@@ -1,0 +1,6 @@
+dofile("/z-lib/functions.lua")
+dofile("/z-lib/ingame_macro.lua")
+dofile("/z-lib/outfits.lua")
+dofile("/z-lib/change_floor.lua")
+dofile("/z-lib/functions.lua")
+dofile("/z-lib/functions.lua")
