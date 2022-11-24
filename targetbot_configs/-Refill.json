@@ -1,0 +1,75 @@
+{
+  "looting": {
+    "items": [
+      {
+        "count": 1,
+        "id": 32926
+      },
+      {
+        "count": 1,
+        "id": 3036
+      },
+      {
+        "count": 1,
+        "id": 3038
+      },
+      {
+        "count": 1,
+        "id": 3041
+      },
+      {
+        "count": 1,
+        "id": 281
+      },
+      {
+        "count": 1,
+        "id": 5885
+      },
+      {
+        "count": 1,
+        "id": 30180
+      },
+      {
+        "count": 1,
+        "id": 27653
+      },
+      {
+        "count": 1,
+        "id": 6499
+      },
+      {
+        "count": 1,
+        "id": 5880
+      },
+      {
+        "count": 1,
+        "id": 5912
+      },
+      {
+        "count": 1,
+        "id": 5909
+      },
+      {
+        "count": 1,
+        "id": 5911
+      },
+      {
+        "count": 1,
+        "id": 5914
+      },
+      {
+        "count": 1,
+        "id": 5910
+      },
+      {
+        "count": 1,
+        "id": 5913
+      }
+    ],
+    "maxDanger": 10,
+    "minCapacity": 100,
+    "containers": [],
+    "everyItem": false
+  },
+  "targeting": []
+}
