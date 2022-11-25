@@ -10,18 +10,19 @@ CaveBot.Extensions.NpcTalk.setup = function()
 			return "retry"
 		end
 
-	  NPC.say("hi")
-	  for index, message in pairs(messageList) do
-			if index == 1 then return end
-	    schedule(
-	      (index * defaultDelay),
-	      function()
-	        NPC.say(message:trim())
-	      end
-	    )
-	  end
+		NPC.say("hi")
+		for index, message in ipairs(messageList) do
+			if index > 1 then
+				schedule(
+					(index * defaultDelay),
+					function()
+						NPC.say(message:trim())
+					end
+				)
+			end
+		end
 
-		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + ((tableLength(phrases) + 2) * defaultDelay))
+		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + ((tableLength(messageList) + 2) * defaultDelay))
 		return true
 	end)
 

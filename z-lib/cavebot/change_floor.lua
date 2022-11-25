@@ -22,7 +22,7 @@ CaveBot.Extensions.ChangeFloor.setup = function()
 			local topUseThing = tile:getTopUseThing()
 
 			if useItem then
-				if direction == "up"
+				if direction == "up" then
 					useWith(storage.extras.rope, topUseThing)
 				else
 					useWith(storage.extras.shovel, topUseThing)
