@@ -13,13 +13,13 @@ end
 
 function curePoison()
 	if isPoisioned() then
-	  say("exana pox")
+		say("exana pox")
 	end
 end
 
 function checkBlessings()
 	if player:getBlessings() == 0 then
-	  CaveBot.setOff()
+		CaveBot.setOff()
 	end
 end
 

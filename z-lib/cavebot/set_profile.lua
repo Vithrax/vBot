@@ -2,8 +2,8 @@ CaveBot.Extensions.SetProfile = {}
 
 CaveBot.Extensions.SetProfile.setup = function()
 	CaveBot.registerAction("SetProfile", "#ffffff", function(value)
-    CaveBot.setCurrentProfile(value)
-    TargetBot.setCurrentProfile(value)
+		CaveBot.setCurrentProfile(value)
+		TargetBot.setCurrentProfile(value)
 
 		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))
 		return true
