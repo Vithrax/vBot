@@ -127,7 +127,7 @@ CaveBot.Extensions.SupplyCheck.setup = function()
     "supply check",
     {
       value = function()
-        return "startHunt," .. posx() .. "," .. posy() .. "," .. posz()
+        return "starthunt," .. posx() .. "," .. posy() .. "," .. posz()
       end,
       title = "Supply check label",
       description = "Insert here hunting start label",
