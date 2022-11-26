@@ -16,7 +16,7 @@ CaveBot.Extensions.SetQuickloot.setup = function()
 		)
 	end
 
-		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + ((tableLength(phrases) + 2) * defaultDelay))
+		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + ((tableLength(itemList) + 2) * defaultDelay))
 		return true
 	end)
 
