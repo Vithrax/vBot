@@ -26,6 +26,8 @@ CaveBot.Extensions.ChangeFloor.setup = function()
 					useWith(storage.extras.rope, topUseThing)
 				else
 					useWith(storage.extras.shovel, topUseThing)
+					CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))
+					autoWalk(tilePosition, 100, {precision=0})
 				end
 			else
 				use(topUseThing)
