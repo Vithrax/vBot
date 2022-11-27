@@ -4,7 +4,7 @@ CaveBot.Extensions.BuyItem.setup = function()
 	CaveBot.registerAction("BuyItem", "#ffffff", function(value)
 		local data = string.split(value, ",")
 		local npcName = data[1]:trim()
-		local itemId = data[2]:trim()
+		local itemId = tonumber(data[2]:trim())
 		local itemAmount = tonumber(data[3]:trim())
 		local defaultDelay = 750
 
