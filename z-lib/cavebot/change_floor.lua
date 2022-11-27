@@ -3,9 +3,9 @@ CaveBot.Extensions.ChangeFloor = {}
 CaveBot.Extensions.ChangeFloor.setup = function()
 	CaveBot.registerAction("ChangeFloor", "#ffffff", function(value, retries)
 		local data = regexMatch(value, "\\s*([a-z]+)\\s*,\\s*([a-z]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+)")
-		local direction = pos[1][2]
-		local useItem = toBoolean(pos[1][3])
-		local tilePosition = {x=tonumber(pos[1][4]), y=tonumber(pos[1][5]), z=tonumber(pos[1][6])}
+		local direction = data[1][2]
+		local useItem = toBoolean(data[1][3])
+		local tilePosition = {x=tonumber(data[1][4]), y=tonumber(data[1][5]), z=tonumber(data[1][6])}
 		local playerPosition = player:getPosition()
 
 		if retries > 10 then

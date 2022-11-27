@@ -1,7 +1,7 @@
 CaveBot.Extensions.ExaniHur = {}
 
 CaveBot.Extensions.ExaniHur.setup = function()
-	CaveBot.registerAction("ExaniHur", "#ffffff", function(value)
+	CaveBot.registerAction("ExaniHur", "#ffffff", function(value, retries)
 		local data = regexMatch(value, "\\s*([a-z]+)\\s*,\\s*([a-z]+)")
 		local playerPosition = player:getPosition()
 		local floor = data[1][2]
