@@ -12,8 +12,8 @@ TaskBot.taskList = {
 	"Stampors",
 	"High Class Lizards",
 	"Mutated Bats",
-	"Behemoths",
-	"Sea Serpents"
+	"Sea Serpents And Young Sea Serpents",
+	"Behemoths"
 }
 
 TaskBot.taskRequirements = {
@@ -56,10 +56,10 @@ TaskBot.taskRequirements = {
 	MutatedBats = {
 		minLevel = 80, maxLevel = 129
 	},
-	Behemoths = {
+	SeaSerpentsAndYoungSeaSerpents = {
 		minLevel = 130, maxLevel = 9999
 	},
-	SeaSerpents = {
+	Behemoths = {
 		minLevel = 130, maxLevel = 9999
 	}
 }
