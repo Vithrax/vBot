@@ -132,7 +132,6 @@ function questLineTracker(questId, questMissions)
 		questLineClickedId = nil
 		openQuestLineWindow(questId, questMissions)
 	end
-
 	if storage["playerStatus"][player:getName()]["quests"]["Killing in the Name of..."] and questId == storage["playerStatus"][player:getName()]["quests"]["Killing in the Name of..."]["id"] then
 		for i = 1, #questMissions, 1 do
 			local name = questMissions[i][1]
