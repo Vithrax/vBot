@@ -64,4 +64,3 @@ UI.Label("Private Scripts:")
 UI.Separator()
 
 dofile("/z-lib/utils.lua")
-dofile("/z-lib/taskbot.lua")
