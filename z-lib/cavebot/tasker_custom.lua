@@ -98,7 +98,7 @@ onTextMessage(function(mode, text)
 		if not storage.custom == nil and not storage.custom.tasks == nil then
 			for _, task in ipais(storage.custom.tasks) do
 				for __, monsterName in ipairs(task.monsters) do
-					if monsterName === monster then
+					if monsterName == monster then
 						task.count = task.count + 1
 					end
 				end
