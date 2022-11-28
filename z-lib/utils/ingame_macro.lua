@@ -13,9 +13,7 @@ macro(1000, "pause cavebot bless", function()
 end)
 
 macro(1000, "equip aol", function()
-	-- if getNeck():getId() == 3057 then return end
-	-- if player:getBlessings() < 1 then
-	if player:getBlessings() < 1 and (not getNeck() and notgetNeck():getId() == 3057 ) then
+	if player:getBlessings() < 1 and (not getNeck() and notgetNeck():getId() == 3057) then
 		for _, container in pairs(g_game.getContainers()) do
 			for __, item in ipairs(container:getItems()) do
 				if item:getId() == 3057 then
