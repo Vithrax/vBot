@@ -13,8 +13,6 @@ local function loadScript(name)
   return dofile("/vBot/" .. name .. ".lua")
 end
 
-dofile("/z-lib/utils.lua")
-
 -- here you can set manually order of scripts
 -- libraries should be loaded first
 local luaFiles = {
@@ -64,3 +62,6 @@ setDefaultTab("Main")
 UI.Separator()
 UI.Label("Private Scripts:")
 UI.Separator()
+
+dofile("/z-lib/utils.lua")
+dofile("/z-lib/taskbot.lua")
