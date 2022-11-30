@@ -221,7 +221,7 @@ ContListsWindow < MainWindow
     anchors.left: lblCont.left
     anchors.verticalCenter: sortList.verticalCenter
     width: 70
-    text: Items: 
+    text: Items:
     font: verdana-11px-rounded
 
   Button
@@ -358,8 +358,8 @@ function reopenBackpacks()
         g_game.open(bpItem)
     end
 
-    schedule(500, function()
-        local delay = 200
+    schedule(1000, function()
+        local delay = 500
 
         if config.purse then
             local item = getPurse()
@@ -371,10 +371,10 @@ function reopenBackpacks()
             schedule(delay, function()
                 openContainer(lstBPs[i])
             end)
-            delay = delay + 250
+            delay = delay + 500
         end
     end)
-    
+
 end
 
 rootWidget = g_ui.getRootWidget()
@@ -384,7 +384,7 @@ if rootWidget then
 
     contListWindow.onGeometryChange = function(widget, old, new)
         if old.height == 0 then return end
-        
+
         config.height = new.height
     end
 
@@ -434,7 +434,7 @@ if rootWidget then
         contListWindow.forceOpen:setChecked(config.forceOpen)
     end
     contListWindow.forceOpen:setChecked(config.forceOpen)
-    
+
     contListWindow.lootBag.onClick = function(widget)
         config.lootBag = not config.lootBag
         contListWindow.lootBag:setChecked(config.lootBag)
@@ -446,7 +446,7 @@ if rootWidget then
         UI.Container(function()
             t = contListWindow.sortList:getItems()
             config.list[k].items = t
-            end, true, nil, contListWindow.sortList) 
+            end, true, nil, contListWindow.sortList)
         contListWindow.sortList:setItems(t)
     end
     refreshSortList(t)
@@ -658,7 +658,7 @@ end)
 onContainerOpen(function(container, previousContainer)
     mainLoop:setOn()
 end)
-  
+
 onAddItem(function(container, slot, item, oldItem)
     mainLoop:setOn()
 end)
