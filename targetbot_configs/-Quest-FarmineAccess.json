@@ -1,18 +1,12 @@
 {
   "looting": {
     "items": [
-      {
-        "count": 1,
-        "id": 9843
-      }
+
     ],
     "maxDanger": 10,
     "minCapacity": 100,
     "containers": [
-      {
-        "count": 1,
-        "id": 2854
-      }
+
     ],
     "everyItem": false
   },
@@ -26,26 +20,26 @@
       "avoidAttacks": false,
       "rePositionAmount": 5,
       "lureMax": 3,
-      "rpSafe": false,
-      "chase": true,
-      "priority": 1,
-      "name": "Thieving Squirrel, Shard Of Corruption",
-      "keepDistance": false,
-      "keepDistanceRange": 1,
-      "danger": 1,
+      "regex": "^thieving squirrel$|^shard of corruption$",
       "dynamicLureDelay": false,
-      "delayFrom": 2,
+      "priority": 1,
+      "dynamicLure": false,
+      "keepDistance": false,
+      "danger": 1,
+      "chase": true,
+      "keepDistanceRange": 1,
+      "lure": false,
       "closeLure": false,
       "faceMonster": false,
       "lureCavebot": false,
       "dontLoot": false,
       "diamondArrows": false,
-      "lure": false,
+      "delayFrom": 2,
       "anchor": false,
       "closeLureAmount": 3,
       "rePosition": false,
-      "dynamicLure": false,
-      "regex": "^thieving squirrel$|^shard of corruption$"
+      "name": "Thieving Squirrel, Shard Of Corruption",
+      "rpSafe": false
     },
     {
       "lureDelay": 250,
@@ -56,26 +50,26 @@
       "avoidAttacks": false,
       "rePositionAmount": 5,
       "lureMax": 30,
-      "regex": "^.*$",
+      "rpSafe": false,
       "chase": false,
       "priority": 0,
+      "name": "*",
       "keepDistance": false,
-      "closeLure": false,
-      "danger": 0,
       "keepDistanceRange": 1,
-      "lure": true,
+      "danger": 0,
       "dynamicLureDelay": false,
-      "dynamicLure": false,
+      "delayFrom": 2,
+      "closeLure": false,
       "faceMonster": false,
       "lureCavebot": true,
       "dontLoot": true,
       "diamondArrows": false,
-      "delayFrom": 2,
+      "lure": true,
       "anchor": false,
       "closeLureAmount": 3,
       "rePosition": false,
-      "name": "*",
-      "rpSafe": false
+      "dynamicLure": false,
+      "regex": "^.*$"
     }
   ]
 }
