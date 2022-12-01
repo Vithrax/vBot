@@ -64,12 +64,28 @@
       {
         "count": 1,
         "id": 5913
+      },
+      {
+        "count": 1,
+        "id": 5876
+      },
+      {
+        "count": 1,
+        "id": 5881
+      },
+      {
+        "count": 1,
+        "id": 10439
       }
     ],
     "maxDanger": 10,
     "minCapacity": 100,
-    "containers": [],
+    "containers": [
+
+    ],
     "everyItem": false
   },
-  "targeting": []
+  "targeting": [
+
+  ]
 }
