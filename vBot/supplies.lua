@@ -428,7 +428,24 @@ Supplies.hasEnough = function()
   return true
 end
 
-hasSupplies = Supplies.hasEnough
+Supplies.hasHalf = function()
+  local hasSupplies = true
+  local data = Supplies.getItemsData()
+
+  for id, values in pairs(data) do
+    id = tonumber(id)
+    local minimum = (values.min / 2)
+    local current = player:getItemsCount(id) or 0
+
+    if current < minimum then
+      return {id=id, amount=current}
+    end
+  end
+
+  return true
+end
+
+hasSupplies = Supplies.hasHalf
 
 Supplies.setAverageValues = function(data)
   for id, amount in pairs(data) do

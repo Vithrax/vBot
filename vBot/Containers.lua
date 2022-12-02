@@ -598,7 +598,7 @@ local function properTable(t)
     return r
 end
 
-local mainLoop = macro(150, function(macro)
+local mainLoop = macro(500, function(macro)
     if not config.sort and not config.purse then return end
 
     local storageVal = config.list
@@ -651,6 +651,7 @@ local mainLoop = macro(150, function(macro)
             return use(getPurse())
         end
     end
+		delay(1500)
     macro:setOff()
 end)
 
