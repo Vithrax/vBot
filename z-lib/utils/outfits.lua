@@ -107,7 +107,7 @@ NordicChieftainOutfit = 1500
 
 function setOutfit(outfitName, outfitAddons)
 	local outfitChanged = player:getOutfit()
-	local outfitType = trimSpaces(outfitName .. "Outfit")
+	local outfitType = (outfitName .. "Outfit"):trim()
 
 	outfitChanged.type = outfitType
 	outfitChanged.addons = outfitAddons
