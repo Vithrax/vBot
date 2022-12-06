@@ -12,10 +12,10 @@ if not storage["playerInfo"][player:getName()] then
 		exerciseWeaponId = "34299",
 		cavebotProfile = "LavaLurkers",
 		refill = {
-			darashia = false,
-			rathleton = false,
-			farmine = false,
-			graybeach = false
+			darashia = "false",
+			rathleton = "false",
+			farmine = "false",
+			graybeach = "false"
 		}
 	}
 end

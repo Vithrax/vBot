@@ -22,7 +22,7 @@ CaveBot.Extensions.CheckTrainer.setup = function()
 		end
 		if stamina() > STAMINA_LIMIT then
 			g_game.move(findItem(weaponId), {x=65535, y=SlotLeft, z=0}, 1)
-			gotoLabel(labelToGo)
+			CaveBot.gotoLabel(labelToGo)
 		end
 
 		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))
