@@ -11,17 +11,17 @@ CaveBot.Extensions.WithdrawBalance.setup = function()
 		end
 
 		NPC.say("hi")
-		schedule(defaultDelay*2, function()
+		schedule(defaultDelay, function()
 			NPC.say("balance")
 		end)
 		schedule(defaultDelay*3, function()
 			NPC.say("withdraw" .. CaveBot.Extensions.WithdrawBalance.balance)
 		end)
-		schedule(defaultDelay*4, function()
+		schedule(defaultDelay*5, function()
 			NPC.say("yes")
 		end)
 
-		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + defaultDelay*5)
+		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + defaultDelay*7)
 		return true
 	end)
 
