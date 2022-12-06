@@ -22,15 +22,3 @@ function checkBlessings()
 		CaveBot.setOff()
 	end
 end
-
-function setStorage()
-	local places = {"darashia", "rathleton", "farmine"}
-	if not storage.customRefill then
-		storage.customRefill = {}
-	end
-	for _, place in places do
-		if not storage.customRefill[place] then
-			storage.customRefill[place] = false
-		end
-	end
-end

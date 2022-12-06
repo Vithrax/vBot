@@ -1,9 +1,13 @@
 {
   "looting": {
-    "items": [],
+    "items": [
+
+    ],
     "maxDanger": 10,
     "minCapacity": 100,
-    "containers": [],
+    "containers": [
+
+    ],
     "everyItem": false
   },
   "targeting": [
@@ -15,27 +19,27 @@
       "lureCount": 1,
       "avoidAttacks": false,
       "rePositionAmount": 5,
-      "lureMax": 30,
-      "rpSafe": false,
+      "lureMax": 6,
+      "regex": "^deepworm$|^diremaw$|^humongous fungus$",
       "chase": false,
       "priority": 5,
-      "name": "Deepworm, Diremaw, Humongous Fungus",
       "keepDistance": false,
-      "keepDistanceRange": 1,
-      "danger": 5,
-      "dynamicLureDelay": true,
-      "delayFrom": 3,
       "closeLure": false,
+      "danger": 5,
+      "keepDistanceRange": 1,
+      "lure": false,
+      "dynamicLureDelay": true,
+      "dynamicLure": true,
       "faceMonster": false,
       "lureCavebot": false,
       "dontLoot": false,
       "diamondArrows": false,
-      "lure": false,
+      "delayFrom": 3,
       "anchor": false,
       "closeLureAmount": 3,
       "rePosition": false,
-      "dynamicLure": true,
-      "regex": "^deepworm$|^diremaw$|^humongous fungus$"
+      "name": "Deepworm, Diremaw, Humongous Fungus",
+      "rpSafe": false
     },
     {
       "lureDelay": 250,
@@ -46,26 +50,26 @@
       "avoidAttacks": false,
       "rePositionAmount": 5,
       "lureMax": 3,
-      "regex": "^.*$",
+      "rpSafe": false,
       "chase": false,
       "priority": 0,
+      "name": "*",
       "keepDistance": false,
-      "closeLure": false,
-      "danger": 0,
       "keepDistanceRange": 1,
-      "lure": true,
+      "danger": 0,
       "dynamicLureDelay": false,
-      "dynamicLure": false,
+      "delayFrom": 2,
+      "closeLure": false,
       "faceMonster": false,
       "lureCavebot": true,
       "dontLoot": false,
       "diamondArrows": false,
-      "delayFrom": 2,
+      "lure": true,
       "anchor": false,
       "closeLureAmount": 3,
       "rePosition": false,
-      "name": "*",
-      "rpSafe": false
+      "dynamicLure": false,
+      "regex": "^.*$"
     }
   ]
 }

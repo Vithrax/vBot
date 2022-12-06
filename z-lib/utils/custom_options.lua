@@ -26,11 +26,16 @@ macro(1000, "equip aol", function()
 end)
 
 UI.Label("Weapon ID:")
-UI.TextEdit(storage["playerInfo"].weaponId or "7434", function(widget, text)
-  storage["playerInfo"].weaponId = text
+UI.TextEdit(storage["playerInfo"][player:getName()].weaponId or "7434", function(widget, text)
+  storage["playerInfo"][player:getName()].weaponId = text
 end)
 
 UI.Label("Exercise Weapon ID:")
-UI.TextEdit(storage["playerInfo"].exerciseWeaponId or "34299", function(widget, text)
-  storage["playerInfo"].exerciseWeaponId = text
+UI.TextEdit(storage["playerInfo"][player:getName()].exerciseWeaponId or "34299", function(widget, text)
+  storage["playerInfo"][player:getName()].exerciseWeaponId = text
+end)
+
+UI.Label("CaveBot Profile:")
+UI.TextEdit(storage["playerInfo"][player:getName()].cavebotProfile or "LavaLurkers", function(widget, text)
+  storage["playerInfo"][player:getName()].cavebotProfile = text
 end)
