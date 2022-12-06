@@ -1,4 +1,4 @@
-setDefaultTab("Tools")
+setDefaultTab("Main")
 
 macro(10000, "adeta res", function()
 	if not isInPz() then
@@ -23,4 +23,14 @@ macro(1000, "equip aol", function()
 			end
 		end
 	end
+end)
+
+UI.Label("Weapon ID:")
+UI.TextEdit(storage["playerInfo"].weaponId or "7434", function(widget, text)
+  storage["playerInfo"].weaponId = text
+end)
+
+UI.Label("Exercise Weapon ID:")
+UI.TextEdit(storage["playerInfo"].exerciseWeaponId or "34299", function(widget, text)
+  storage["playerInfo"].exerciseWeaponId = text
 end)

@@ -1,20 +1,40 @@
-macro(1000, "change_profile", function()
-	if not HealBot or not AttackBot then
-		return
-	end
+if not HealBot or not AttackBot then
+	return
+end
 
-	local profiles = {
-		"Rotten Apple"=1,
-		"Head Creeps"=2,
-		"Junkhead"=3,
-		"Sludge Factory"=4,
-		"Them Bones"=5
+if not storage["playerInfo"] then
+  storage["playerInfo"] = {}
+end
+
+if not storage["playerInfo"][player:getName()] then
+  storage["playerInfo"][player:getName()] = {
+		weaponId = "7434",
+		exerciseWeaponId = "34299",
+		refill = {
+			darashia = false,
+			rathleton = false,
+			farmine = false,
+			graybeach = false
+		}
 	}
+end
 
-	if profiles[player:getName()] then
-		local profileNumber = profiles[player:getName()]
+local profileNumber = nil
+local profileChars = {
+	"Rotten Apple",
+	"Head Creeps",
+	"Junkhead",
+	"Sludge Factory",
+	"Them Bones"
+}
 
-		HealBot.setActiveProfile(profileNumber)
-		AttackBot.setActiveProfile(profileNumber)
+for indexChar, profileChar in ipairs(profileChars) do
+	if profileChar == player:getName() then
+		profileNumber = indexChar
 	end
-end)
+end
+
+if not profileNumber == nil then
+	HealBotConfig.setActiveProfile(profileNumber)
+	AttackBot.setActiveProfile(profileNumber)
+end

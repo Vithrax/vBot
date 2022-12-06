@@ -4,8 +4,18 @@ CaveBot.Extensions.CheckTrainer.setup = function()
 	CaveBot.registerAction("CheckTrainer", "#ffffff", function(value)
 		local data = string.split(value, ",")
 		local labelToGo = data[1]:trim()
-		local weaponId = tonumber(data[2]:trim())
+		local weaponId = tonumber(storage["playerInfo"].weaponId:trim()) or 7434
+		local exerciseWeaponId = tonumber(storage["playerInfo"].exerciseWeaponId:trim()) or 34299
 		local STAMINA_LIMIT = 2519
+		local NO_WEAPON_LABEL = "toTrainers"
+
+		print(exerciseWeaponId)
+		print(itemAmount(exerciseWeaponId))
+
+		if itemAmount(exerciseWeaponId) < 1 then
+			CaveBot.gotoLabel(NO_WEAPON_LABEL)
+			return true
+		end
 
 		if getLeft() and getLeft():getId() == weaponId and stamina() < STAMINA_LIMIT then
 			g_game.move(getLeft(), {x=65535, y=SlotBack, z=0}, 1)
@@ -20,9 +30,9 @@ CaveBot.Extensions.CheckTrainer.setup = function()
 	end)
 
 	CaveBot.Editor.registerAction("checktrainer", "check trainer", {
-		value="label, weaponId",
+		value="label",
 		title="Check trainer",
-		description="Check if train or go hunt (label to go if stamina, weaponId)",
+		description="Check if train or go hunt (label to go if stamina is ok)",
 		multiline=false
 	})
 end
