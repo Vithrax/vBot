@@ -32,7 +32,7 @@
       "dynamicLure": false,
       "faceMonster": false,
       "lureCavebot": false,
-      "dontLoot": false,
+      "dontLoot": true,
       "diamondArrows": false,
       "delayFrom": 2,
       "anchor": false,
