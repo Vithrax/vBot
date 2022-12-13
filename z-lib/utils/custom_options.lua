@@ -34,23 +34,3 @@ UI.Label("CaveBot Profile:")
 UI.TextEdit(storage["playerInfo"][player:getName()].cavebotProfile or "LavaLurkers", function(widget, text)
   storage["playerInfo"][player:getName()].cavebotProfile = text
 end)
-
-UI.Label("Refill Darashia:")
-UI.TextEdit(storage["playerInfo"][player:getName()].refill.darashia or "false", function(widget, text)
-  storage["playerInfo"][player:getName()].refill.darashia = text
-end)
-
-UI.Label("Refill Rathleton:")
-UI.TextEdit(storage["playerInfo"][player:getName()].refill.rathleton or "false", function(widget, text)
-  storage["playerInfo"][player:getName()].refill.rathleton = text
-end)
-
-UI.Label("Refill Farmine:")
-UI.TextEdit(storage["playerInfo"][player:getName()].refill.farmine or "false", function(widget, text)
-  storage["playerInfo"][player:getName()].refill.farmine = text
-end)
-
-UI.Label("Refill Gray Beach:")
-UI.TextEdit(storage["playerInfo"][player:getName()].refill.graybeach or "false", function(widget, text)
-  storage["playerInfo"][player:getName()].refill.graybeach = text
-end)
