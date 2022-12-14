@@ -32,5 +32,6 @@ end)
 
 UI.Label("CaveBot Profile:")
 UI.TextEdit(storage["playerInfo"][player:getName()].cavebotProfile or "LavaLurkers", function(widget, text)
+	storage["playerInfo"][player:getName()].cavebotChanged = true
   storage["playerInfo"][player:getName()].cavebotProfile = text
 end)
