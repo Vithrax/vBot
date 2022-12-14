@@ -297,7 +297,10 @@
       {"count":1,"id":14078},
       {"count":1,"id":14076},
       {"count":1,"id":14080},
-      {"count":1,"id":14081}
+      {"count":1,"id":14081},
+      {"count":1,"id":22083},
+      {"count":1,"id":5896},
+      {"count":1,"id":5897}
     ],
     "maxDanger": 10,
     "minCapacity": 100,

@@ -12,7 +12,7 @@
   },
   "targeting": [
     {
-      "lureDelay": 650,
+      "lureDelay": 400,
       "lureMin": 3,
       "maxDistance": 10,
       "anchorRange": 3,
@@ -50,26 +50,26 @@
       "avoidAttacks": false,
       "rePositionAmount": 5,
       "lureMax": 3,
-      "regex": "^.*$",
-      "dynamicLureDelay": false,
-      "priority": 0,
-      "dynamicLure": false,
-      "keepDistance": false,
-      "danger": 0,
+      "rpSafe": false,
       "chase": false,
+      "priority": 0,
+      "name": "*",
+      "keepDistance": false,
       "keepDistanceRange": 1,
-      "lure": true,
+      "dynamicLureDelay": false,
+      "danger": 0,
+      "delayFrom": 2,
       "closeLure": false,
       "faceMonster": false,
       "lureCavebot": true,
       "dontLoot": true,
       "diamondArrows": false,
-      "delayFrom": 2,
+      "lure": true,
       "anchor": false,
       "closeLureAmount": 3,
       "rePosition": false,
-      "name": "*",
-      "rpSafe": false
+      "dynamicLure": false,
+      "regex": "^.*$"
     }
   ]
 }

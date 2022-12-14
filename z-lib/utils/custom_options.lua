@@ -26,12 +26,12 @@ UI.TextEdit(storage["playerInfo"][player:getName()].weaponId or "7434", function
 end)
 
 UI.Label("Exercise Weapon ID:")
-UI.TextEdit(storage["playerInfo"][player:getName()].exerciseWeaponId or "34299", function(widget, text)
+UI.TextEdit(storage["playerInfo"][player:getName()].exerciseWeaponId or "34303", function(widget, text)
   storage["playerInfo"][player:getName()].exerciseWeaponId = text
 end)
 
 UI.Label("CaveBot Profile:")
-UI.TextEdit(storage["playerInfo"][player:getName()].cavebotProfile or "LavaLurkers", function(widget, text)
+UI.TextEdit(storage["playerInfo"][player:getName()].cavebotProfile or "-Refill", function(widget, text)
 	storage["playerInfo"][player:getName()].cavebotChanged = true
   storage["playerInfo"][player:getName()].cavebotProfile = text
 end)
