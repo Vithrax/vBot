@@ -1,0 +1,75 @@
+{
+  "looting": {
+    "items": [
+
+    ],
+    "maxDanger": 10,
+    "minCapacity": 100,
+    "containers": [
+
+    ],
+    "everyItem": false
+  },
+  "targeting": [
+    {
+      "lureDelay": 650,
+      "lureMin": 3,
+      "maxDistance": 10,
+      "anchorRange": 3,
+      "lureCount": 1,
+      "avoidAttacks": false,
+      "rePositionAmount": 5,
+      "lureMax": 30,
+      "regex": "^black sphinx acolyte$|^burning gladiator$|^ogre rowdy$|^ogre ruffian$|^ogre sage$|^priestess of the wild sun$|^young goanna$|^adult goanna$|^feral sphinx$|^manticore$|^sphinx$|^lamassu$",
+      "chase": false,
+      "priority": 5,
+      "keepDistance": false,
+      "closeLure": false,
+      "danger": 5,
+      "keepDistanceRange": 1,
+      "lure": false,
+      "dynamicLureDelay": true,
+      "dynamicLure": true,
+      "faceMonster": false,
+      "lureCavebot": false,
+      "dontLoot": true,
+      "diamondArrows": false,
+      "delayFrom": 1,
+      "anchor": false,
+      "closeLureAmount": 3,
+      "rePosition": false,
+      "name": "Black Sphinx Acolyte, Burning Gladiator, Ogre Rowdy, Ogre Ruffian, Ogre Sage, Priestess Of The Wild Sun, Young Goanna, Adult Goanna, Feral Sphinx, Manticore, Sphinx, Lamassu",
+      "rpSafe": false
+    },
+    {
+      "lureDelay": 250,
+      "lureMin": 1,
+      "maxDistance": 1,
+      "anchorRange": 3,
+      "lureCount": 5,
+      "avoidAttacks": false,
+      "rePositionAmount": 5,
+      "lureMax": 3,
+      "regex": "^.*$",
+      "dynamicLureDelay": false,
+      "priority": 0,
+      "dynamicLure": false,
+      "keepDistance": false,
+      "danger": 0,
+      "chase": false,
+      "keepDistanceRange": 1,
+      "lure": true,
+      "closeLure": false,
+      "faceMonster": false,
+      "lureCavebot": true,
+      "dontLoot": true,
+      "diamondArrows": false,
+      "delayFrom": 2,
+      "anchor": false,
+      "closeLureAmount": 3,
+      "rePosition": false,
+      "name": "*",
+      "rpSafe": false
+    }
+  ]
+}
