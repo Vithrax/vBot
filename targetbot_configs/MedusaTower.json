@@ -13,15 +13,15 @@
   "targeting": [
     {
       "lureDelay": 750,
-      "lureMin": 3,
-      "maxDistance": 10,
+      "lureMin": 1,
+      "maxDistance": 5,
       "anchorRange": 3,
       "lureCount": 1,
       "avoidAttacks": false,
       "rePositionAmount": 5,
       "lureMax": 4,
       "regex": "^serpent spawn$|^medusa$|^behemoth$",
-      "chase": false,
+      "chase": true,
       "priority": 5,
       "keepDistance": false,
       "closeLure": false,
