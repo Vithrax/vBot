@@ -1,17 +1,22 @@
-if not storage["playerInfo"] then
-  storage["playerInfo"] = {}
-end
-
-if not storage["playerInfo"][player:getName()] then
-  storage["playerInfo"][player:getName()] = {
-		weaponId = "7434",
-		exerciseWeaponId = "34303",
+if not StorageConfig then
+	StorageConfig = {
+		weaponId = "",
+		exerciseWeaponId = "",
 		cavebotProfile = "-Refill",
 		cavebotChanged = false
 	}
+	vBotConfigSave("storage")
+end
+
+StorageCfg = {}
+
+StorageCfg.setData = function(key, value)
+	StorageConfig[key] = value
+	vBotConfigSave("storage")
 end
 
 if CaveBot ~= nil and TargetBot ~= nil then
 	TargetBot.setCurrentProfile("-Refill")
 	CaveBot.setCurrentProfile("-Refill")
+	CaveBot.setOff()
 end

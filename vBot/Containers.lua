@@ -7,30 +7,44 @@ if type(storage[panelName]) ~= "table" then
         purse = true;
         list = {
             {
-                value = "Main Backpack",
+                value = "main",
                 enabled = true,
-                item = 9601,
-                min = false,
-                items = { 3081, 3048 }
-            },
-            {
-                value = "Runes",
-                enabled = true,
-                item = 2866,
+                item = 2854,
                 min = true,
-                items = { 3161, 3180 }
+                items = { 27653 }
             },
             {
-                value = "Money",
+                value = "tools",
                 enabled = true,
-                item = 2871,
+                item = 7343,
                 min = true,
-                items = { 3031, 3035, 3043 }
+                items = { 16167 }
             },
             {
-                value = "Purse",
+                value = "supplies",
+                enabled = true,
+                item = 21411,
+                min = true,
+                items = { 236, 237, 238, 239, 7642, 7642, 7643, 23373, 23374, 23375, 3155, 3161, 3180, 3191, 3202 }
+            },
+            {
+                value = "quiver",
+                enabled = true,
+                item = 34332,
+                min = true,
+                items = { 7365, 15793, 25757 }
+            },
+            {
+                value = "purse",
                 enabled = true,
                 item = 23396,
+                min = true,
+                items = {}
+            },
+            {
+                value = "quickloot",
+                enabled = true,
+                item = 23721,
                 min = true,
                 items = {}
             },

@@ -21,17 +21,17 @@ macro(1000, "pause cavebot bless", function()
 end)
 
 UI.Label("Weapon ID:")
-UI.TextEdit(storage["playerInfo"][player:getName()].weaponId or "7434", function(widget, text)
-  storage["playerInfo"][player:getName()].weaponId = text
+UI.TextEdit(StorageConfig.weaponId or "", function(widget, text)
+	StorageCfg.setData("weaponId", text)
 end)
 
 UI.Label("Exercise Weapon ID:")
-UI.TextEdit(storage["playerInfo"][player:getName()].exerciseWeaponId or "34303", function(widget, text)
-  storage["playerInfo"][player:getName()].exerciseWeaponId = text
+UI.TextEdit(StorageConfig.exerciseWeaponId or "", function(widget, text)
+	StorageCfg.setData("exerciseWeaponId", text)
 end)
 
 UI.Label("CaveBot Profile:")
-UI.TextEdit(storage["playerInfo"][player:getName()].cavebotProfile or "-Refill", function(widget, text)
-	storage["playerInfo"][player:getName()].cavebotChanged = true
-  storage["playerInfo"][player:getName()].cavebotProfile = text
+UI.TextEdit(StorageConfig.cavebotProfile or "-Refill", function(widget, text)
+	StorageCfg.setData("cavebotChanged", true)
+	StorageCfg.setData("cavebotProfile", text)
 end)
