@@ -9,9 +9,6 @@ CaveBot.Extensions.CheckTrainer.setup = function()
 		local STAMINA_LIMIT = 2519
 		local NO_WEAPON_LABEL = "toTrainers"
 
-		print(exerciseWeaponId)
-		print(itemAmount(exerciseWeaponId))
-
 		if itemAmount(exerciseWeaponId) < 1 then
 			CaveBot.gotoLabel(NO_WEAPON_LABEL)
 			return true
