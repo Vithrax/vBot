@@ -4,8 +4,8 @@ CaveBot.Extensions.CheckTrainer.setup = function()
 	CaveBot.registerAction("CheckTrainer", "#ffffff", function(value)
 		local data = string.split(value, ",")
 		local labelToGo = data[1]:trim()
-		local weaponId = tonumber(storage["playerInfo"][player:getName()].weaponId:trim()) or 7434
-		local exerciseWeaponId = tonumber(storage["playerInfo"][player:getName()].exerciseWeaponId:trim()) or 34299
+		local weaponId = tonumber(StorageConfig.weaponId:trim()) or 7434
+		local exerciseWeaponId = tonumber(StorageConfig.exerciseWeaponId:trim()) or 34299
 		local STAMINA_LIMIT = 2519
 		local NO_WEAPON_LABEL = "toTrainers"
 
