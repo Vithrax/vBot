@@ -14,10 +14,18 @@ CaveBot.Extensions.CheckTrainer.setup = function()
 			return true
 		end
 
+		if getRight() and getRight():getId() == weaponId and stamina() < STAMINA_LIMIT then
+			g_game.move(getRight(), {x=65535, y=SlotBack, z=0}, 1)
+			CaveBot.delay(500)
+		end
 		if getLeft() and getLeft():getId() == weaponId and stamina() < STAMINA_LIMIT then
 			g_game.move(getLeft(), {x=65535, y=SlotBack, z=0}, 1)
 		end
 		if stamina() > STAMINA_LIMIT then
+			if player:getVocation() == 2 then
+				g_game.move(findItem(weaponId), {x=65535, y=SlotRight, z=0}, 1)
+				CaveBot.delay(500)
+			end
 			g_game.move(findItem(weaponId), {x=65535, y=SlotLeft, z=0}, 1)
 			CaveBot.gotoLabel(labelToGo)
 		end
