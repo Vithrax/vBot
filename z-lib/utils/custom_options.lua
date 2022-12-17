@@ -31,7 +31,12 @@ UI.TextEdit(StorageConfig.exerciseWeaponId or "", function(widget, text)
 end)
 
 UI.Label("CaveBot Profile:")
-UI.TextEdit(StorageConfig.cavebotProfile or "-Refill", function(widget, text)
+UI.TextEdit(StorageConfig.cavebotProfile or "-Refill-Depositor", function(widget, text)
 	StorageCfg.setData("cavebotChanged", true)
 	StorageCfg.setData("cavebotProfile", text)
+end)
+
+UI.Label("CaveBot Refill:")
+UI.TextEdit(StorageConfig.cavebotRefill or "-Refill-Depositor", function(widget, text)
+	StorageCfg.setData("cavebotRefill", text)
 end)

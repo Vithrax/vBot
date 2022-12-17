@@ -2,8 +2,9 @@ if not StorageConfig then
 	StorageConfig = {
 		weaponId = "",
 		exerciseWeaponId = "",
-		cavebotProfile = "-Refill",
-		cavebotChanged = false
+		cavebotProfile = "-Refill-Depositor",
+		cavebotChanged = false,
+		cavebotRefill = "-Refill-Depositor"
 	}
 	vBotConfigSave("storage")
 end
@@ -16,7 +17,7 @@ StorageCfg.setData = function(key, value)
 end
 
 if CaveBot ~= nil and TargetBot ~= nil then
-	TargetBot.setCurrentProfile("-Refill")
-	CaveBot.setCurrentProfile("-Refill")
+	TargetBot.setCurrentProfile("-Refill-Depositor")
+	CaveBot.setCurrentProfile("-Refill-Depositor")
 	CaveBot.setOff()
 end
