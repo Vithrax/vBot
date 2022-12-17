@@ -3,7 +3,6 @@ if not StorageConfig then
 		weaponId = "",
 		exerciseWeaponId = "",
 		cavebotProfile = "-Refill-Depositor",
-		cavebotChanged = false,
 		cavebotRefill = "-Refill-Depositor"
 	}
 	vBotConfigSave("storage")

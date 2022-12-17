@@ -32,7 +32,6 @@ end)
 
 UI.Label("CaveBot Profile:")
 UI.TextEdit(StorageConfig.cavebotProfile or "-Refill-Depositor", function(widget, text)
-	StorageCfg.setData("cavebotChanged", true)
 	StorageCfg.setData("cavebotProfile", text)
 end)
 
