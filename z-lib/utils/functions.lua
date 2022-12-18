@@ -5,6 +5,15 @@ function toBoolean(str)
 	return string.lower(str) == 'true'
 end
 
+function hasArrayValue(arr, val)
+	for index, value in ipairs(arr) do
+		if value == val then
+			return true
+		end
+	end
+	return false
+end
+
 function tableLength(T)
 	local count = 0
 	for _ in pairs(T) do count = count + 1 end
