@@ -1,0 +1,75 @@
+{
+  "looting": {
+    "items": [
+
+    ],
+    "maxDanger": 10,
+    "minCapacity": 100,
+    "containers": [
+
+    ],
+    "everyItem": false
+  },
+  "targeting": [
+    {
+      "lureDelay": 500,
+      "lureMin": 3,
+      "maxDistance": 10,
+      "anchorRange": 3,
+      "lureCount": 1,
+      "avoidAttacks": false,
+      "rePositionAmount": 5,
+      "lureMax": 4,
+      "regex": "^grim reaper$|^flimsy lost soul$|^mean lost soul$",
+      "chase": false,
+      "priority": 5,
+      "keepDistance": false,
+      "closeLure": false,
+      "danger": 5,
+      "keepDistanceRange": 1,
+      "lure": false,
+      "dynamicLureDelay": true,
+      "dynamicLure": true,
+      "faceMonster": false,
+      "lureCavebot": false,
+      "dontLoot": true,
+      "diamondArrows": false,
+      "delayFrom": 1,
+      "anchor": false,
+      "closeLureAmount": 3,
+      "rePosition": false,
+      "name": "Grim Reaper, Flimsy Lost Soul, Mean Lost Soul",
+      "rpSafe": false
+    },
+    {
+      "lureDelay": 250,
+      "lureMin": 0,
+      "maxDistance": 1,
+      "anchorRange": 3,
+      "lureCount": 5,
+      "avoidAttacks": false,
+      "rePositionAmount": 5,
+      "lureMax": 30,
+      "rpSafe": false,
+      "chase": false,
+      "priority": 0,
+      "name": "*",
+      "keepDistance": false,
+      "keepDistanceRange": 1,
+      "dynamicLureDelay": false,
+      "danger": 0,
+      "delayFrom": 2,
+      "closeLure": false,
+      "faceMonster": false,
+      "lureCavebot": true,
+      "dontLoot": true,
+      "diamondArrows": false,
+      "lure": false,
+      "anchor": false,
+      "closeLureAmount": 3,
+      "rePosition": false,
+      "dynamicLure": false,
+      "regex": "^.*$"
+    }
+  ]
+}
