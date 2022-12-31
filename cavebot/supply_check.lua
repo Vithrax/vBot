@@ -71,7 +71,7 @@ CaveBot.Extensions.SupplyCheck.setup = function()
 
       if storage.caveBot.forceRefill then
         print("CaveBot[SupplyCheck]: User forced, going back on refill. Last round took: " .. round)
-        storage.caveBot.forceRefill = false
+        --storage.caveBot.forceRefill = false
         supplyRetries = 0
         missedChecks = 0
         return false

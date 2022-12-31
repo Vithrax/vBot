@@ -25,6 +25,8 @@ local function resetCache()
 	elseif storage.caveBot.backOffline then
 		storage.caveBot.backOffline = false
 		CaveBot.gotoLabel('toOfflineTraining')
+	elseif storage.caveBot.forceRefill then
+		storage.caveBot.forceRefill = false
 	end
 end
 
