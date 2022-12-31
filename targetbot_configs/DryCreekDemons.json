@@ -12,15 +12,15 @@
   },
   "targeting": [
     {
-      "lureDelay": 650,
-      "lureMin": 3,
+      "lureDelay": 750,
+      "lureMin": 2,
       "maxDistance": 10,
       "anchorRange": 3,
       "lureCount": 1,
       "avoidAttacks": false,
       "rePositionAmount": 5,
-      "lureMax": 5,
-      "regex": "^black sphinx acolyte$|^burning gladiator$|^ogre rowdy$|^ogre ruffian$|^ogre sage$|^priestess of the wild sun$|^young goanna$|^adult goanna$|^feral sphinx$|^manticore$|^sphinx$|^lamassu$",
+      "lureMax": 4,
+      "regex": "^demon$|^diabolic imp$",
       "chase": false,
       "priority": 5,
       "keepDistance": false,
@@ -34,11 +34,11 @@
       "lureCavebot": false,
       "dontLoot": true,
       "diamondArrows": false,
-      "delayFrom": 1,
+      "delayFrom": 2,
       "anchor": false,
       "closeLureAmount": 3,
       "rePosition": false,
-      "name": "Black Sphinx Acolyte, Burning Gladiator, Ogre Rowdy, Ogre Ruffian, Ogre Sage, Priestess Of The Wild Sun, Young Goanna, Adult Goanna, Feral Sphinx, Manticore, Sphinx, Lamassu",
+      "name": "Demon, Diabolic Imp",
       "rpSafe": false
     },
     {

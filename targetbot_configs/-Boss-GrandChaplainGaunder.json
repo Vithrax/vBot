@@ -86,7 +86,7 @@
       "rpSafe": false,
       "chase": false,
       "priority": 0,
-      "name": "*",
+      "name": "Monk, Jailer",
       "keepDistance": false,
       "keepDistanceRange": 1,
       "danger": 0,
@@ -102,7 +102,7 @@
       "closeLureAmount": 3,
       "rePosition": false,
       "dynamicLure": false,
-      "regex": "^.*$"
+      "regex": "^monk$|^jailer$"
     }
   ]
 }
