@@ -2,6 +2,7 @@ if not StorageConfig then
 	StorageConfig = {
 		refill = {},
 		weaponId = "",
+		ingame_hotkeys = "",
 		exerciseWeaponId = "",
 		cavebotProfile = "-Refill-Depositor",
 		cavebotRefill = "-Refill-Depositor"

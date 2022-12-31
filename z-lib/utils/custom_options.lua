@@ -2,7 +2,7 @@ setDefaultTab("Main")
 
 macro(1000, "equip aol", function()
 	local AOL_ID = 3057
-	if player:getBlessings() < 1 and (not getNeck() and not getNeck():getId() == AOL_ID) then
+	if player:getBlessings() == 0 and (not getNeck() or getNeck():getId() ~= AOL_ID) then
 		for _, container in pairs(g_game.getContainers()) do
 			for __, item in ipairs(container:getItems()) do
 				if item:getId() == AOL_ID then
