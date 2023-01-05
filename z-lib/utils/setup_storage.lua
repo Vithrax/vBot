@@ -5,7 +5,8 @@ if not StorageConfig then
 		ingame_hotkeys = "",
 		exerciseWeaponId = "",
 		cavebotProfile = "-Refill-Depositor",
-		cavebotRefill = "-Refill-Depositor"
+		cavebotRefill = "-Refill-Depositor",
+		cavebotBlessings = "-Blessings-Walk"
 	}
 	vBotConfigSave("storage")
 end

@@ -113,6 +113,9 @@ function setOutfit(outfitName, outfitAddons)
 
 	outfitChanged.type = outfitType
 	outfitChanged.addons = outfitAddons
+	outfitChanged.body = 114
+	outfitChanged.legs = 114
+	outfitChanged.feet = 114
 
 	g_game.changeOutfit(outfitChanged)
 end

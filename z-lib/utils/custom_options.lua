@@ -35,7 +35,12 @@ UI.TextEdit(StorageConfig.cavebotProfile or "-Refill-Depositor", function(widget
 	StorageCfg.setData("cavebotProfile", text)
 end)
 
-UI.Label("CaveBot Refill:")
+UI.Label("Refill Profile:")
 UI.TextEdit(StorageConfig.cavebotRefill or "-Refill-Depositor", function(widget, text)
 	StorageCfg.setData("cavebotRefill", text)
+end)
+
+UI.Label("Blessings Profile:")
+UI.TextEdit(StorageConfig.cavebotBlessings or "-Blessings-Walk", function(widget, text)
+	StorageCfg.setData("cavebotBlessings", text)
 end)
