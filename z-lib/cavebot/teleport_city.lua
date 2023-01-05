@@ -43,7 +43,7 @@ CaveBot.Extensions.TeleportCity.setup = function()
 			return "retry"
 		end
 
-		if getDistanceBetween(playerPosition, cityPosition) >= 3 then
+		if getDistanceBetween(playerPosition, cityPosition) > 10 then
 			NPC.say("!tp " .. cityName)
 			return "retry"
 		end
