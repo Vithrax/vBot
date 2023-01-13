@@ -1,0 +1,75 @@
+{
+  "looting": {
+    "items": [
+
+    ],
+    "maxDanger": 10,
+    "minCapacity": 100,
+    "containers": [
+
+    ],
+    "everyItem": false
+  },
+  "targeting": [
+    {
+      "lureDelay": 750,
+      "lureMin": 3,
+      "maxDistance": 10,
+      "anchorRange": 3,
+      "lureCount": 1,
+      "avoidAttacks": false,
+      "rePositionAmount": 5,
+      "lureMax": 6,
+      "regex": "^crazed winter vanguard$|^crazed winter rearguard$|^arachnophobica$|^thanatursus$",
+      "chase": false,
+      "priority": 5,
+      "keepDistance": false,
+      "closeLure": false,
+      "danger": 5,
+      "keepDistanceRange": 1,
+      "lure": false,
+      "dynamicLureDelay": true,
+      "dynamicLure": true,
+      "faceMonster": false,
+      "lureCavebot": false,
+      "dontLoot": true,
+      "diamondArrows": false,
+      "delayFrom": 3,
+      "anchor": false,
+      "closeLureAmount": 3,
+      "rePosition": false,
+      "name": "Crazed Winter Vanguard, Crazed Winter Rearguard, Arachnophobica, Thanatursus",
+      "rpSafe": false
+    },
+    {
+      "lureDelay": 250,
+      "lureMin": 0,
+      "maxDistance": 1,
+      "anchorRange": 3,
+      "lureCount": 5,
+      "avoidAttacks": false,
+      "rePositionAmount": 5,
+      "lureMax": 30,
+      "regex": "^.*$",
+      "dynamicLureDelay": false,
+      "priority": 0,
+      "dynamicLure": false,
+      "keepDistance": false,
+      "danger": 0,
+      "chase": false,
+      "keepDistanceRange": 1,
+      "lure": false,
+      "closeLure": false,
+      "faceMonster": false,
+      "lureCavebot": true,
+      "dontLoot": true,
+      "diamondArrows": false,
+      "delayFrom": 2,
+      "anchor": false,
+      "closeLureAmount": 3,
+      "rePosition": false,
+      "name": "*",
+      "rpSafe": false
+    }
+  ]
+}
