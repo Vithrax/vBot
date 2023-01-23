@@ -4,8 +4,8 @@ if not StorageConfig then
 		weaponId = "",
 		ingame_hotkeys = "",
 		exerciseWeaponId = "",
-		cavebotProfile = "-Refill-Depositor",
-		cavebotRefill = "-Refill-Depositor",
+		cavebotProfile = "YalaharDragons",
+		cavebotRefillLootSeller = "true",
 		cavebotBlessings = "-Blessings-Walk"
 	}
 	vBotConfigSave("storage")
@@ -19,8 +19,7 @@ StorageCfg.setData = function(key, value)
 end
 
 if CaveBot ~= nil and TargetBot ~= nil then
-	local currentProfile = StorageConfig.cavebotRefill or "-Refill-Depositor"
-	TargetBot.setCurrentProfile(currentProfile)
-	CaveBot.setCurrentProfile(currentProfile)
+	TargetBot.setCurrentProfile("-Refill")
+	CaveBot.setCurrentProfile("-Refill")
 	CaveBot.setOff()
 end

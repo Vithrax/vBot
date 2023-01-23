@@ -21,7 +21,7 @@ CaveBot.Extensions.TeleportCity.setup = function()
 			["farmine"] = {x=33025,y=31553,z=10},
 			["gray beach"] = {x=33447,y=31323,z=9},
 			["roshamuul"] = {x=0,y=0,z=0},
-			["krailos"] = {x=0,y=0,z=0},
+			["krailos"] = {x=33657,y=31665,z=8},
 			["rathleton"] = {x=33594,y=31899,z=6},
 			["feyrist"] = {x=33479,y=32230,z=7},
 			["issavi"] = {x=33921,y=31477,z=5},
@@ -29,12 +29,34 @@ CaveBot.Extensions.TeleportCity.setup = function()
 		local cityName = value:trim()
 		local cityPosition = teleportCities[cityName]
 		local playerPosition = player:getPosition()
+		local timeLimitIgnore = 120
+		local timeLimitRetries = 300
+
+		if isPoisioned() and canCast("exana pox") then cast("exana pox")
+		elseif isCursed() and canCast("exana mort") then cast("exana mort")
+		elseif isBleeding() and canCast("exana kor") then cast("exana kor")
+		elseif isBurning() and canCast("exana flam") then cast("exana flam")
+		elseif isEnergized() and canCast("exana vis") then cast("exana vis")
+		end
+
+		-- if not storage.teleporterLastTps then
+		-- 	storage.teleporterLastTps = {}
+		-- end
+
+		-- if storage.teleporterLastTps[cityName] and storage.teleporterLastTps[cityName]< os.time() + timeLimitIgnore then
+		-- 	return false
+		-- end
+
+		if storage.teleporterLastTp == cityName then
+			-- return false
+		end
 
 		if not storage.teleporterStarted then
 			storage.teleporterStarted = os.time()
 		end
 
-		if storage.teleporterStarted + 600 < os.time() then
+		if storage.teleporterStarted + timeLimitRetries < os.time() then
+			storage.teleporterStarted = nil
 			return false
 		end
 
@@ -49,6 +71,9 @@ CaveBot.Extensions.TeleportCity.setup = function()
 		end
 
 		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))
+		storage.teleporterStarted = nil
+		-- storage.teleporterLastTps[cityName] = os.time()
+		storage.teleporterLastTp = cityName
 		return true
 	end)
 

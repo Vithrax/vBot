@@ -1,6 +1,6 @@
 setDefaultTab("Main")
 
-macro(1000, "equip aol", function()
+macro(250, "equip aol", function()
 	local AOL_ID = 3057
 	if player:getBlessings() == 0 and (not getNeck() or getNeck():getId() ~= AOL_ID) then
 		for _, container in pairs(g_game.getContainers()) do
@@ -14,9 +14,18 @@ macro(1000, "equip aol", function()
 	end
 end)
 
-macro(1000, "pause cavebot bless", function()
-	if player:getBlessings() == 0 then
+macro(1000, "pause cavebot bless+aol", function()
+	local AOL_ID = 3057
+	local cavebotBlessings = StorageConfig.cavebotBlessings or "-Blessings-Walk"
+
+	if player:getBlessings() == 0 and (not getNeck() or getNeck():getId() ~= AOL_ID) and itemAmount(AOL_ID) < 1 then
 		CaveBot.setOff()
+	end
+
+	if player:getBlessings() == 0 and CaveBot.getCurrentProfile() ~= cavebotBlessings then
+		TargetBot.setCurrentProfile(cavebotBlessings)
+		CaveBot.setCurrentProfile(cavebotBlessings)
+		return
 	end
 end)
 
@@ -35,9 +44,9 @@ UI.TextEdit(StorageConfig.cavebotProfile or "-Refill-Depositor", function(widget
 	StorageCfg.setData("cavebotProfile", text)
 end)
 
-UI.Label("Refill Profile:")
-UI.TextEdit(StorageConfig.cavebotRefill or "-Refill-Depositor", function(widget, text)
-	StorageCfg.setData("cavebotRefill", text)
+UI.Label("CaveBot Refill Loot Seller:")
+UI.TextEdit(StorageConfig.cavebotRefillLootSeller or "true", function(widget, text)
+	StorageCfg.setData("cavebotRefillLootSeller", text)
 end)
 
 UI.Label("Blessings Profile:")

@@ -7,7 +7,7 @@ end
 
 function hasArrayValue(arr, val)
 	for index, value in ipairs(arr) do
-		if value == val then
+		if value:trim() == val:trim() then
 			return true
 		end
 	end

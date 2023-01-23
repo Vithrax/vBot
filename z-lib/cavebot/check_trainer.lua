@@ -7,7 +7,7 @@ CaveBot.Extensions.CheckTrainer.setup = function()
 		local weaponId = tonumber(StorageConfig.weaponId:trim()) or 7434
 		local exerciseWeaponId = tonumber(StorageConfig.exerciseWeaponId:trim()) or 34299
 		local STAMINA_LIMIT = 2519
-		local NO_WEAPON_LABEL = "toTrainers"
+		local NO_WEAPON_LABEL = "buyExerciseWeapon"
 
 		if itemAmount(exerciseWeaponId) < 1 then
 			CaveBot.gotoLabel(NO_WEAPON_LABEL)
