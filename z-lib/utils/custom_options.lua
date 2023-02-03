@@ -44,11 +44,6 @@ UI.TextEdit(StorageConfig.cavebotProfile or "-Refill", function(widget, text)
 	StorageCfg.setData("cavebotProfile", text)
 end)
 
-UI.ComboBox(StorageConfig.cavebotProfile or "-Refill", function(widget, data1, data2)
-	print(data1)
-	print(data2)
-end)
-
 UI.Label("CaveBot Refill Loot Seller:")
 UI.TextEdit(StorageConfig.cavebotRefillLootSeller or "true", function(widget, text)
 	StorageCfg.setData("cavebotRefillLootSeller", text)
