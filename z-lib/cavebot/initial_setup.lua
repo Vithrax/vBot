@@ -33,9 +33,10 @@ CaveBot.Extensions.InitialSetup.setup = function()
 			return true
 		end
 
-		if not isCaveBotRefill then
-			print(CaveBot.getCurrentProfile())
-			StorageCfg.setData("refill", string.split(value, ","))
+		local citiesLootSeller = string.split(value, ",")
+
+		if not isCaveBotRefill and citiesLootSeller[0] ~= "x" then
+			StorageCfg.setData("refill", citiesLootSeller)
 		end
 
 		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))
