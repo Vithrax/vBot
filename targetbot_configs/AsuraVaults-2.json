@@ -13,14 +13,14 @@
   "targeting": [
     {
       "lureDelay": 500,
-      "lureMin": 3,
+      "lureMin": 2,
       "maxDistance": 10,
       "anchorRange": 3,
       "lureCount": 1,
       "avoidAttacks": false,
       "rePositionAmount": 5,
-      "lureMax": 4,
-      "regex": "^black sphinx acolyte$|^burning gladiator$|^priestess of the wild sun$|^manticore$|^feral sphinx$|^young goanna$|^adult goanna$",
+      "lureMax": 6,
+      "regex": "^true midnight asura$|^true dawnfire asura$|^true frost flower asura$|^hellhound$|^hellspawn$",
       "chase": false,
       "priority": 5,
       "keepDistance": false,
@@ -38,7 +38,7 @@
       "anchor": false,
       "closeLureAmount": 3,
       "rePosition": false,
-      "name": "Black Sphinx Acolyte, Burning Gladiator, Priestess Of The Wild Sun, Manticore, Feral Sphinx, Young Goanna, Adult Goanna",
+      "name": "True Midnight Asura, True Dawnfire Asura, True Frost Flower Asura, Hellhound, Hellspawn",
       "rpSafe": false
     },
     {
