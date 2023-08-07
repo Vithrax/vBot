@@ -5,7 +5,7 @@ CaveBot.Extensions.SimpleCheck.setup = function()
 		local supplyData = Supplies.hasEnough()
 		local supplyInfo = Supplies.getAdditionalData()
 
-		local hasToRefill = storage.caveBot.forceRefill or storage.caveBot.backStop or storage.caveBot.backTrainers or storage.caveBot.backOffline or (supplyInfo.stamina.enabled and stamina() < tonumber(supplyInfo.stamina.value)) or type(supplyData) == "table"
+		local hasToRefill = storage.caveBot.forceRefill or storage.caveBot.backStop or storage.caveBot.backTrainers or storage.caveBot.backOffline or (supplyInfo.stamina.enabled and stamina() < tonumber(supplyInfo.stamina.value)) or (supplyInfo.capacity.enabled and freecap() < tonumber(supplyInfo.capacity.value)) or type(supplyData) == "table"
 
 		if not hasToRefill then
 			CaveBot.gotoLabel(value)

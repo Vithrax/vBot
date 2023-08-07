@@ -13,13 +13,13 @@
   "targeting": [
     {
       "lureDelay": 500,
-      "lureMin": 3,
+      "lureMin": 5,
       "maxDistance": 10,
       "anchorRange": 3,
       "lureCount": 1,
       "avoidAttacks": false,
       "rePositionAmount": 5,
-      "lureMax": 4,
+      "lureMax": 6,
       "regex": "^black sphinx acolyte$|^burning gladiator$|^priestess of the wild sun$|^manticore$|^feral sphinx$|^young goanna$|^adult goanna$",
       "chase": false,
       "priority": 5,
