@@ -2,19 +2,26 @@ CaveBot.Extensions.SetQuickloot = {}
 
 CaveBot.Extensions.SetQuickloot.setup = function()
 	CaveBot.registerAction("SetQuickloot", "#ffffff", function(value)
-	local itemList = string.split(value, ",")
-	local defaultDelay = 5000
+		local itemList = string.split(value, ",")
+		local defaultDelay = 5000
 
-	NPC.say("!quickloot clear")
-	for index, item in pairs(itemList) do
-		schedule(
-			(index * defaultDelay),
-			function()
-				local itemTrim = item:trim()
-				NPC.say("!quickloot add," .. itemTrim)
-			end
-		)
-	end
+		if StorageConfig.lastQuickloot == value then
+			return true
+		end
+
+		StorageCfg.setData('lastQuickloot', "")
+
+		NPC.say("!quickloot clear")
+		for index, item in pairs(itemList) do
+			schedule(
+				(index * defaultDelay),
+				function()
+					local itemTrim = item:trim()
+					NPC.say("!quickloot add," .. itemTrim)
+				end
+			)
+		end
+		StorageCfg.setData('lastQuickloot', value)
 
 		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + ((tableLength(itemList) + 2) * defaultDelay))
 		return true

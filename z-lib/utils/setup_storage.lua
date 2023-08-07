@@ -3,6 +3,7 @@ if not StorageConfig then
 		refill = {},
 		weaponId = "",
 		ingame_hotkeys = "",
+		lastQuickloot = "",
 		exerciseWeaponId = "",
 		cavebotProfile = "YalaharDragons",
 		cavebotRefillLootSeller = "true",
