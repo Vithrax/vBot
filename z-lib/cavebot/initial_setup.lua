@@ -2,7 +2,7 @@ CaveBot.Extensions.InitialSetup = {}
 
 CaveBot.Extensions.InitialSetup.setup = function()
 	CaveBot.registerAction("InitialSetup", "#ffffff", function(value)
-		local cavebotBlessings = StorageConfig.cavebotBlessings or "-Blessings-Walk"
+		local cavebotBlessings = storage_custom.cavebotBlessings or "-Blessings-Walk"
 
 		TargetBot.setCurrentProfile(CaveBot.getCurrentProfile())
 		if player:getName() == "Junkhead" then
@@ -36,7 +36,7 @@ CaveBot.Extensions.InitialSetup.setup = function()
 		local citiesLootSeller = string.split(value, ",")
 
 		if not isCaveBotRefill and citiesLootSeller[0] ~= "x" then
-			StorageCfg.setData("refill", citiesLootSeller)
+			stg_custom.set_data("refill", citiesLootSeller)
 		end
 
 		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))

@@ -1,8 +1,8 @@
 setDefaultTab("Tools")
 local panelName = "renameContainers"
-if type(storage[panelName]) ~= "table" then
-    storage[panelName] = {
-        enabled = false;
+if type(storage_custom[panelName]) ~= "table" then
+    storage_custom[panelName] = {
+        enabled = true;
         height = 170,
         purse = true;
         list = {
@@ -11,28 +11,14 @@ if type(storage[panelName]) ~= "table" then
                 enabled = true,
                 item = 2854,
                 min = true,
-                items = { 27653 }
+                items = {}
             },
             {
                 value = "tools",
                 enabled = true,
                 item = 7343,
                 min = true,
-                items = { 16167 }
-            },
-            {
-                value = "supplies",
-                enabled = true,
-                item = 21411,
-                min = true,
-                items = { 236, 237, 238, 239, 7642, 7642, 7643, 23373, 23374, 23375, 3155, 3161, 3180, 3191, 3202 }
-            },
-            {
-                value = "quiver",
-                enabled = true,
-                item = 34332,
-                min = true,
-                items = { 7365, 15793, 25757 }
+                items = {}
             },
             {
                 value = "purse",
@@ -52,7 +38,7 @@ if type(storage[panelName]) ~= "table" then
     }
 end
 
-local config = storage[panelName]
+local config = storage_custom[panelName]
 
 UI.Separator()
 local renameContui = setupUI([[

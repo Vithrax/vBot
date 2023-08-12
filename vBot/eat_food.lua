@@ -1,29 +1,8 @@
 setDefaultTab("HP")
-if voc() ~= 1 and voc() ~= 11 then
-    if storage.foodItems then
-        local t = {}
-        for i, v in pairs(storage.foodItems) do
-            if not table.find(t, v.id) then
-                table.insert(t, v.id)
-            end
-        end
-        local foodItems = { 3607, 3585, 3592, 3600, 3601 }
-        for i, item in pairs(foodItems) do
-            if not table.find(t, item) then
-                table.insert(storage.foodItems, item)
-            end
-        end
-    end
-    macro(500, "Cast Food", function()
-        if player:getRegenerationTime() <= 400 then
-            cast("exevo pan", 5000)
-        end
-    end)
-end
 
 UI.Label("Eatable items:")
 if type(storage.foodItems) ~= "table" then
-  storage.foodItems = {3582, 3577}
+  storage.foodItems = {3582, 3577, 3723}
 end
 
 local foodContainer = UI.Container(function(widget, items)
@@ -45,4 +24,5 @@ macro(50000, "Eat Food", function()
     end
   end
 end)
+
 UI.Separator()

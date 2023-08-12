@@ -2,19 +2,19 @@ CaveBot.Extensions.NpcTalk = {}
 
 CaveBot.Extensions.NpcTalk.setup = function()
 	CaveBot.registerAction("NpcTalk", "#ffffff", function(value, retries)
-		local messageList = string.split(value, ",")
-		local npcName = messageList[1]:trim()
-		local defaultDelay = 750
+		local messages = string.split(value, ",")
+		local npc_name = messages[1]:trim()
+		local default_delay = 750
 
-		if not CaveBot.ReachNPC(npcName) then
+		if not CaveBot.ReachNPC(npc_name) then
 			return "retry"
 		end
 
 		NPC.say("hi")
-		for index, message in ipairs(messageList) do
+		for index, message in ipairs(messages) do
 			if index > 1 then
 				schedule(
-					(index * defaultDelay),
+					(index * default_delay),
 					function()
 						NPC.say(message:trim())
 					end
@@ -22,7 +22,7 @@ CaveBot.Extensions.NpcTalk.setup = function()
 			end
 		end
 
-		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + ((tableLength(messageList) + 2) * defaultDelay))
+		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + ((table_length(messages) + 2) * default_delay))
 		return true
 	end)
 

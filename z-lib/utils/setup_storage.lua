@@ -1,26 +1,25 @@
-if not StorageConfig then
-	StorageConfig = {
-		refill = {},
-		weaponId = "",
+if not storage_custom then
+	storage_custom = {
+		weapon_id = "",
+		exercise_id = "",
 		ingame_hotkeys = "",
-		lastQuickloot = "",
-		exerciseWeaponId = "",
-		cavebotProfile = "YalaharDragons",
-		cavebotRefillLootSeller = "true",
-		cavebotBlessings = "-Blessings-Walk"
+		last_quickloot = "",
+		cavebot_profile = "_configuration",
 	}
 	vBotConfigSave("storage")
 end
 
-StorageCfg = {}
+stg_custom = {}
 
-StorageCfg.setData = function(key, value)
-	StorageConfig[key] = value
+stg_custom.set_data = function(key, value)
+	storage_custom[key] = value
 	vBotConfigSave("storage")
 end
 
-if CaveBot ~= nil and TargetBot ~= nil then
-	TargetBot.setCurrentProfile("-Refill")
-	CaveBot.setCurrentProfile("-Refill")
-	CaveBot.setOff()
+stg_custom.set_quest = function(name, value)
+	if not storage_custom["quests"] then
+		storage_custom["quests"] = {}
+	end
+	storage_custom["quests"][name] = value
+	vBotConfigSave("storage")
 end

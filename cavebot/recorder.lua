@@ -39,7 +39,7 @@ local function setup()
 
   onUseWith(function(pos, itemId, target, subType)
     if CaveBot.isOn() or not isEnabled then return end
-		if hasArrayValue(ignoreUseWithItems, itemId) then return end
+		if has_array_value(ignoreUseWithItems, itemId) then return end
     if not target:isItem() then return end
     local targetPos = target:getPosition()
     if targetPos.x == 0xFFFF then return end

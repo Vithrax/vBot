@@ -2,32 +2,40 @@ CaveBot.Extensions.CheckTrainer = {}
 
 CaveBot.Extensions.CheckTrainer.setup = function()
 	CaveBot.registerAction("CheckTrainer", "#ffffff", function(value)
-		local data = string.split(value, ",")
-		local labelToGo = data[1]:trim()
-		local weaponId = tonumber(StorageConfig.weaponId:trim()) or 7434
-		local exerciseWeaponId = tonumber(StorageConfig.exerciseWeaponId:trim()) or 34299
-		local STAMINA_LIMIT = 2519
-		local NO_WEAPON_LABEL = "buyExerciseWeapon"
+		local exercise_list = {34392, 34293, 34294, 34295, 34296, 34297, 34298, 34299, 34300, 34301, 34302, 34303}
+		local label_to_go = string.split(value, ",")[1]:trim()
+		local stamina_limit = 2519
+		local label_buy_weapon = "buyexerciseweapon"
 
-		if itemAmount(exerciseWeaponId) < 1 then
-			CaveBot.gotoLabel(NO_WEAPON_LABEL)
-			return true
+		if not storage_custom.exercise_id or storage_custom.exercise_id == "" then
+			for item_id, _ in ipairs(SuppliesConfig.supplies[SuppliesConfig.supplies.currentProfile].items) do
+				if has_array_value(exercise_list, item_id) then
+					stg_custom.set_data("exercise_id", item_id)
+				end
+			end
 		end
 
-		if getRight() and getRight():getId() == weaponId and stamina() < STAMINA_LIMIT then
+		if getLeft() and getLeft():getId() ~= storage_custom.exercise_id then
+			stg_custom.set_data("weapon_id", getLeft():getId())
+		end
+
+		if getRight() and getRight():getId() == storage_custom.weapon_id and stamina() < stamina_limit then
 			g_game.move(getRight(), {x=65535, y=SlotBack, z=0}, 1)
 			CaveBot.delay(500)
 		end
-		if getLeft() and getLeft():getId() == weaponId and stamina() < STAMINA_LIMIT then
+
+		if getLeft() and getLeft():getId() == storage_custom.weapon_id and stamina() < stamina_limit then
 			g_game.move(getLeft(), {x=65535, y=SlotBack, z=0}, 1)
 		end
-		if stamina() > STAMINA_LIMIT then
+
+		if stamina() > stamina_limit then
 			if player:getVocation() == 2 then
-				g_game.move(findItem(weaponId), {x=65535, y=SlotRight, z=0}, 1)
+				g_game.move(findItem(storage_custom.weapon_id), {x=65535, y=SlotRight, z=0}, 1)
 				CaveBot.delay(500)
 			end
-			g_game.move(findItem(weaponId), {x=65535, y=SlotLeft, z=0}, 1)
-			CaveBot.gotoLabel(labelToGo)
+
+			g_game.move(findItem(storage_custom.weapon_id), {x=65535, y=SlotLeft, z=0}, 1)
+			CaveBot.gotoLabel(label_to_go)
 		end
 
 		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))

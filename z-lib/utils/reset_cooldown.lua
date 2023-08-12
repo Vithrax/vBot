@@ -4,8 +4,6 @@ onTextMessage(function(mode, text)
 			modules.game_cooldown.cooldown = {}
 			modules.game_cooldown.cooldowns = {}
 			modules.game_cooldown.groupCooldown = {}
-			storage.teleporterLastTp = nil
-			storage.teleporterLastTps = {}
 		end)
 	end
 end)
@@ -13,5 +11,3 @@ end)
 modules.game_cooldown.cooldown = {}
 modules.game_cooldown.cooldowns = {}
 modules.game_cooldown.groupCooldown = {}
-storage.teleporterLastTp = nil
-storage.teleporterLastTps = {}

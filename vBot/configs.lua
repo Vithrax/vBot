@@ -15,7 +15,7 @@ AttackBotConfig = {}
 local attackBotFile = "/bot/" .. configName .. "/vBot_configs/".. player:getName() .."/AttackBot.json"
 SuppliesConfig = {}
 local suppliesFile = "/bot/" .. configName .. "/vBot_configs/".. player:getName() .."/Supplies.json"
-StorageConfig = {}
+storage_custom = {}
 local storageFile = "/bot/" .. configName .. "/vBot_configs/".. player:getName() .."/Storage.json"
 
 
@@ -60,7 +60,7 @@ if g_resources.fileExists(storageFile) then
     if not status then
       return onError("Error while reading config file (" .. storageFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
     end
-    StorageConfig = result
+    storage_custom = result
 end
 
 function vBotConfigSave(file)
@@ -84,7 +84,7 @@ function vBotConfigSave(file)
 			configTable = SuppliesConfig
 	elseif file == "storage" then
 			configFile = storageFile
-			configTable = StorageConfig
+			configTable = storage_custom
   else
     return
   end

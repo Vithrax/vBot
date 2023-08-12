@@ -127,7 +127,7 @@ UI.Separator()
 UI.Label("Sell Exeptions")
 
 if type(storage.cavebotSell) ~= "table" then
-  storage.cavebotSell = {23544, 3081}
+  storage.cavebotSell = {3003, 3457, 3308, 3456, 3453}
 end
 
 local sellContainer = UI.Container(function(widget, items)

@@ -110,22 +110,22 @@ UI.Separator()
 --- add callback (optional)
 --- optionals should be addionaly sandboxed (if true then end)
 
-addItem("rope", "Rope Item", 9596, leftPanel, "This item will be used in various bot related scripts as default rope item.")
-addItem("shovel", "Shovel Item", 9596, leftPanel, "This item will be used in various bot related scripts as default shovel item.")
-addItem("machete", "Machete Item", 9596, leftPanel, "This item will be used in various bot related scripts as default machete item.")
-addItem("scythe", "Scythe Item", 9596, leftPanel, "This item will be used in various bot related scripts as default scythe item.")
+addItem("rope", "Rope Item", 3003, leftPanel, "This item will be used in various bot related scripts as default rope item.")
+addItem("shovel", "Shovel Item", 3457, leftPanel, "This item will be used in various bot related scripts as default shovel item.")
+addItem("machete", "Machete Item", 3308, leftPanel, "This item will be used in various bot related scripts as default machete item.")
+addItem("scythe", "Scythe Item", 3453, leftPanel, "This item will be used in various bot related scripts as default scythe item.")
 addCheckBox("pathfinding", "CaveBot Pathfinding", true, leftPanel, "Cavebot will automatically search for first reachable waypoint after missing 10 goto's.")
 addScrollBar("talkDelay", "Global NPC Talk Delay", 0, 2000, 1000, leftPanel, "Breaks between each talk action in cavebot (time in miliseconds).")
 addScrollBar("looting", "Max Loot Distance", 0, 50, 40, leftPanel, "Every loot corpse futher than set distance (in sqm) will be ignored and forgotten.")
 addScrollBar("lootDelay", "Loot Delay", 0, 1000, 200, leftPanel, "Wait time for loot container to open. Lower value means faster looting. \n WARNING if you are having looting issues(e.g. container is locked in closing/opnening), increase this value.")
 addScrollBar("huntRoutes", "Hunting Rounds Limit", 0, 300, 50, leftPanel, "Round limit for supply check, if character already made more rounds than set, on next supply check will return to city.")
-addScrollBar("killUnder", "Kill monsters below", 0, 100, 1, leftPanel, "Force TargetBot to kill added creatures when they are below set percentage of health - will ignore all other TargetBot settings.")
-addScrollBar("gotoMaxDistance", "Max GoTo Distance", 0, 127, 30, leftPanel, "Maximum distance to next goto waypoint for the bot to try to reach.")
+addScrollBar("killUnder", "Kill monsters below", 0, 100, 10, leftPanel, "Force TargetBot to kill added creatures when they are below set percentage of health - will ignore all other TargetBot settings.")
+addScrollBar("gotoMaxDistance", "Max GoTo Distance", 0, 127, 127, leftPanel, "Maximum distance to next goto waypoint for the bot to try to reach.")
 addCheckBox("lootLast", "Start loot from last corpse", true, leftPanel, "Looting sequence will be reverted and bot will start looting newest bodies.")
 addCheckBox("joinBot", "Join TargetBot and CaveBot", false, leftPanel, "Cave and Target tabs will be joined into one.")
 addCheckBox("reachable", "Target only pathable mobs", false, leftPanel, "Ignore monsters that can't be reached.")
 
-addCheckBox("title", "Custom Window Title", true, rightPanel, "Personalize OTCv8 window name according to character specific.")
+addCheckBox("title", "Custom Window Title", false, rightPanel, "Personalize OTCv8 window name according to character specific.")
 if true then
   local vocText = ""
 
@@ -371,7 +371,7 @@ if true then
 end
 
 
-addCheckBox("bless", "Buy bless at login", true, rightPanel, "Say !bless at login.")
+addCheckBox("bless", "Buy bless at login", false, rightPanel, "Say !bless at login.")
 if true then
   local blessed = false
   onTextMessage(function(mode,text) 
@@ -415,7 +415,7 @@ if true then
 end
 
 
-addCheckBox("suppliesControl", "TargetBot off if low supply", false, leftPanel, "Turn off TargetBot if either one of supply amount is below 50% of minimum.")
+addCheckBox("suppliesControl", "TargetBot off if low supply", true, leftPanel, "Turn off TargetBot if either one of supply amount is below 50% of minimum.")
 if true then
   macro(500, function()
     if not settings.suppliesControl then return end
@@ -523,7 +523,7 @@ if true then
   end)
 end
 
-addCheckBox("checkPlayer", "Check Players", true, rightPanel, "Auto look on players and mark level and vocation on character model")
+addCheckBox("checkPlayer", "Check Players", false, rightPanel, "Auto look on players and mark level and vocation on character model")
 if true then
   local found
   local function checkPlayers()
@@ -569,7 +569,7 @@ if true then
           guild = guild:sub(1,10) -- change to proper (last) values
           guild = guild.."..."
         end
-        local voc
+        local voc = ""
         if text:lower():find("sorcerer") then
             voc = "MS"
         elseif text:lower():find("druid") then
