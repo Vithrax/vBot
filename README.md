@@ -4,7 +4,7 @@ Fork from Vithrax vBot 4.8
 
 ## Ps
 
-Scripts with `_` before the name are configuration scripts and scripts with `__` (two underlines) before the name are quest scripts
+Scripts with `__` (two underlines) before the name are configuration scripts and scripts with `_` (one underline) before the name are quest scripts
 
 Quest scripts will not work without needed items
 
