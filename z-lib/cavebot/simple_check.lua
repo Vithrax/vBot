@@ -2,12 +2,17 @@ CaveBot.Extensions.SimpleCheck = {}
 
 CaveBot.Extensions.SimpleCheck.setup = function()
 	CaveBot.registerAction("SimpleCheck", "#ffffff", function(value)
-		local supplyData = Supplies.hasEnough()
-		local supplyInfo = Supplies.getAdditionalData()
+		local supply_data = Supplies.hasEnough()
+		local supply_info = Supplies.getAdditionalData()
+		local has_to_refill = storage.caveBot.forceRefill
+												or storage.caveBot.backStop
+												or storage.caveBot.backTrainers
+												or storage.caveBot.backOffline
+												or type(supply_data) == "table"
+												or (supply_info.stamina.enabled and stamina() < tonumber(supply_info.stamina.value))
+												or (supply_info.capacity.enabled and freecap() < tonumber(supply_info.capacity.value))
 
-		local hasToRefill = storage.caveBot.forceRefill or storage.caveBot.backStop or storage.caveBot.backTrainers or storage.caveBot.backOffline or (supplyInfo.stamina.enabled and stamina() < tonumber(supplyInfo.stamina.value)) or (supplyInfo.capacity.enabled and freecap() < tonumber(supplyInfo.capacity.value)) or type(supplyData) == "table"
-
-		if not hasToRefill then
+		if not has_to_refill then
 			CaveBot.gotoLabel(value)
 		end
 

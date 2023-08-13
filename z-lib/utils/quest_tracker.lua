@@ -5,6 +5,21 @@ questLogButtonClicked = false
 questLineClicked = false
 questLineClickedId = nil
 
+if not quests_config then
+	quests_config = {}
+	vBotConfigSave("quests")
+end
+
+qst_config = {}
+
+qst_config.set_data = function(key, value)
+	if not quests_config["quests"] then
+		quests_config["quests"] = {}
+	end
+	quests_config["quests"][key] = value
+	vBotConfigSave("quests")
+end
+
 rootWidget = g_ui.getRootWidget()
 
 questLogButton = rootWidget:recursiveGetChildById("questLogButton")
@@ -108,7 +123,7 @@ function questLogTracker(quests)
 		local qid = quests[i][1]
 		local name = quests[i][2]
 		local isCompleted = quests[i][3]
-		stg_custom.set_quest(name, {
+		qst_config.set_data(name, {
 			id = qid,
 			completed = isCompleted
 		})
@@ -125,3 +140,8 @@ function destroyWindows()
 		questLineWindow:destroy()
 	end
 end
+
+g_game.requestQuestLog()
+questsTracker = macro(2000, function()
+	g_game.requestQuestLog()
+end)

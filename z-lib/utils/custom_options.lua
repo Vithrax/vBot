@@ -17,6 +17,6 @@ macro(500, "pause no bless + aol", function()
 end)
 
 UI.Label("CaveBot Profile:")
-UI.TextEdit(storage_custom.cavebot_profile or "_blessings", function(widget, text)
+UI.TextEdit(storage_custom.cavebot_profile or "", function(widget, text)
 	stg_custom.set_data("cavebot_profile", text)
 end)

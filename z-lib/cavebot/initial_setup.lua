@@ -2,41 +2,21 @@ CaveBot.Extensions.InitialSetup = {}
 
 CaveBot.Extensions.InitialSetup.setup = function()
 	CaveBot.registerAction("InitialSetup", "#ffffff", function(value)
-		local cavebotBlessings = storage_custom.cavebotBlessings or "-Blessings-Walk"
-
+		local supply_data = Supplies.hasEnough()
+		local supply_info = Supplies.getAdditionalData()
+		local has_to_refill = storage.caveBot.forceRefill
+												or storage.caveBot.backStop
+												or storage.caveBot.backTrainers
+												or storage.caveBot.backOffline
+												or type(supply_data) == "table"
+												or (supply_info.stamina.enabled and stamina() < tonumber(supply_info.stamina.value))
+												or (supply_info.capacity.enabled and freecap() < tonumber(supply_info.capacity.value))
+		
 		TargetBot.setCurrentProfile(CaveBot.getCurrentProfile())
-		if player:getName() == "Junkhead" then
-			TargetBot.setCurrentProfile(CaveBot.getCurrentProfile() .. "-Ninja")
-		end
-		TargetBot.setOn()
 
-		if player:getBlessings() == 0 and CaveBot.getCurrentProfile() ~= cavebotBlessings then
-			TargetBot.setCurrentProfile(cavebotBlessings)
-			CaveBot.setCurrentProfile(cavebotBlessings)
-			return true
-		end
-
-		if CaveBot.getCurrentProfile() == cavebotBlessings then
-			return true
-		end
-
-		local supplyData = Supplies.hasEnough()
-		local supplyInfo = Supplies.getAdditionalData()
-
-		local hasToRefill = storage.caveBot.forceRefill or storage.caveBot.backStop or storage.caveBot.backTrainers or storage.caveBot.backOffline or (supplyInfo.stamina.enabled and stamina() < tonumber(supplyInfo.stamina.value)) or (supplyInfo.capacity.enabled and freecap() < tonumber(supplyInfo.capacity.value)) or type(supplyData) == "table"
-
-		local isCaveBotRefill = CaveBot.getCurrentProfile() == "-Refill" or CaveBot.getCurrentProfile() == "-LootSeller"
-
-		if hasToRefill and not isCaveBotRefill then
-			TargetBot.setCurrentProfile("-Refill")
-			CaveBot.setCurrentProfile("-Refill")
-			return true
-		end
-
-		local citiesLootSeller = string.split(value, ",")
-
-		if not isCaveBotRefill and citiesLootSeller[0] ~= "x" then
-			stg_custom.set_data("refill", citiesLootSeller)
+		if has_to_refill then
+			TargetBot.setCurrentProfile("__configuration")
+			CaveBot.setCurrentProfile("__configuration")
 		end
 
 		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))
@@ -44,9 +24,9 @@ CaveBot.Extensions.InitialSetup.setup = function()
 	end)
 
 	CaveBot.Editor.registerAction("initialsetup", "initial setup", {
-		value="feyrist",
+		value="_",
 		title="Initial Setup",
-		description="cities to sell supplies",
+		description="check refill properties",
 		multiline=false
 	})
 end

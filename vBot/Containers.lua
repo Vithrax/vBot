@@ -1,7 +1,14 @@
 setDefaultTab("Tools")
-local panelName = "renameContainers"
-if type(storage_custom[panelName]) ~= "table" then
-    storage_custom[panelName] = {
+
+if not containers_config then
+	containers_config = {}
+	vBotConfigSave("containers")
+end
+
+local panelName = "containers"
+
+if type(containers_config[panelName]) ~= "table" then
+    containers_config[panelName] = {
         enabled = true;
         height = 170,
         purse = true;
@@ -36,9 +43,10 @@ if type(storage_custom[panelName]) ~= "table" then
             },
         }
     }
+    vBotConfigSave("containers")
 end
 
-local config = storage_custom[panelName]
+local config = containers_config[panelName]
 
 UI.Separator()
 local renameContui = setupUI([[
@@ -330,7 +338,6 @@ end
 
 local lstBPs
 
-
 local openContainer = function(id)
     local t = {getRight(), getLeft(), getAmmo()} -- if more slots needed then add them here
     for i=1,#t do
@@ -374,7 +381,7 @@ function reopenBackpacks()
             delay = delay + 500
         end
     end)
-
+    vBotConfigSave("containers")
 end
 
 rootWidget = g_ui.getRootWidget()
@@ -398,6 +405,7 @@ if rootWidget then
 
     renameContui.reopenCont.onClick = function(widget)
         reopenBackpacks()
+        vBotConfigSave("containers")
     end
 
     renameContui.minimiseCont.onClick = function(widget)
@@ -405,39 +413,46 @@ if rootWidget then
             local containerWindow = container.window
             containerWindow:setContentHeight(34)
         end
+        vBotConfigSave("containers")
     end
 
     renameContui.title:setOn(config.enabled)
     renameContui.title.onClick = function(widget)
         config.enabled = not config.enabled
         widget:setOn(config.enabled)
+        vBotConfigSave("containers")
     end
 
     contListWindow.closeButton.onClick = function(widget)
         contListWindow:hide()
+        vBotConfigSave("containers")
     end
 
     contListWindow.purse.onClick = function(widget)
         config.purse = not config.purse
         contListWindow.purse:setChecked(config.purse)
+        vBotConfigSave("containers")
     end
     contListWindow.purse:setChecked(config.purse)
 
     contListWindow.sort.onClick = function(widget)
         config.sort = not config.sort
         contListWindow.sort:setChecked(config.sort)
+        vBotConfigSave("containers")
     end
     contListWindow.sort:setChecked(config.sort)
 
     contListWindow.forceOpen.onClick = function(widget)
         config.forceOpen = not config.forceOpen
         contListWindow.forceOpen:setChecked(config.forceOpen)
+        vBotConfigSave("containers")
     end
     contListWindow.forceOpen:setChecked(config.forceOpen)
 
     contListWindow.lootBag.onClick = function(widget)
         config.lootBag = not config.lootBag
         contListWindow.lootBag:setChecked(config.lootBag)
+        vBotConfigSave("containers")
     end
     contListWindow.lootBag:setChecked(config.lootBag)
 
@@ -448,6 +463,7 @@ if rootWidget then
             config.list[k].items = t
             end, true, nil, contListWindow.sortList)
         contListWindow.sortList:setItems(t)
+        vBotConfigSave("containers")
     end
     refreshSortList(t)
 
@@ -473,10 +489,12 @@ if rootWidget then
                     label.enabled:setChecked(entry.enabled)
                     label.enabled:setTooltip(entry.enabled and 'Disable' or 'Enable')
                     label.enabled:setImageColor(entry.enabled and '#00FF00' or '#FF0000')
+                    vBotConfigSave("containers")
                 end
                 label.remove.onClick = function(widget)
                     table.removevalue(config.list, entry)
                     label:destroy()
+                    vBotConfigSave("containers")
                 end
                 label.state:setChecked(entry.min)
                 label.state.onClick = function(widget)
@@ -484,11 +502,13 @@ if rootWidget then
                     label.state:setChecked(entry.min)
                     label.state:setColor(entry.min and '#00FF00' or '#FF0000')
                     label.state:setTooltip(entry.min and 'Open Minimised' or 'Do not minimise')
+                    vBotConfigSave("containers")
                 end
                 label.openNext.onClick = function(widget)
                     entry.openNext = not entry.openNext
                     label.openNext:setChecked(entry.openNext)
                     label.openNext:setColor(entry.openNext and '#00FF00' or '#FF0000')
+                    vBotConfigSave("containers")
                 end
                 label:setText(entry.value)
                 label.enabled:setChecked(entry.enabled)
@@ -504,6 +524,7 @@ if rootWidget then
             end
             if tFocus then contListWindow.itemList:focusChild(tFocus) end
         end
+        vBotConfigSave("containers")
     end
     contListWindow.addItem.onClick = function(widget)
         local id = contListWindow.contId:getItemId()
@@ -579,6 +600,7 @@ local function nameContainersOnLogin()
             end
         end
     end
+    vBotConfigSave("containers")
 end
 nameContainersOnLogin()
 
@@ -651,7 +673,8 @@ local mainLoop = macro(500, function(macro)
             return use(getPurse())
         end
     end
-		delay(1500)
+    delay(1500)
+    vBotConfigSave("containers")
     macro:setOff()
 end)
 

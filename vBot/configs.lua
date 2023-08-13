@@ -17,7 +17,10 @@ SuppliesConfig = {}
 local suppliesFile = "/bot/" .. configName .. "/vBot_configs/".. player:getName() .."/Supplies.json"
 storage_custom = {}
 local storageFile = "/bot/" .. configName .. "/vBot_configs/".. player:getName() .."/Storage.json"
-
+quests_config = {}
+local questsFile = "/bot/" .. configName .. "/vBot_configs/".. player:getName() .."/Quests.json"
+containers_config = {}
+local containersFile = "/bot/" .. configName .. "/vBot_configs/".. player:getName() .."/Containers.json"
 
 --healbot
 if g_resources.fileExists(healBotFile) then
@@ -54,13 +57,35 @@ end
 
 --storage
 if g_resources.fileExists(storageFile) then
+  local status, result = pcall(function()
+    return json.decode(g_resources.readFileContents(storageFile))
+  end)
+  if not status then
+    return onError("Error while reading config file (" .. storageFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
+  end
+  storage_custom = result
+end
+
+--quests
+if g_resources.fileExists(questsFile) then
     local status, result = pcall(function()
-      return json.decode(g_resources.readFileContents(storageFile))
+      return json.decode(g_resources.readFileContents(questsFile))
     end)
     if not status then
-      return onError("Error while reading config file (" .. storageFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
+      return onError("Error while reading config file (" .. questsFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
     end
-    storage_custom = result
+    quests_config = result
+end
+
+--containers
+if g_resources.fileExists(containersFile) then
+    local status, result = pcall(function()
+      return json.decode(g_resources.readFileContents(containersFile))
+    end)
+    if not status then
+      return onError("Error while reading config file (" .. containersFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
+    end
+    containers_config = result
 end
 
 function vBotConfigSave(file)
@@ -74,17 +99,23 @@ function vBotConfigSave(file)
   if not file then return end
   file = file:lower()
   if file == "heal" then
-      configFile = healBotFile
-      configTable = HealBotConfig
+    configFile = healBotFile
+    configTable = HealBotConfig
   elseif file == "atk" then
-      configFile = attackBotFile
-      configTable = AttackBotConfig
+    configFile = attackBotFile
+    configTable = AttackBotConfig
 	elseif file == "supply" then
-			configFile = suppliesFile
-			configTable = SuppliesConfig
-	elseif file == "storage" then
-			configFile = storageFile
-			configTable = storage_custom
+    configFile = suppliesFile
+    configTable = SuppliesConfig
+  elseif file == "storage" then
+    configFile = storageFile
+    configTable = storage_custom
+  elseif file == "quests" then
+    configFile = questsFile
+    configTable = quests_config
+  elseif file == "containers" then
+    configFile = containersFile
+    configTable = containers_config
   else
     return
   end
