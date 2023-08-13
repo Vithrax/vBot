@@ -152,7 +152,7 @@ if true then
   end)
 end
 
-addCheckBox("separatePm", "Open PM's in new Window", false, rightPanel, "PM's will be automatically opened in new tab after receiving one.")
+addCheckBox("separatePm", "Open PM's in new Window", true, rightPanel, "PM's will be automatically opened in new tab after receiving one.")
 if true then
   onTalk(function(name, level, mode, text, channelId, pos)
     if mode == 4 and settings.separatePm then
