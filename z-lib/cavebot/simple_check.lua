@@ -9,7 +9,6 @@ CaveBot.Extensions.SimpleCheck.setup = function()
 												or storage.caveBot.backTrainers
 												or storage.caveBot.backOffline
 												or type(supply_data) == "table"
-												or (supply_info.stamina.enabled and stamina() < tonumber(supply_info.stamina.value))
 												or (supply_info.capacity.enabled and freecap() < tonumber(supply_info.capacity.value))
 
 		if not has_to_refill then

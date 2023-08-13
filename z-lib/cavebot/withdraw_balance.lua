@@ -4,24 +4,23 @@ CaveBot.Extensions.WithdrawBalance.balance = 0
 CaveBot.Extensions.WithdrawBalance.setup = function()
 	CaveBot.registerAction("WithdrawBalance", "#ffffff", function(value)
 		local npc_name = value:trim()
-		local default_delay = 750
 
 		if not CaveBot.ReachNPC(npc_name) then
 			return "retry"
 		end
 
 		NPC.say("hi")
-		schedule(default_delay, function()
+		schedule(storage.extras.talkDelay, function()
 			NPC.say("balance")
 		end)
-		schedule(default_delay*3, function()
+		schedule(storage.extras.talkDelay*3, function()
 			NPC.say("withdraw" .. CaveBot.Extensions.WithdrawBalance.balance)
 		end)
-		schedule(default_delay*5, function()
+		schedule(storage.extras.talkDelay*5, function()
 			NPC.say("yes")
 		end)
 
-		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + default_delay*7)
+		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping") + storage.extras.talkDelay*7)
 		return true
 	end)
 

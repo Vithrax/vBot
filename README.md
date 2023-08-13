@@ -19,13 +19,13 @@ Quest scripts will not work without needed items, please check items before runn
 - [ ] create a new lootseller script based on itens in inventory
 - [ ] create leave rookgaard script
 - [ ] define best way to refill and loot seller scripts
-- [ ] create new yalahar quest script
-- [ ] create new farmine quest script
-- [ ] create new feyrist quest script
-- [ ] create new inquisition quest script
-- [ ] create new warzone quest script
-- [ ] create new grimvale quest script
-- [ ] create new poi levers script
-- [ ] create new kilmaresh quest script
-- [ ] create new grave danger quest script (without bosses)
-- [ ] create new library quest script
+- [ ] create new yalahar quest script (in-service-of-yalahar)
+- [ ] create new farmine quest script (the-new-frontier)
+- [ ] create new feyrist quest script (threatened dreams)
+- [ ] create new inquisition quest script (the-inquisition)
+- [ ] create new warzone quest script (bigfoots-burden)
+- [ ] create new grimvale quest script (grimvale)
+- [ ] create new poi levers script (poi-levers)
+- [ ] create new kilmaresh quest script (kilmaresh)
+- [ ] create new grave danger quest script without bosses (grave-danger)
+- [ ] create new library quest script (the-secret-library)

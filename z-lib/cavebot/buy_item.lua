@@ -3,12 +3,11 @@ CaveBot.Extensions.BuyItem = {}
 CaveBot.Extensions.BuyItem.setup = function()
 	CaveBot.registerAction("BuyItem", "#ffffff", function(value)
 		local data = string.split(value, ",")
-		local npcName = data[1]:trim()
-		local itemId = tonumber(data[2]:trim())
-		local itemAmountToHave = tonumber(data[3]:trim())
-		local defaultDelay = 750
+		local npc_name = data[1]:trim()
+		local item_id = tonumber(data[2]:trim())
+		local item_amount = tonumber(data[3]:trim())
 
-		if not CaveBot.ReachNPC(npcName) then
+		if not CaveBot.ReachNPC(npc_name) then
 			return "retry"
 		end
 
@@ -18,17 +17,17 @@ CaveBot.Extensions.BuyItem.setup = function()
       return "retry"
     end
 
-		local itemAmountBuy = itemAmountToHave - itemAmount(itemId)
-		NPC.buy(itemId, itemAmountBuy)
+		local item_amount_buy = item_amount - itemAmount(item_id)
+		NPC.buy(item_id, item_amount_buy)
 
 		CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))
 		return true
 	end)
 
 	CaveBot.Editor.registerAction("buyitem", "buy item", {
-		value="npcName, itemId, amount",
+		value="npc_name, item_id, item_amount",
 		title="Buy item",
-		description="Buy item on NPC (npcName, itemId, amount)",
+		description="Buy item on NPC (npc_name, item_id, item_amount)",
 		multiline=false
 	})
 end
