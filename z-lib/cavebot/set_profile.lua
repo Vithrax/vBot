@@ -12,7 +12,7 @@ CaveBot.Extensions.SetProfile.setup = function()
   end)
 
   CaveBot.Editor.registerAction("setprofile", "set profile", {
-    value="-Refill",
+    value="",
     title="Set profile",
     description="Set CaveBot and TargetBot profile",
     multiline=false
