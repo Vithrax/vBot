@@ -14,7 +14,7 @@ Quest scripts will not work without needed items, please check items before runn
 - [x] separate quests, containers and storage in different files
 - [x] create _configuration script that redirects bot to bless, refill or hunt scripts
 - [x] create fast refill script (dry creek and feyrist)
-- [ ] fix buy_supplies function (sometimes proceeding without buy all items)
+- [x] fix buy_supplies function (sometimes proceeding without buy all items)
 - [ ] fix sell_all function (skipping if cap == 0)
 - [ ] create a new lootseller script based on itens in inventory
 - [ ] create leave rookgaard script

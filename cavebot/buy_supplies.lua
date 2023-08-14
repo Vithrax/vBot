@@ -2,68 +2,71 @@ CaveBot.Extensions.BuySupplies = {}
 
 CaveBot.Extensions.BuySupplies.setup = function()
   CaveBot.registerAction("BuySupplies", "#C300FF", function(value, retries)
-    local possibleItems = {}
-
-    local val = string.split(value, ",")
-    local waitVal
-    if #val == 0 or #val > 2 then 
-      warn("CaveBot[BuySupplies]: incorrect BuySupplies value")
-      return false 
-    elseif #val == 2 then
-      waitVal = tonumber(val[2]:trim())
-    end
-
-    local npcName = val[1]:trim()
-    local npc = getCreatureByName(npcName)
-    if not npc then 
-      print("CaveBot[BuySupplies]: NPC not found")
-      return false 
-    end
-    
-    if not waitVal and #val == 2 then 
-      warn("CaveBot[BuySupplies]: incorrect delay values!")
-    elseif waitVal and #val == 2 then
-      delay(waitVal)
-    end
+    local possible_items = {}
+    local npc_name = string.split(value, ",")[1]:trim()
+    local npc = getCreatureByName(npc_name)
 
     if retries > 50 then
       print("CaveBot[BuySupplies]: Too many tries, can't buy")
       return false
     end
 
-    if not CaveBot.ReachNPC(npcName) then
+    if not npc then
+      print("CaveBot[BuySupplies]: NPC not found")
+      return false
+    end
+
+    if not CaveBot.ReachNPC(npc_name) then
       return "retry"
     end
 
     if not NPC.isTrading() then
       CaveBot.OpenNpcTrade()
-      CaveBot.delay(storage.extras.talkDelay*2)
+      CaveBot.delay(2 * storage.extras.talkDelay)
       return "retry"
     end
 
-    -- get items from npc
-    local npcItems = NPC.getBuyItems()
-    for i,v in pairs(npcItems) do
-      table.insert(possibleItems, v.id)
+    local npc_items = NPC.getBuyItems()
+    for i, v in pairs(npc_items) do
+      table.insert(possible_items, v.id)
     end
+
+    local transaction_delay = 1
 
     for id, values in pairs(Supplies.getItemsData()) do
       id = tonumber(id)
-      if table.find(possibleItems, id) then
-        local max = values.max
-        local current = player:getItemsCount(id)
-        local toBuy = max - current
+      if table.find(possible_items, id) then
+        local items_max = values.max
+        local items_current = player:getItemsCount(id)
+        local items_to_buy = items_max - items_current
+        local transaction_loops = math.ceil(items_to_buy / 100)
 
-        if toBuy > 0 then
-          toBuy = math.min(100, toBuy)
-
-          NPC.buy(id, math.min(100, toBuy))
-          print("CaveBot[BuySupplies]: bought " .. toBuy .. "x " .. id)
-          return "retry"
+        for i = 1, transaction_loops, 1 do
+          if (i < transaction_loops) then
+            items_to_buy = items_to_buy - 100
+            schedule(
+              (i * 2 * storage.extras.talkDelay),
+              function()
+                NPC.buy(id, 100)
+                print("CaveBot[BuySupplies]: bought 100x " .. id)
+              end
+            )
+          else
+            schedule(
+              (i * 2 * storage.extras.talkDelay),
+              function()
+                NPC.buy(id, items_to_buy)
+                print("CaveBot[BuySupplies]: bought " .. items_to_buy .. "x " .. id)
+              end
+            )
+          end
         end
+
+        transaction_delay = transaction_delay + transaction_loops
       end
     end
 
+    CaveBot.delay(transaction_delay * 2 * storage.extras.talkDelay)
     print("CaveBot[BuySupplies]: bought everything, proceeding")
     return true
  end)
