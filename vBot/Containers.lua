@@ -1,49 +1,49 @@
 setDefaultTab("Tools")
 
 if not containers_config then
-	containers_config = {}
-	vBotConfigSave("containers")
+  containers_config = {}
+  vBotConfigSave("containers")
 end
 
 local panelName = "containers"
 
 if type(containers_config[panelName]) ~= "table" then
-    containers_config[panelName] = {
-        enabled = true;
-        height = 170,
-        purse = true;
-        list = {
-            {
-                value = "main",
-                enabled = true,
-                item = 2854,
-                min = true,
-                items = {}
-            },
-            {
-                value = "tools",
-                enabled = true,
-                item = 7343,
-                min = true,
-                items = {}
-            },
-            {
-                value = "purse",
-                enabled = true,
-                item = 23396,
-                min = true,
-                items = {}
-            },
-            {
-                value = "quickloot",
-                enabled = true,
-                item = 23721,
-                min = true,
-                items = {}
-            },
-        }
+  containers_config[panelName] = {
+    enabled = true;
+    height = 170,
+    purse = true;
+    list = {
+      {
+        value = "main",
+        enabled = true,
+        item = 2854,
+        min = true,
+        items = {}
+      },
+      {
+        value = "tools",
+        enabled = true,
+        item = 7343,
+        min = true,
+        items = {}
+      },
+      {
+        value = "purse",
+        enabled = true,
+        item = 23396,
+        min = true,
+        items = {}
+      },
+      {
+        value = "quickloot",
+        enabled = true,
+        item = 23721,
+        min = true,
+        items = {}
+      },
     }
-    vBotConfigSave("containers")
+  }
+  vBotConfigSave("containers")
 end
 
 local config = containers_config[panelName]
@@ -317,382 +317,382 @@ ContListsWindow < MainWindow
 ]])
 
 function findItemsInArray(t, tfind)
-    local tArray = {}
-    for x,v in pairs(t) do
-        if type(v) == "table" then
-            local aItem = t[x].item
-            local aEnabled = t[x].enabled
-                if aItem then
-                    if tfind and aItem == tfind then
-                        return x
-                    elseif not tfind then
-                        if aEnabled then
-                            table.insert(tArray, aItem)
-                        end
-                    end
-                end
-            end
+  local tArray = {}
+  for x,v in pairs(t) do
+    if type(v) == "table" then
+      local aItem = t[x].item
+      local aEnabled = t[x].enabled
+      if aItem then
+        if tfind and aItem == tfind then
+          return x
+        elseif not tfind then
+          if aEnabled then
+            table.insert(tArray, aItem)
+          end
         end
-    if not tfind then return tArray end
+      end
+    end
+  end
+  if not tfind then return tArray end
 end
 
 local lstBPs
 
 local openContainer = function(id)
-    local t = {getRight(), getLeft(), getAmmo()} -- if more slots needed then add them here
-    for i=1,#t do
-        local slotItem = t[i]
-        if slotItem and slotItem:getId() == id then
-            return g_game.open(slotItem, nil)
-        end
+  local t = {getRight(), getLeft(), getAmmo()} -- if more slots needed then add them here
+  for i=1,#t do
+    local slotItem = t[i]
+    if slotItem and slotItem:getId() == id then
+      return g_game.open(slotItem, nil)
     end
+  end
 
-    for i, container in pairs(g_game.getContainers()) do
-        for i, item in ipairs(container:getItems()) do
-            if item:isContainer() and item:getId() == id then
-                return g_game.open(item, nil)
-            end
-        end
+  for i, container in pairs(g_game.getContainers()) do
+    for i, item in ipairs(container:getItems()) do
+      if item:isContainer() and item:getId() == id then
+        return g_game.open(item, nil)
+      end
     end
+  end
 end
 
 function reopenBackpacks()
-    lstBPs = findItemsInArray(config.list)
+  lstBPs = findItemsInArray(config.list)
 
-    for _, container in pairs(g_game.getContainers()) do g_game.close(container) end
-    bpItem = getBack()
-    if bpItem ~= nil then
-        g_game.open(bpItem)
+  for _, container in pairs(g_game.getContainers()) do g_game.close(container) end
+  bpItem = getBack()
+  if bpItem ~= nil then
+    g_game.open(bpItem)
+  end
+
+  schedule(1000, function()
+    local delay = 500
+
+    if config.purse then
+      local item = getPurse()
+      if item then
+        use(item)
+      end
     end
-
-    schedule(1000, function()
-        local delay = 500
-
-        if config.purse then
-            local item = getPurse()
-            if item then
-                use(item)
-            end
-        end
-        for i=1,#lstBPs do
-            schedule(delay, function()
-                openContainer(lstBPs[i])
-            end)
-            delay = delay + 500
-        end
-    end)
-    vBotConfigSave("containers")
+    for i=1,#lstBPs do
+      schedule(delay, function()
+        openContainer(lstBPs[i])
+      end)
+      delay = delay + 500
+    end
+  end)
+  vBotConfigSave("containers")
 end
 
 rootWidget = g_ui.getRootWidget()
 if rootWidget then
-    contListWindow = UI.createWindow('ContListsWindow', rootWidget)
+  contListWindow = UI.createWindow('ContListsWindow', rootWidget)
+  contListWindow:hide()
+
+  contListWindow.onGeometryChange = function(widget, old, new)
+    if old.height == 0 then return end
+
+    config.height = new.height
+  end
+
+  contListWindow:setHeight(config.height or 170)
+
+  renameContui.editContList.onClick = function(widget)
+    contListWindow:show()
+    contListWindow:raise()
+    contListWindow:focus()
+  end
+
+  renameContui.reopenCont.onClick = function(widget)
+    reopenBackpacks()
+    vBotConfigSave("containers")
+  end
+
+  renameContui.minimiseCont.onClick = function(widget)
+    for i, container in ipairs(getContainers()) do
+      local containerWindow = container.window
+      containerWindow:setContentHeight(34)
+    end
+    vBotConfigSave("containers")
+  end
+
+  renameContui.title:setOn(config.enabled)
+  renameContui.title.onClick = function(widget)
+    config.enabled = not config.enabled
+    widget:setOn(config.enabled)
+    vBotConfigSave("containers")
+  end
+
+  contListWindow.closeButton.onClick = function(widget)
     contListWindow:hide()
+    vBotConfigSave("containers")
+  end
 
-    contListWindow.onGeometryChange = function(widget, old, new)
-        if old.height == 0 then return end
-
-        config.height = new.height
-    end
-
-    contListWindow:setHeight(config.height or 170)
-
-    renameContui.editContList.onClick = function(widget)
-        contListWindow:show()
-        contListWindow:raise()
-        contListWindow:focus()
-    end
-
-    renameContui.reopenCont.onClick = function(widget)
-        reopenBackpacks()
-        vBotConfigSave("containers")
-    end
-
-    renameContui.minimiseCont.onClick = function(widget)
-        for i, container in ipairs(getContainers()) do
-            local containerWindow = container.window
-            containerWindow:setContentHeight(34)
-        end
-        vBotConfigSave("containers")
-    end
-
-    renameContui.title:setOn(config.enabled)
-    renameContui.title.onClick = function(widget)
-        config.enabled = not config.enabled
-        widget:setOn(config.enabled)
-        vBotConfigSave("containers")
-    end
-
-    contListWindow.closeButton.onClick = function(widget)
-        contListWindow:hide()
-        vBotConfigSave("containers")
-    end
-
-    contListWindow.purse.onClick = function(widget)
-        config.purse = not config.purse
-        contListWindow.purse:setChecked(config.purse)
-        vBotConfigSave("containers")
-    end
+  contListWindow.purse.onClick = function(widget)
+    config.purse = not config.purse
     contListWindow.purse:setChecked(config.purse)
+    vBotConfigSave("containers")
+  end
+  contListWindow.purse:setChecked(config.purse)
 
-    contListWindow.sort.onClick = function(widget)
-        config.sort = not config.sort
-        contListWindow.sort:setChecked(config.sort)
-        vBotConfigSave("containers")
-    end
+  contListWindow.sort.onClick = function(widget)
+    config.sort = not config.sort
     contListWindow.sort:setChecked(config.sort)
+    vBotConfigSave("containers")
+  end
+  contListWindow.sort:setChecked(config.sort)
 
-    contListWindow.forceOpen.onClick = function(widget)
-        config.forceOpen = not config.forceOpen
-        contListWindow.forceOpen:setChecked(config.forceOpen)
-        vBotConfigSave("containers")
-    end
+  contListWindow.forceOpen.onClick = function(widget)
+    config.forceOpen = not config.forceOpen
     contListWindow.forceOpen:setChecked(config.forceOpen)
+    vBotConfigSave("containers")
+  end
+  contListWindow.forceOpen:setChecked(config.forceOpen)
 
-    contListWindow.lootBag.onClick = function(widget)
-        config.lootBag = not config.lootBag
-        contListWindow.lootBag:setChecked(config.lootBag)
-        vBotConfigSave("containers")
-    end
+  contListWindow.lootBag.onClick = function(widget)
+    config.lootBag = not config.lootBag
     contListWindow.lootBag:setChecked(config.lootBag)
+    vBotConfigSave("containers")
+  end
+  contListWindow.lootBag:setChecked(config.lootBag)
 
-    local function refreshSortList(k, t)
-        t = t or {}
-        UI.Container(function()
-            t = contListWindow.sortList:getItems()
-            config.list[k].items = t
-            end, true, nil, contListWindow.sortList)
-        contListWindow.sortList:setItems(t)
-        vBotConfigSave("containers")
-    end
-    refreshSortList(t)
+  local function refreshSortList(k, t)
+    t = t or {}
+    UI.Container(function()
+      t = contListWindow.sortList:getItems()
+      config.list[k].items = t
+    end, true, nil, contListWindow.sortList)
+    contListWindow.sortList:setItems(t)
+    vBotConfigSave("containers")
+  end
+  refreshSortList(t)
 
-    local refreshContNames = function(tFocus)
-        local storageVal = config.list
-        if storageVal and #storageVal > 0 then
-            for i, child in pairs(contListWindow.itemList:getChildren()) do
-                child:destroy()
-            end
-            for k, entry in pairs(storageVal) do
-                local label = g_ui.createWidget("BackpackName", contListWindow.itemList)
-                label.onMouseRelease = function()
-                    contListWindow.contId:setItemId(entry.item)
-                    contListWindow.contName:setText(entry.value)
-                    if not entry.items then
-                        entry.items = {}
-                    end
-                    contListWindow.sortList:setItems(entry.items)
-                    refreshSortList(k, entry.items)
-                end
-                label.enabled.onClick = function(widget)
-                    entry.enabled = not entry.enabled
-                    label.enabled:setChecked(entry.enabled)
-                    label.enabled:setTooltip(entry.enabled and 'Disable' or 'Enable')
-                    label.enabled:setImageColor(entry.enabled and '#00FF00' or '#FF0000')
-                    vBotConfigSave("containers")
-                end
-                label.remove.onClick = function(widget)
-                    table.removevalue(config.list, entry)
-                    label:destroy()
-                    vBotConfigSave("containers")
-                end
-                label.state:setChecked(entry.min)
-                label.state.onClick = function(widget)
-                    entry.min = not entry.min
-                    label.state:setChecked(entry.min)
-                    label.state:setColor(entry.min and '#00FF00' or '#FF0000')
-                    label.state:setTooltip(entry.min and 'Open Minimised' or 'Do not minimise')
-                    vBotConfigSave("containers")
-                end
-                label.openNext.onClick = function(widget)
-                    entry.openNext = not entry.openNext
-                    label.openNext:setChecked(entry.openNext)
-                    label.openNext:setColor(entry.openNext and '#00FF00' or '#FF0000')
-                    vBotConfigSave("containers")
-                end
-                label:setText(entry.value)
-                label.enabled:setChecked(entry.enabled)
-                label.enabled:setTooltip(entry.enabled and 'Disable' or 'Enable')
-                label.enabled:setImageColor(entry.enabled and '#00FF00' or '#FF0000')
-                label.state:setColor(entry.min and '#00FF00' or '#FF0000')
-                label.state:setTooltip(entry.min and 'Open Minimised' or 'Do not minimise')
-                label.openNext:setColor(entry.openNext and '#00FF00' or '#FF0000')
-
-                if tFocus and entry.item == tFocus then
-                    tFocus = label
-                end
-            end
-            if tFocus then contListWindow.itemList:focusChild(tFocus) end
+  local refreshContNames = function(tFocus)
+    local storageVal = config.list
+    if storageVal and #storageVal > 0 then
+      for i, child in pairs(contListWindow.itemList:getChildren()) do
+        child:destroy()
+      end
+      for k, entry in pairs(storageVal) do
+        local label = g_ui.createWidget("BackpackName", contListWindow.itemList)
+        label.onMouseRelease = function()
+          contListWindow.contId:setItemId(entry.item)
+          contListWindow.contName:setText(entry.value)
+          if not entry.items then
+            entry.items = {}
+          end
+          contListWindow.sortList:setItems(entry.items)
+          refreshSortList(k, entry.items)
         end
-        vBotConfigSave("containers")
-    end
-    contListWindow.addItem.onClick = function(widget)
-        local id = contListWindow.contId:getItemId()
-        local trigger = contListWindow.contName:getText()
-
-        if id > 100 and trigger:len() > 0 then
-            local ifind = findItemsInArray(config.list, id)
-            if ifind then
-                config.list[ifind] = { item = id, value = trigger, enabled = config.list[ifind].enabled, min = config.list[ifind].min, items = config.list[ifind].items}
-            else
-                table.insert(config.list, { item = id, value = trigger, enabled = true, min = false, items = {} })
-            end
-            contListWindow.contId:setItemId(0)
-            contListWindow.contName:setText('')
-            contListWindow.contName:setColor('white')
-            contListWindow.contName:setImageColor('#ffffff')
-            contListWindow.contId:setImageColor('#ffffff')
-            refreshContNames(id)
-        else
-            contListWindow.contId:setImageColor('red')
-            contListWindow.contName:setImageColor('red')
-            contListWindow.contName:setColor('red')
+        label.enabled.onClick = function(widget)
+          entry.enabled = not entry.enabled
+          label.enabled:setChecked(entry.enabled)
+          label.enabled:setTooltip(entry.enabled and 'Disable' or 'Enable')
+          label.enabled:setImageColor(entry.enabled and '#00FF00' or '#FF0000')
+          vBotConfigSave("containers")
         end
+        label.remove.onClick = function(widget)
+          table.removevalue(config.list, entry)
+          label:destroy()
+          vBotConfigSave("containers")
+        end
+        label.state:setChecked(entry.min)
+        label.state.onClick = function(widget)
+          entry.min = not entry.min
+          label.state:setChecked(entry.min)
+          label.state:setColor(entry.min and '#00FF00' or '#FF0000')
+          label.state:setTooltip(entry.min and 'Open Minimised' or 'Do not minimise')
+          vBotConfigSave("containers")
+        end
+        label.openNext.onClick = function(widget)
+          entry.openNext = not entry.openNext
+          label.openNext:setChecked(entry.openNext)
+          label.openNext:setColor(entry.openNext and '#00FF00' or '#FF0000')
+          vBotConfigSave("containers")
+        end
+        label:setText(entry.value)
+        label.enabled:setChecked(entry.enabled)
+        label.enabled:setTooltip(entry.enabled and 'Disable' or 'Enable')
+        label.enabled:setImageColor(entry.enabled and '#00FF00' or '#FF0000')
+        label.state:setColor(entry.min and '#00FF00' or '#FF0000')
+        label.state:setTooltip(entry.min and 'Open Minimised' or 'Do not minimise')
+        label.openNext:setColor(entry.openNext and '#00FF00' or '#FF0000')
+
+        if tFocus and entry.item == tFocus then
+          tFocus = label
+        end
+      end
+      if tFocus then contListWindow.itemList:focusChild(tFocus) end
     end
-    refreshContNames()
+    vBotConfigSave("containers")
+  end
+  contListWindow.addItem.onClick = function(widget)
+    local id = contListWindow.contId:getItemId()
+    local trigger = contListWindow.contName:getText()
+
+    if id > 100 and trigger:len() > 0 then
+      local ifind = findItemsInArray(config.list, id)
+      if ifind then
+        config.list[ifind] = { item = id, value = trigger, enabled = config.list[ifind].enabled, min = config.list[ifind].min, items = config.list[ifind].items}
+      else
+        table.insert(config.list, { item = id, value = trigger, enabled = true, min = false, items = {} })
+      end
+      contListWindow.contId:setItemId(0)
+      contListWindow.contName:setText('')
+      contListWindow.contName:setColor('white')
+      contListWindow.contName:setImageColor('#ffffff')
+      contListWindow.contId:setImageColor('#ffffff')
+      refreshContNames(id)
+    else
+      contListWindow.contId:setImageColor('red')
+      contListWindow.contName:setImageColor('red')
+      contListWindow.contName:setColor('red')
+    end
+  end
+  refreshContNames()
 end
 
 onContainerOpen(function(container, previousContainer)
-    if not container.window then return end
-    local containerWindow = container.window
-    if not previousContainer then
-        containerWindow:setContentHeight(34)
-    end
+  if not container.window then return end
+  local containerWindow = container.window
+  if not previousContainer then
+    containerWindow:setContentHeight(34)
+  end
 
-    local storageVal = config.list
-    if storageVal and #storageVal > 0 then
-        for _, entry in pairs(storageVal) do
-            if entry.enabled and string.find(container:getContainerItem():getId(), entry.item) then
-                if entry.min then
-                    containerWindow:minimize()
-                end
-                if renameContui.title:isOn() then
-                    containerWindow:setText(entry.value)
-                end
-                if entry.openNext then
-                    for i, item in ipairs(container:getItems()) do
-                        if item:getId() == entry.item then
-                            local time = #storageVal * 250
-                            schedule(time, function()
-                                time = time + 250
-                                g_game.open(item)
-                            end)
-                        end
-                    end
-                end
-            end
+  local storageVal = config.list
+  if storageVal and #storageVal > 0 then
+    for _, entry in pairs(storageVal) do
+      if entry.enabled and string.find(container:getContainerItem():getId(), entry.item) then
+        if entry.min then
+          containerWindow:minimize()
         end
+        if renameContui.title:isOn() then
+          containerWindow:setText(entry.value)
+        end
+        if entry.openNext then
+          for i, item in ipairs(container:getItems()) do
+            if item:getId() == entry.item then
+              local time = #storageVal * 250
+              schedule(time, function()
+                time = time + 250
+                g_game.open(item)
+              end)
+            end
+          end
+        end
+      end
     end
+  end
 end)
 
 local function nameContainersOnLogin()
-    for i, container in ipairs(getContainers()) do
-        if renameContui.title:isOn() then
-            if not container.window then return end
-            local containerWindow = container.window
-            local storageVal = config.list
-            if storageVal and #storageVal > 0 then
-                for _, entry in pairs(storageVal) do
-                    if entry.enabled and string.find(container:getContainerItem():getId(), entry.item) then
-                        containerWindow:setText(entry.value)
-                    end
-                end
-            end
+  for i, container in ipairs(getContainers()) do
+    if renameContui.title:isOn() then
+      if not container.window then return end
+      local containerWindow = container.window
+      local storageVal = config.list
+      if storageVal and #storageVal > 0 then
+        for _, entry in pairs(storageVal) do
+          if entry.enabled and string.find(container:getContainerItem():getId(), entry.item) then
+            containerWindow:setText(entry.value)
+          end
         end
+      end
     end
-    vBotConfigSave("containers")
+  end
+  vBotConfigSave("containers")
 end
 nameContainersOnLogin()
 
 local function moveItem(item, destination)
-    return g_game.move(item, destination:getSlotPosition(destination:getItemsCount()), item:getCount())
+  return g_game.move(item, destination:getSlotPosition(destination:getItemsCount()), item:getCount())
 end
 
 local function properTable(t)
-    local r = {}
-    for _, entry in pairs(t) do
-      if type(entry) == "number" then
-        table.insert(r, entry)
-      else
-        table.insert(r, entry.id)
-      end
+  local r = {}
+  for _, entry in pairs(t) do
+    if type(entry) == "number" then
+      table.insert(r, entry)
+    else
+      table.insert(r, entry.id)
     end
-    return r
+  end
+  return r
 end
 
 local mainLoop = macro(500, function(macro)
-    if not config.sort and not config.purse then return end
+  if not config.sort and not config.purse then return end
 
-    local storageVal = config.list
-    for _, entry in pairs(storageVal) do
-        local dId = entry.item
-        local items = properTable(entry.items)
-        -- sorting
-        if config.sort then
-            for _, container in pairs(getContainers()) do
-                local cName = container:getName():lower()
-                if not cName:find("depot") and not cName:find("depot") and not cName:find("quiver") then
-                    local cId = container:getContainerItem():getId()
-                    for __, item in ipairs(container:getItems()) do
-                        local id = item:getId()
-                        if table.find(items, id) and cId ~= dId then
-                            local destination = getContainerByItem(dId, true)
-                            if destination and not containerIsFull(destination) then
-                                return moveItem(item, destination)
-                            end
-                        end
-                    end
-                end
+  local storageVal = config.list
+  for _, entry in pairs(storageVal) do
+    local dId = entry.item
+    local items = properTable(entry.items)
+    -- sorting
+    if config.sort then
+      for _, container in pairs(getContainers()) do
+        local cName = container:getName():lower()
+        if not cName:find("depot") and not cName:find("depot") and not cName:find("quiver") then
+          local cId = container:getContainerItem():getId()
+          for __, item in ipairs(container:getItems()) do
+            local id = item:getId()
+            if table.find(items, id) and cId ~= dId then
+              local destination = getContainerByItem(dId, true)
+              if destination and not containerIsFull(destination) then
+                return moveItem(item, destination)
+              end
             end
+          end
         end
-        -- keep open / purse 23396
-        if config.forceOpen then
-            local container = getContainerByItem(dId)
-            if not container then
-                local t = {getBack(), getAmmo(), getFinger(), getNeck(), getLeft(), getRight()}
-                for i=1,#t do
-                    local slot = t[i]
-                    if slot and slot:getId() == dId then
-                        return g_game.open(slot)
-                    end
-                end
-                local cItem = findItem(dId)
-                if cItem then
-                    return g_game.open(cItem)
-                end
-            end
+      end
+    end
+    -- keep open / purse 23396
+    if config.forceOpen then
+      local container = getContainerByItem(dId)
+      if not container then
+        local t = {getBack(), getAmmo(), getFinger(), getNeck(), getLeft(), getRight()}
+        for i=1,#t do
+          local slot = t[i]
+          if slot and slot:getId() == dId then
+            return g_game.open(slot)
+          end
         end
-    end
-    if config.purse and config.forceOpen and not getContainerByItem(23396) then
-        return use(getPurse())
-    end
-    if config.lootBag and config.forceOpen and not getContainerByItem(23721) then
-        if findItem(23721) then
-            g_game.open(findItem(23721), getContainerByItem(23396))
-        else
-            return use(getPurse())
+        local cItem = findItem(dId)
+        if cItem then
+          return g_game.open(cItem)
         end
+      end
     end
-    delay(1500)
-    vBotConfigSave("containers")
-    macro:setOff()
+  end
+  if config.purse and config.forceOpen and not getContainerByItem(23396) then
+    return use(getPurse())
+  end
+  if config.lootBag and config.forceOpen and not getContainerByItem(23721) then
+    if findItem(23721) then
+      g_game.open(findItem(23721), getContainerByItem(23396))
+    else
+      return use(getPurse())
+    end
+  end
+  delay(1500)
+  vBotConfigSave("containers")
+  macro:setOff()
 end)
 
 
 onContainerOpen(function(container, previousContainer)
-    mainLoop:setOn()
+  mainLoop:setOn()
 end)
 
 onAddItem(function(container, slot, item, oldItem)
-    mainLoop:setOn()
+  mainLoop:setOn()
 end)
 
 onPlayerInventoryChange(function(slot, item, oldItem)
-    mainLoop:setOn()
+  mainLoop:setOn()
 end)
 
 onContainerClose(function(container)
-    if not container.lootContainer then
-        mainLoop:setOn()
-    end
+  if not container.lootContainer then
+    mainLoop:setOn()
+  end
 end)
