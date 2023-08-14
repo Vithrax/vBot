@@ -74,6 +74,6 @@ CaveBot.Extensions.BuySupplies.setup = function()
  CaveBot.Editor.registerAction("buysupplies", "buy supplies", {
   value="NPC name",
   title="Buy Supplies",
-  description="NPC Name, delay(in ms, optional)",
+  description="NPC Name",
  })
 end

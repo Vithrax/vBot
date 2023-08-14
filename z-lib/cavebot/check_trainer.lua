@@ -8,11 +8,16 @@ CaveBot.Extensions.CheckTrainer.setup = function()
     local label_buy_weapon = "buyexerciseweapon"
 
     if not storage_custom.exercise_id or storage_custom.exercise_id == "" then
-      for item_id, _ in ipairs(SuppliesConfig.supplies[SuppliesConfig.supplies.currentProfile].items) do
-        if has_array_value(exercise_list, item_id) then
-          stg_custom.set_data("exercise_id", item_id)
+      for item_id, _ in pairs(SuppliesConfig.supplies[SuppliesConfig.supplies.currentProfile].items) do
+        if table.find(exercise_list, tonumber(item_id)) then
+          stg_custom.set_data("exercise_id", tonumber(item_id))
         end
       end
+    end
+
+    if itemAmount(storage_custom.exercise_id) < 1 then
+      CaveBot.gotoLabel(label_buy_weapon)
+      return true
     end
 
     if getLeft() and getLeft():getId() ~= storage_custom.exercise_id then
