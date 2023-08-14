@@ -1,6 +1,6 @@
 --[[
-    Configs for modules
-    Based on Kondrah storage method
+Configs for modules
+Based on Kondrah storage method
 --]]
 local configName = modules.game_bot.contentsPanel.config:getCurrentOption().text
 
@@ -24,35 +24,35 @@ local containersFile = "/bot/" .. configName .. "/vBot_configs/".. player:getNam
 
 --healbot
 if g_resources.fileExists(healBotFile) then
-    local status, result = pcall(function()
-      return json.decode(g_resources.readFileContents(healBotFile))
-    end)
-    if not status then
-      return onError("Error while reading config file (" .. healBotFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
-    end
-    HealBotConfig = result
+  local status, result = pcall(function()
+    return json.decode(g_resources.readFileContents(healBotFile))
+  end)
+  if not status then
+    return onError("Error while reading config file (" .. healBotFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
+  end
+  HealBotConfig = result
 end
 
 --attackbot
 if g_resources.fileExists(attackBotFile) then
-    local status, result = pcall(function()
-      return json.decode(g_resources.readFileContents(attackBotFile))
-    end)
-    if not status then
-      return onError("Error while reading config file (" .. attackBotFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
-    end
-    AttackBotConfig = result
+  local status, result = pcall(function()
+    return json.decode(g_resources.readFileContents(attackBotFile))
+  end)
+  if not status then
+    return onError("Error while reading config file (" .. attackBotFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
+  end
+  AttackBotConfig = result
 end
 
 --supplies
 if g_resources.fileExists(suppliesFile) then
-    local status, result = pcall(function()
-      return json.decode(g_resources.readFileContents(suppliesFile))
-    end)
-    if not status then
-      return onError("Error while reading config file (" .. suppliesFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
-    end
-    SuppliesConfig = result
+  local status, result = pcall(function()
+    return json.decode(g_resources.readFileContents(suppliesFile))
+  end)
+  if not status then
+    return onError("Error while reading config file (" .. suppliesFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
+  end
+  SuppliesConfig = result
 end
 
 --storage
@@ -68,24 +68,24 @@ end
 
 --quests
 if g_resources.fileExists(questsFile) then
-    local status, result = pcall(function()
-      return json.decode(g_resources.readFileContents(questsFile))
-    end)
-    if not status then
-      return onError("Error while reading config file (" .. questsFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
-    end
-    quests_config = result
+  local status, result = pcall(function()
+    return json.decode(g_resources.readFileContents(questsFile))
+  end)
+  if not status then
+    return onError("Error while reading config file (" .. questsFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
+  end
+  quests_config = result
 end
 
 --containers
 if g_resources.fileExists(containersFile) then
-    local status, result = pcall(function()
-      return json.decode(g_resources.readFileContents(containersFile))
-    end)
-    if not status then
-      return onError("Error while reading config file (" .. containersFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
-    end
-    containers_config = result
+  local status, result = pcall(function()
+    return json.decode(g_resources.readFileContents(containersFile))
+  end)
+  if not status then
+    return onError("Error while reading config file (" .. containersFile .. "). To fix this problem you can delete HealBot.json. Details: " .. result)
+  end
+  containers_config = result
 end
 
 function vBotConfigSave(file)
@@ -104,7 +104,7 @@ function vBotConfigSave(file)
   elseif file == "atk" then
     configFile = attackBotFile
     configTable = AttackBotConfig
-	elseif file == "supply" then
+  elseif file == "supply" then
     configFile = suppliesFile
     configTable = SuppliesConfig
   elseif file == "storage" then
