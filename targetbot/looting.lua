@@ -12,6 +12,16 @@ TargetBot.Looting.setup = function()
   ui = UI.createWidget("TargetBotLootingPanel")
   UI.Container(TargetBot.Looting.onItemsUpdate, true, nil, ui.items)
   UI.Container(TargetBot.Looting.onContainersUpdate, true, nil, ui.containers) 
+  UI.Separator()
+  local blackListText = table.concat(storage.blacklist, ",")
+  UI.Label("Loot Blacklist (creature1,creature2):")
+  UI.TextEdit(table.concat(storage.blacklist, ","), function(_, text)
+    storage.blacklist = {}
+    for _, creature in ipairs(string.split(text, ",")) do
+      table.insert(storage.blacklist, creature)
+    end
+  end)
+  UI.Separator()
   ui.everyItem.onClick = function()
     ui.everyItem:setOn(not ui.everyItem:isOn())
     TargetBot.save()
@@ -302,6 +312,11 @@ onCreatureDisappear(function(creature)
   local pos = player:getPosition()
   local mpos = creature:getPosition()
   local name = creature:getName()
+
+  for _, v in ipairs(storage.blacklist) do
+    if name == v then return end
+  end
+  
   if pos.z ~= mpos.z or math.max(math.abs(pos.x-mpos.x), math.abs(pos.y-mpos.y)) > 6 then return end
   schedule(20, function() -- check in 20ms if there's container (dead body) on that tile
     if not containers[1] then return end
