@@ -13,7 +13,6 @@ TargetBot.Looting.setup = function()
   UI.Container(TargetBot.Looting.onItemsUpdate, true, nil, ui.items)
   UI.Container(TargetBot.Looting.onContainersUpdate, true, nil, ui.containers) 
   UI.Separator()
-  local blackListText = table.concat(storage.blacklist, ",")
   UI.Label("Loot Blacklist (creature1,creature2):")
   UI.TextEdit(table.concat(storage.blacklist, ","), function(_, text)
     storage.blacklist = {}
